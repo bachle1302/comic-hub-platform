@@ -1,0 +1,271 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { getAdminComics, type AdminComic } from "@/features/admin/comics";
+import {
+  AdminChapterForm,
+  AdminChaptersTable,
+  createAdminChapter,
+  deleteAdminChapter,
+  getAdminChapter,
+  getAdminChapters,
+  updateAdminChapter,
+  type AdminChapter,
+  type AdminChaptersQuery,
+  type CreateAdminChapterInput,
+  type UpdateAdminChapterInput,
+} from "@/features/admin/chapters";
+
+type DeletedFilter = NonNullable<AdminChaptersQuery["deleted"]>;
+
+export default function AdminChaptersPage() {
+  const [chapters, setChapters] = useState<AdminChapter[]>([]);
+  const [comics, setComics] = useState<AdminComic[]>([]);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [editingChapter, setEditingChapter] = useState<AdminChapter | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingChapters, setIsLoadingChapters] = useState(false);
+  const [selectedComicId, setSelectedComicId] = useState<number | null>(null);
+  const [deletedFilter, setDeletedFilter] = useState<DeletedFilter>("active");
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const selectedComic = useMemo(
+    () => comics.find((comic) => comic.id === selectedComicId) ?? null,
+    [comics, selectedComicId],
+  );
+
+  const loadChapters = useCallback(async (
+    comicId: number,
+    deleted: DeletedFilter = "active",
+  ) => {
+    setIsLoadingChapters(true);
+    setErrorMessage(null);
+
+    try {
+      setChapters(await getAdminChapters(comicId, { deleted }));
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Khong tai duoc chapter",
+      );
+    } finally {
+      setIsLoadingChapters(false);
+    }
+  }, []);
+
+  const loadComics = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const nextComics = await getAdminComics();
+      setComics(nextComics);
+
+      if (nextComics.length > 0) {
+        setSelectedComicId(nextComics[0].id);
+        await loadChapters(nextComics[0].id, "active");
+      }
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Khong tai duoc danh sach truyen",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadChapters]);
+
+  useEffect(() => {
+    const task = window.setTimeout(() => {
+      void loadComics();
+    }, 0);
+
+    return () => window.clearTimeout(task);
+  }, [loadComics]);
+
+  async function handleSelectComic(comicId: number) {
+    setSelectedComicId(comicId);
+    setEditingChapter(null);
+    setSuccessMessage(null);
+    await loadChapters(comicId, deletedFilter);
+  }
+
+  async function handleSubmit(
+    input: CreateAdminChapterInput | UpdateAdminChapterInput,
+  ) {
+    if (!selectedComic) {
+      setErrorMessage("Vui long chon truyen truoc");
+      return;
+    }
+
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      if (editingChapter) {
+        await updateAdminChapter(editingChapter.id, input);
+        setSuccessMessage("Cap nhat chapter thanh cong");
+      } else {
+        await createAdminChapter(
+          selectedComic.id,
+          input as CreateAdminChapterInput,
+        );
+        setSuccessMessage("Them chapter thanh cong");
+      }
+
+      setEditingChapter(null);
+      await loadChapters(selectedComic.id, deletedFilter);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Luu chapter that bai",
+      );
+    }
+  }
+
+  async function handleEdit(chapter: AdminChapter) {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      setEditingChapter(await getAdminChapter(chapter.id));
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Khong tai duoc chapter detail",
+      );
+    }
+  }
+
+  async function handleDelete(chapter: AdminChapter) {
+    const confirmed = window.confirm(
+      `Chapter "${chapter.name}" se duoc an khoi public, khong bi xoa vinh vien. Tiep tuc?`,
+    );
+
+    if (!confirmed || !selectedComic) {
+      return;
+    }
+
+    setDeletingId(chapter.id);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const result = await deleteAdminChapter(chapter.id);
+      setSuccessMessage(result.message);
+
+      if (editingChapter?.id === chapter.id) {
+        setEditingChapter(null);
+      }
+
+      await loadChapters(selectedComic.id, deletedFilter);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Xoa chapter that bai",
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Quan ly chuong</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Tao chapter, upload anh len object storage va luu metadata vao backend.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <div className="rounded-lg border p-6 text-sm text-muted-foreground">
+          Dang tai danh sach truyen...
+        </div>
+      ) : comics.length === 0 ? (
+        <div className="rounded-lg border p-6 text-sm text-muted-foreground">
+          Vui long tao truyen truoc.
+        </div>
+      ) : (
+        <>
+          <div className="space-y-2 rounded-lg border bg-card p-4">
+            <label htmlFor="chapter-comic" className="text-sm font-medium">
+              Chon truyen
+            </label>
+            <select
+              id="chapter-comic"
+              className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:border-primary"
+              value={selectedComicId ?? ""}
+              onChange={(event) => void handleSelectComic(Number(event.target.value))}
+            >
+              {comics.map((comic) => (
+                <option key={comic.id} value={comic.id}>
+                  {comic.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4 text-sm">
+            <label htmlFor="chapter-deleted-filter" className="font-medium">
+              Trang thai chapter
+            </label>
+            <select
+              id="chapter-deleted-filter"
+              value={deletedFilter}
+              onChange={(event) => {
+                const nextDeletedFilter = event.target.value as DeletedFilter;
+
+                setDeletedFilter(nextDeletedFilter);
+                setEditingChapter(null);
+                if (selectedComicId !== null) {
+                  void loadChapters(selectedComicId, nextDeletedFilter);
+                }
+              }}
+              className="h-10 rounded-md border bg-background px-3 outline-none focus:border-primary"
+            >
+              <option value="active">Active</option>
+              <option value="deleted">Deleted</option>
+              <option value="all">All</option>
+            </select>
+            <span className="text-muted-foreground">
+              Loc chapter cua truyen dang chon theo trang thai soft delete.
+            </span>
+          </div>
+
+          {selectedComic ? (
+            <AdminChapterForm
+              key={`${selectedComic.id}-${editingChapter?.id ?? "create"}`}
+              comicSlug={selectedComic.slug}
+              initialValue={editingChapter}
+              mode={editingChapter ? "edit" : "create"}
+              onCancel={() => setEditingChapter(null)}
+              onSubmit={handleSubmit}
+            />
+          ) : null}
+
+          {successMessage ? (
+            <div className="rounded-md border border-green-600/30 bg-green-600/10 p-3 text-sm text-green-700 dark:text-green-300">
+              {successMessage}
+            </div>
+          ) : null}
+
+          {isLoadingChapters ? (
+            <div className="rounded-lg border p-6 text-sm text-muted-foreground">
+              Dang tai danh sach chapter...
+            </div>
+          ) : (
+            <AdminChaptersTable
+              chapters={chapters}
+              deletingId={deletingId}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
+          )}
+        </>
+      )}
+
+      {errorMessage ? (
+        <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+          {errorMessage}
+        </div>
+      ) : null}
+    </div>
+  );
+}

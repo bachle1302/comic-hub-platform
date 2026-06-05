@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment and local secrets
+.env
+.env.local
+.env.production
+.env.*.local
+!.env.example
+
+# Crawled/generated data
+data/
+output/
+downloads/
+images/
+tmp/
+cache/
+manga-storage/
+*.result.json
+chapter_result.json
+
+# Logs and temp files
+logs/
+*.log
+.cache/
+tmp/
+temp/

@@ -1,0 +1,557 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//////////////////////////////////////////////////
+// ENUM
+//////////////////////////////////////////////////
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ComicStatus {
+  ONGOING
+  COMPLETED
+  HIATUS
+  CANCELLED
+}
+
+enum TransactionType {
+  RECHARGE
+  SPEND
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum CommentReportStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+enum NotificationType {
+  NEW_CHAPTER
+  COMMENT
+  REPLY_COMMENT
+  SYSTEM
+}
+
+enum AuthTokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum AdminAuditAction {
+  CREATE_AUTHOR
+  UPDATE_AUTHOR
+  DELETE_AUTHOR
+
+  CREATE_CATEGORY
+  UPDATE_CATEGORY
+  DELETE_CATEGORY
+
+  CREATE_COMIC
+  UPDATE_COMIC
+  DELETE_COMIC
+
+  CREATE_CHAPTER
+  UPDATE_CHAPTER
+  DELETE_CHAPTER
+  UPLOAD_CHAPTER_IMAGES
+
+  DELETE_COMMENT
+  DELETE_REPORTED_COMMENT
+  UPDATE_COMMENT_REPORT_STATUS
+
+  ADJUST_USER_COIN
+  UPDATE_USER
+  DELETE_USER
+
+  SYSTEM
+}
+
+//////////////////////////////////////////////////
+// USER
+//////////////////////////////////////////////////
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String?
+  role      Role     @default(USER)
+  avatar    String?
+  coin      Int      @default(0)
+  emailVerifiedAt DateTime?
+  provider  String   @default("local")
+  googleId  String?  @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments      Comment[]
+  commentReports CommentReport[]
+  commentLikes   CommentLike[]
+  notifications  Notification[]
+  follows       Follow[]
+  histories     History[]
+  purchases     Purchase[]
+  transactions  Transaction[]
+  refreshTokens RefreshToken[]
+  authTokens    AuthToken[]
+  adminAuditLogs AdminAuditLog[]
+
+  @@index([role])
+  @@index([provider])
+  @@index([createdAt])
+}
+
+model AdminAuditLog {
+  id         Int @id @default(autoincrement())
+
+  adminId    Int?
+  adminEmail String?
+  adminName  String?
+
+  action     AdminAuditAction
+  entityType String
+  entityId   String?
+
+  message  String
+  metadata Json?
+
+  ip        String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  admin User? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([adminId])
+  @@index([action])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([createdAt])
+}
+
+model AuthToken {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  type      AuthTokenType
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([expiresAt])
+  @@index([tokenHash])
+}
+
+//////////////////////////////////////////////////
+// REFRESH TOKEN - MULTI DEVICE
+//////////////////////////////////////////////////
+
+model RefreshToken {
+  id     Int    @id @default(autoincrement())
+  token  String @unique @db.VarChar(500)
+
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userAgent String?
+  ip        String?
+
+  isRevoked Boolean @default(false)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([isRevoked])
+}
+
+//////////////////////////////////////////////////
+// COMIC
+//////////////////////////////////////////////////
+
+model Comic {
+  id          Int     @id @default(autoincrement())
+  name        String
+  slug        String  @unique
+  description String? @db.Text
+
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+
+  thumbnail String?
+
+  status   ComicStatus @default(ONGOING)
+  isPublic Boolean     @default(true)
+
+  viewTotal    Int       @default(0)
+  followCount  Int       @default(0)
+  chapterCount Int       @default(0)
+  lastChapterAt DateTime?
+
+  authorId Int
+  author   Author @relation(fields: [authorId], references: [id])
+
+  chapters   Chapter[]
+  categories ComicCategory[]
+  follows    Follow[]
+  comments   Comment[]
+  histories  History[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([status])
+  @@index([isPublic])
+  @@index([viewTotal])
+  @@index([followCount])
+  @@index([lastChapterAt])
+  @@index([createdAt])
+}
+
+//////////////////////////////////////////////////
+// CHAPTER
+//////////////////////////////////////////////////
+
+model Chapter {
+  id            Int     @id @default(autoincrement())
+  name          String
+  chapterNumber Float
+  price         Int     @default(0)
+  isPublic      Boolean @default(true)
+
+  viewTotal Int @default(0)
+
+  comicId Int
+  comic   Comic @relation(fields: [comicId], references: [id], onDelete: Cascade)
+
+  images    ChapterImage[]
+  histories History[]
+  purchases Purchase[]
+  comments  Comment[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([comicId, chapterNumber])
+  @@index([comicId])
+  @@index([isPublic])
+  @@index([viewTotal])
+  @@index([createdAt])
+}
+
+//////////////////////////////////////////////////
+// CHAPTER IMAGE
+//////////////////////////////////////////////////
+
+model ChapterImage {
+  id    Int    @id @default(autoincrement())
+
+  // Public URL hoặc CDN URL
+  url   String
+
+  // Object Storage key, ví dụ:
+  // comics/one-piece/chapters/1001/001.webp
+  key   String?
+
+  order Int
+
+  width    Int?
+  height   Int?
+  size     Int?
+  mimeType String?
+
+  chapterId Int
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([chapterId, order])
+  @@index([chapterId])
+}
+
+//////////////////////////////////////////////////
+// AUTHOR
+//////////////////////////////////////////////////
+
+model Author {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String @unique
+
+  comics Comic[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
+//////////////////////////////////////////////////
+// CATEGORY
+//////////////////////////////////////////////////
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String @unique
+
+  comics ComicCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
+//////////////////////////////////////////////////
+// COMIC - CATEGORY MANY TO MANY
+//////////////////////////////////////////////////
+
+model ComicCategory {
+  id         Int @id @default(autoincrement())
+  comicId    Int
+  categoryId Int
+
+  comic    Comic    @relation(fields: [comicId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([comicId, categoryId])
+  @@index([comicId])
+  @@index([categoryId])
+}
+
+//////////////////////////////////////////////////
+// COMMENT
+//////////////////////////////////////////////////
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String @db.Text
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comicId Int
+  comic   Comic @relation(fields: [comicId], references: [id], onDelete: Cascade)
+
+  // Comment có thể thuộc chapter cụ thể
+  chapterId Int?
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  // Chuẩn bị sẵn reply comment
+  parentId Int?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+  reports  CommentReport[]
+  likes    CommentLike[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([comicId])
+  @@index([chapterId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model CommentReport {
+  id        Int                 @id @default(autoincrement())
+  commentId Int
+  userId    Int
+  reason    String              @db.VarChar(500)
+  status    CommentReportStatus @default(PENDING)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
+  @@index([status])
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  commentId Int
+  userId    Int
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@index([userId])
+}
+
+//////////////////////////////////////////////////
+// NOTIFICATION
+//////////////////////////////////////////////////
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  type      NotificationType
+  title     String
+  message   String?          @db.Text
+  targetUrl String
+  isRead    Boolean          @default(false)
+
+  comicId   Int?
+  chapterId Int?
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comic   Comic?   @relation(fields: [comicId], references: [id], onDelete: Cascade)
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type, chapterId])
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([comicId])
+  @@index([chapterId])
+}
+
+//////////////////////////////////////////////////
+// FOLLOW
+//////////////////////////////////////////////////
+
+model Follow {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  comicId Int
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comic Comic @relation(fields: [comicId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, comicId])
+  @@index([userId])
+  @@index([comicId])
+  @@index([createdAt])
+}
+
+//////////////////////////////////////////////////
+// HISTORY - ĐỌC TIẾP THEO ẢNH
+//////////////////////////////////////////////////
+
+model History {
+  id Int @id @default(autoincrement())
+
+  userId    Int
+  comicId   Int
+  chapterId Int
+
+  // User đang dừng ở ảnh thứ mấy trong chapter
+  imageIndex Int @default(0)
+
+  // Tiến độ đọc, ví dụ 0.45 = 45%
+  progress Float @default(0)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comic   Comic   @relation(fields: [comicId], references: [id], onDelete: Cascade)
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Mỗi user chỉ có 1 lịch sử đọc mới nhất cho mỗi truyện
+  @@unique([userId, comicId])
+  @@index([userId])
+  @@index([comicId])
+  @@index([chapterId])
+  @@index([updatedAt])
+}
+
+//////////////////////////////////////////////////
+// PURCHASE - MUA CHAPTER BẰNG COIN
+//////////////////////////////////////////////////
+
+model Purchase {
+  id Int @id @default(autoincrement())
+
+  userId    Int
+  chapterId Int
+
+  // Giá tại thời điểm mua
+  price Int
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, chapterId])
+  @@index([userId])
+  @@index([chapterId])
+  @@index([createdAt])
+}
+
+//////////////////////////////////////////////////
+// TRANSACTION - LỊCH SỬ COIN
+//////////////////////////////////////////////////
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Số coin thay đổi
+  // RECHARGE: amount dương
+  // SPEND: amount âm hoặc lưu dương tùy logic service
+  amount Int
+
+  orderId String? @unique
+
+  type   TransactionType
+  status TransactionStatus
+
+  balanceBefore Int?
+  balanceAfter  Int?
+
+  description String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}

@@ -1,0 +1,8 @@
+ALTER TYPE "AdminAuditAction" ADD VALUE IF NOT EXISTS 'BAN_USER';
+ALTER TYPE "AdminAuditAction" ADD VALUE IF NOT EXISTS 'UNBAN_USER';
+
+ALTER TABLE "User"
+ADD COLUMN "bannedAt" TIMESTAMP(3),
+ADD COLUMN "banReason" VARCHAR(500);
+
+CREATE INDEX "User_bannedAt_idx" ON "User"("bannedAt");
