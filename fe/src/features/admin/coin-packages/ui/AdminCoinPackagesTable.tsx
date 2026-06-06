@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import type { AdminCoinPackage } from "../api/admin-coin-packages.schema";
 
 type AdminCoinPackagesTableProps = {
@@ -75,9 +75,9 @@ export function AdminCoinPackagesTable({
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap justify-end gap-2">
                       <Button asChild size="sm" variant="outline">
-                        <Link href={`/admin/coin-packages/${coinPackage.id}`}>
+                        <AdminLink href={`/admin/coin-packages/${coinPackage.id}`}>
                           Sua
-                        </Link>
+                        </AdminLink>
                       </Button>
                       <Button
                         type="button"

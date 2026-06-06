@@ -1,10 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useMemo } from "react";
 
-import { getPublicSystemSettingsClientSafe } from "@/features/system-settings/api/public-system-settings.client-api";
-import type { PublicSystemSettings } from "@/features/system-settings/api/system-settings.schema";
+import { usePublicSettings } from "@/features/system-settings/model/PublicSettingsProvider";
 import { MaintenancePage } from "@/shared/ui/MaintenancePage";
 
 type MaintenanceGateProps = {
@@ -21,27 +20,9 @@ function isBypassPath(pathname: string): boolean {
 
 export function MaintenanceGate({ children }: MaintenanceGateProps) {
   const pathname = usePathname();
-  const [settings, setSettings] = useState<PublicSystemSettings | null>(null);
+  const { settings } = usePublicSettings();
 
   const shouldBypass = useMemo(() => isBypassPath(pathname), [pathname]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (shouldBypass) {
-      return undefined;
-    }
-
-    getPublicSystemSettingsClientSafe().then((nextSettings) => {
-      if (isMounted) {
-        setSettings(nextSettings);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [shouldBypass, pathname]);
 
   if (shouldBypass) {
     return <>{children}</>;

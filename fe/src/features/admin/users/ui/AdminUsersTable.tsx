@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import { formatDate } from "@/shared/utils/format";
 import type { AdminUserListItem } from "../api/admin-users.schema";
 
@@ -68,7 +68,7 @@ export function AdminUsersTable({ users }: AdminUsersTableProps) {
                 <td className="px-4 py-3">{formatDate(user.createdAt)}</td>
                 <td className="px-4 py-3 text-right">
                   <Button asChild size="sm" variant="outline">
-                    <Link href={`/admin/users/${user.id}`}>Chi tiet</Link>
+                    <AdminLink href={`/admin/users/${user.id}`}>Chi tiet</AdminLink>
                   </Button>
                 </td>
               </tr>

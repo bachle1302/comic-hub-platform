@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import {
   type CreateAdminCoinPackageInput,
   updateAdminCoinPackage,
 } from "@/features/admin/coin-packages";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function EditAdminCoinPackagePage() {
   const params = useParams<{ id: string }>();
@@ -64,7 +64,7 @@ export default function EditAdminCoinPackagePage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/admin/coin-packages">Quay lai</Link>
+          <AdminLink href="/admin/coin-packages">Quay lai</AdminLink>
         </Button>
       </div>
 

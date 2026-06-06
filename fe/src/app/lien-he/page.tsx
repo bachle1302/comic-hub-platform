@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     "Liên hệ hỗ trợ, báo lỗi, báo cáo vi phạm hoặc khiếu nại thanh toán.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function ContactPage() {
   const settings = await getPublicSystemSettingsSafe();
   const supportEmail = settings.general?.supportEmail ?? "support@example.com";

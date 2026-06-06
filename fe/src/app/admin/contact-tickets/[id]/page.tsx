@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import {
   getAdminContactTicket,
   type ContactTicket,
 } from "@/features/contact-tickets";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function AdminContactTicketDetailPage() {
   const params = useParams<{ id: string }>();
@@ -56,7 +56,7 @@ export default function AdminContactTicketDetailPage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/admin/contact-tickets">Quay lai tickets</Link>
+          <AdminLink href="/admin/contact-tickets">Quay lai tickets</AdminLink>
         </Button>
       </div>
 

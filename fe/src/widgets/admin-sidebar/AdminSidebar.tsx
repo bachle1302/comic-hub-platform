@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 const links = [
   { href: "/admin", label: "Dashboard" },
@@ -41,7 +41,7 @@ export function AdminSidebar() {
           const isActive = isActiveLink(pathname, link.href);
 
           return (
-            <Link
+            <AdminLink
               key={link.href}
               href={link.href}
               className={
@@ -51,7 +51,7 @@ export function AdminSidebar() {
               }
             >
               {link.label}
-            </Link>
+            </AdminLink>
           );
         })}
       </nav>

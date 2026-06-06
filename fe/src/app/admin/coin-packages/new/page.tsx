@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +7,7 @@ import {
   createAdminCoinPackage,
   type CreateAdminCoinPackageInput,
 } from "@/features/admin/coin-packages";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function NewAdminCoinPackagePage() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function NewAdminCoinPackagePage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/admin/coin-packages">Quay lai</Link>
+          <AdminLink href="/admin/coin-packages">Quay lai</AdminLink>
         </Button>
       </div>
 

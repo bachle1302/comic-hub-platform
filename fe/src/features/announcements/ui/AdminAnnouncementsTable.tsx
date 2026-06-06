@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import type { Announcement } from "../api/announcements.schema";
 
 type AdminAnnouncementsTableProps = {
@@ -88,9 +88,9 @@ export function AdminAnnouncementsTable({
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap justify-end gap-2">
                     <Button asChild size="sm" variant="outline">
-                      <Link href={`/admin/announcements/${announcement.id}`}>
+                      <AdminLink href={`/admin/announcements/${announcement.id}`}>
                         Sua
-                      </Link>
+                      </AdminLink>
                     </Button>
                     <Button
                       type="button"

@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import {
   contactTicketStatusSchema,
   updateContactTicketInputSchema,
@@ -157,12 +157,12 @@ export function AdminContactTicketDetail({
                 {ticket.relatedUrl}
               </a>
             ) : (
-              <Link
+              <AdminLink
                 href={ticket.relatedUrl}
                 className="mt-1 block break-all text-primary underline"
               >
                 {ticket.relatedUrl}
-              </Link>
+              </AdminLink>
             )}
           </div>
         ) : null}
