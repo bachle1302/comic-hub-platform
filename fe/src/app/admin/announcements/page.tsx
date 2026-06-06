@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +11,7 @@ import {
   type AdminAnnouncementsQuery,
   type AnnouncementsPaginated,
 } from "@/features/announcements";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminAnnouncementsQuery = {
@@ -144,7 +144,7 @@ export default function AdminAnnouncementsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/admin/announcements/new">Tao thong bao</Link>
+          <AdminLink href="/admin/announcements/new">Tao thong bao</AdminLink>
         </Button>
       </div>
 

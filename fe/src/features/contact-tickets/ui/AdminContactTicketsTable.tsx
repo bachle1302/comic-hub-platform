@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import type {
   ContactTicket,
   ContactTicketStatus,
@@ -100,9 +100,9 @@ export function AdminContactTicketsTable({
                 <td className="px-4 py-3">
                   <div className="flex justify-end">
                     <Button asChild size="sm" variant="outline">
-                      <Link href={`/admin/contact-tickets/${ticket.id}`}>
+                      <AdminLink href={`/admin/contact-tickets/${ticket.id}`}>
                         Chi tiet
-                      </Link>
+                      </AdminLink>
                     </Button>
                   </div>
                 </td>

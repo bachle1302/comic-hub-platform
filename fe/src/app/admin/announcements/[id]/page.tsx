@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
   type AnnouncementInput,
   updateAdminAnnouncement,
 } from "@/features/announcements";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function EditAdminAnnouncementPage() {
   const params = useParams<{ id: string }>();
@@ -99,7 +99,7 @@ export default function EditAdminAnnouncementPage() {
             {isBroadcasting ? "Dang gui..." : "Gui notification"}
           </Button>
           <Button asChild variant="outline">
-            <Link href="/admin/announcements">Quay lai</Link>
+            <AdminLink href="/admin/announcements">Quay lai</AdminLink>
           </Button>
         </div>
       </div>

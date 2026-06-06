@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +10,7 @@ import {
   type AdminCoinPackagesPaginated,
   type AdminCoinPackagesQuery,
 } from "@/features/admin/coin-packages";
+import { AdminLink } from "@/shared/ui/AdminLink";
 import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminCoinPackagesQuery = {
@@ -121,7 +121,7 @@ export default function AdminCoinPackagesPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/admin/coin-packages/new">Tao goi coin</Link>
+          <AdminLink href="/admin/coin-packages/new">Tao goi coin</AdminLink>
         </Button>
       </div>
 

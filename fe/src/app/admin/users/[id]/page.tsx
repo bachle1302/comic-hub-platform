@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
   type AdminUserDetail as AdminUserDetailType,
 } from "@/features/admin/users";
 import { AdminUserDetail } from "@/features/admin/users/ui/AdminUserDetail";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function AdminUserDetailPage() {
   const params = useParams<{ id: string }>();
@@ -72,7 +72,7 @@ export default function AdminUserDetailPage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/admin/users">Quay lai users</Link>
+          <AdminLink href="/admin/users">Quay lai users</AdminLink>
         </Button>
       </div>
 

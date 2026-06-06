@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AdminStatsCards, getAdminDashboardStats, type AdminDashboardStats } from "@/features/admin/dashboard";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function AdminPage() {
   const [stats, setStats] = useState<AdminDashboardStats | null>(null);
@@ -96,7 +96,7 @@ export default function AdminPage() {
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {adminLinks.map((item) => (
-          <Link
+          <AdminLink
             key={item.href}
             href={item.href}
             className="rounded-lg border bg-card p-4 hover:bg-muted"
@@ -105,7 +105,7 @@ export default function AdminPage() {
             <span className="mt-1 block text-sm text-muted-foreground">
               {item.description}
             </span>
-          </Link>
+          </AdminLink>
         ))}
       </div>
     </div>

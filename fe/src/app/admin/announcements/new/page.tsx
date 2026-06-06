@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +7,7 @@ import {
   createAdminAnnouncement,
   type AnnouncementInput,
 } from "@/features/announcements";
+import { AdminLink } from "@/shared/ui/AdminLink";
 
 export default function NewAdminAnnouncementPage() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function NewAdminAnnouncementPage() {
           </p>
         </div>
         <Button asChild variant="outline">
-          <Link href="/admin/announcements">Quay lai</Link>
+          <AdminLink href="/admin/announcements">Quay lai</AdminLink>
         </Button>
       </div>
 
