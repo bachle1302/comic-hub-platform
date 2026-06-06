@@ -30,6 +30,8 @@ export const adminCommentSchema = z.object({
   deletedById: z.number().nullable().optional(),
   deleteReason: z.string().nullable().optional(),
   isDeleted: z.boolean().optional().default(false),
+  likeCount: z.number().optional(),
+  reportCount: z.number().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   user: adminCommentUserSchema.optional(),

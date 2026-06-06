@@ -48,6 +48,29 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
+let loadMeInFlight: Promise<User | null> | null = null;
+
+async function requestCurrentUser(): Promise<User | null> {
+  if (!hasAuthSessionMarker()) {
+    clearAccessToken();
+    return null;
+  }
+
+  try {
+    const refreshResult = await refreshAccessTokenFromApi();
+
+    if (refreshResult.user) {
+      return refreshResult.user;
+    }
+
+    return await getMe();
+  } catch {
+    clearAccessToken();
+    clearAuthSessionMarker();
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,15 +86,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
 
     try {
-      await refreshAccessTokenFromApi();
-      const currentUser = await getMe();
+      if (!loadMeInFlight) {
+        loadMeInFlight = requestCurrentUser().finally(() => {
+          loadMeInFlight = null;
+        });
+      }
+
+      const currentUser = await loadMeInFlight;
       setUser(currentUser);
       return currentUser;
-    } catch {
-      clearAccessToken();
-      clearAuthSessionMarker();
-      setUser(null);
-      return null;
     } finally {
       setIsLoading(false);
     }

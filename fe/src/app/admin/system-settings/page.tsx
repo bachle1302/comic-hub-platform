@@ -9,6 +9,7 @@ import {
   type AdminSystemSettingsQuery,
   type SystemSetting,
 } from "@/features/system-settings";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 export default function AdminSystemSettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -45,8 +46,12 @@ export default function AdminSystemSettingsPage() {
     setErrorMessage(null);
 
     try {
-      await updateAdminSystemSetting(key, value);
-      await loadSettings(query);
+      const updatedSetting = await updateAdminSystemSetting(key, value);
+      setSettings((currentSettings) =>
+        currentSettings.map((setting) =>
+          setting.key === updatedSetting.key ? updatedSetting : setting,
+        ),
+      );
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Cập nhật cấu hình thất bại",
@@ -67,7 +72,16 @@ export default function AdminSystemSettingsPage() {
         </p>
       </div>
 
-      <AdminSystemSettingsFilter initialQuery={query} onChange={setQuery} />
+      <AdminSystemSettingsFilter
+        initialQuery={query}
+        onChange={(nextQuery) => {
+          setQuery((currentQuery) =>
+            areShallowObjectsEqual(currentQuery, nextQuery)
+              ? currentQuery
+              : nextQuery,
+          );
+        }}
+      />
 
       {errorMessage ? (
         <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">

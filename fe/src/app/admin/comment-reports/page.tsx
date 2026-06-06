@@ -12,6 +12,7 @@ import {
   type AdminCommentReportsQuery,
   type CommentReportStatus,
 } from "@/features/admin/comment-reports";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminCommentReportsQuery = {
   limit: 20,
@@ -51,11 +52,17 @@ export default function AdminCommentReportsPage() {
   }, [loadReports, query]);
 
   function handleFilterChange(nextQuery: AdminCommentReportsQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {
@@ -69,8 +76,17 @@ export default function AdminCommentReportsPage() {
     setErrorMessage(null);
 
     try {
-      await updateAdminCommentReportStatus(id, { status });
-      await loadReports(query);
+      const updatedReport = await updateAdminCommentReportStatus(id, { status });
+      setReportsData((currentData) =>
+        currentData
+          ? {
+              ...currentData,
+              items: currentData.items.map((report) =>
+                report.id === updatedReport.id ? updatedReport : report,
+              ),
+            }
+          : currentData,
+      );
     } catch (error) {
       setErrorMessage(
         error instanceof Error

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,15 @@ import { NotificationBell } from "@/features/notifications";
 import { WalletBadge } from "@/features/wallet";
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

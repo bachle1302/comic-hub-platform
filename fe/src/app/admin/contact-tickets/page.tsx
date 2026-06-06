@@ -9,6 +9,7 @@ import {
   type ContactTicketsPaginated,
   type ContactTicketsQuery,
 } from "@/features/contact-tickets";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: ContactTicketsQuery = {
   limit: 20,
@@ -45,11 +46,17 @@ export default function AdminContactTicketsPage() {
   }, [loadTickets, query]);
 
   function handleFilterChange(nextQuery: ContactTicketsQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {

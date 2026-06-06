@@ -31,6 +31,7 @@ type CommentUserPayload = {
 type CommentLikeCountPayload = {
   _count: {
     likes: number;
+    reports?: number;
   };
 };
 
@@ -664,12 +665,14 @@ export class CommentsService {
         select: {
           id: true,
           name: true,
+          email: true,
           avatar: true,
         },
       },
       _count: {
         select: {
           likes: true,
+          reports: true,
         },
       },
       replies: {
@@ -778,6 +781,7 @@ export class CommentsService {
       ...rest,
       isDeleted: rest.deletedAt !== null,
       likeCount: _count.likes,
+      reportCount: _count.reports ?? 0,
     };
   }
 

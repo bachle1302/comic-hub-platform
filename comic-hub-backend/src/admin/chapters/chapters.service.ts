@@ -22,6 +22,14 @@ const chapterListSelect = {
   deletedById: true,
   deleteReason: true,
   viewTotal: true,
+  comicId: true,
+  comic: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+    },
+  },
   createdAt: true,
   updatedAt: true,
   _count: {
@@ -31,7 +39,7 @@ const chapterListSelect = {
       purchases: true,
     },
   },
-} as const;
+} satisfies Prisma.ChapterSelect;
 
 const chapterDetailSelect = {
   id: true,
@@ -80,6 +88,10 @@ type ComicIdentity = {
 
 type DeletedFilter = 'active' | 'deleted' | 'all';
 
+type ChapterListPayload = Prisma.ChapterGetPayload<{
+  select: typeof chapterListSelect;
+}>;
+
 @Injectable()
 export class ChaptersService {
   constructor(
@@ -91,13 +103,15 @@ export class ChaptersService {
   async findAllByComic(comicId: number, deleted: DeletedFilter = 'active') {
     await this.ensureComicExists(comicId);
 
-    return this.prisma.chapter.findMany({
+    const chapters = await this.prisma.chapter.findMany({
       where: this.withDeletedFilter({ comicId }, deleted),
       select: chapterListSelect,
       orderBy: {
         chapterNumber: 'desc',
       },
     });
+
+    return chapters.map((chapter) => this.serializeChapterListItem(chapter));
   }
 
   async create(comicId: number, dto: CreateAdminChapterDto) {
@@ -393,6 +407,19 @@ export class ChaptersService {
       size: image.size,
       mimeType: image.mimeType,
     }));
+  }
+
+  private serializeChapterListItem(chapter: ChapterListPayload) {
+    const { _count, ...rest } = chapter;
+
+    return {
+      ...rest,
+      commentCount: _count.comments,
+      imageCount: _count.images,
+      isDeleted: rest.deletedAt !== null,
+      purchaseCount: _count.purchases,
+      _count,
+    };
   }
 
   private async clearComicCache(slug: string) {

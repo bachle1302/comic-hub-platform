@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   apiErrorResponseSchema,
-  apiSuccessResponseSchema,
+  parseApiSuccessData,
 } from "@/shared/api/api-response.schema";
 import { clearAccessToken, setAccessToken } from "./token-storage";
 
@@ -15,7 +15,9 @@ function getErrorMessage(payload: unknown): string {
   return parsed.success ? parsed.data.message : "Could not refresh token";
 }
 
-export async function refreshAccessToken(): Promise<string> {
+let refreshTokenInFlight: Promise<string> | null = null;
+
+async function requestRefreshAccessToken(): Promise<string> {
   const response = await fetch("/api/auth/refresh", {
     method: "POST",
     cache: "no-store",
@@ -28,20 +30,27 @@ export async function refreshAccessToken(): Promise<string> {
     throw new Error(getErrorMessage(payload));
   }
 
-  const parsed = apiSuccessResponseSchema(refreshDataSchema).safeParse(payload);
+  try {
+    const data = parseApiSuccessData(payload, refreshDataSchema);
+    setAccessToken(data.accessToken);
 
-  if (!parsed.success) {
+    return data.accessToken;
+  } catch {
     clearAccessToken();
     throw new Error("Invalid refresh response shape");
   }
+}
 
-  const successPayload = parsed.data as { data: z.infer<typeof refreshDataSchema> };
-  setAccessToken(successPayload.data.accessToken);
+export function refreshAccessToken(): Promise<string> {
+  if (!refreshTokenInFlight) {
+    refreshTokenInFlight = requestRefreshAccessToken().finally(() => {
+      refreshTokenInFlight = null;
+    });
+  }
 
-  return successPayload.data.accessToken;
+  return refreshTokenInFlight;
 }
 
 export function logoutClientSide(): void {
   clearAccessToken();
 }
-

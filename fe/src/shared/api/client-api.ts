@@ -13,6 +13,8 @@ type ClientApiOptions = {
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
+const inFlightGetRequests = new Map<string, Promise<unknown>>();
+
 function getErrorMessage(payload: unknown): string {
   const parsed = apiErrorResponseSchema.safeParse(payload);
   return parsed.success ? parsed.data.message : "Request failed";
@@ -20,6 +22,13 @@ function getErrorMessage(payload: unknown): string {
 
 function resolveUrl(path: string): string {
   return path.startsWith("/api/") ? path : `${getApiBaseUrl()}${path}`;
+}
+
+function createGetRequestKey(path: string, options?: ClientApiOptions): string {
+  const authPart = options?.auth ? "auth" : "public";
+  const headersPart = JSON.stringify(options?.headers ?? {});
+
+  return `${authPart}:${resolveUrl(path)}:${headersPart}`;
 }
 
 async function request<TSchema extends z.ZodTypeAny>(
@@ -83,12 +92,35 @@ async function request<TSchema extends z.ZodTypeAny>(
   return parseApiSuccessData(payload, schema);
 }
 
+function dedupeGet<TSchema extends z.ZodTypeAny>(
+  path: string,
+  schema: TSchema,
+  options?: ClientApiOptions,
+): Promise<z.infer<TSchema>> {
+  const key = createGetRequestKey(path, options);
+  const existingRequest = inFlightGetRequests.get(key);
+
+  if (existingRequest) {
+    return existingRequest as Promise<z.infer<TSchema>>;
+  }
+
+  const nextRequest = request("GET", path, schema, undefined, options).finally(
+    () => {
+      inFlightGetRequests.delete(key);
+    },
+  );
+
+  inFlightGetRequests.set(key, nextRequest);
+
+  return nextRequest;
+}
+
 export function clientApiGet<TSchema extends z.ZodTypeAny>(
   path: string,
   schema: TSchema,
   options?: ClientApiOptions,
 ): Promise<z.infer<TSchema>> {
-  return request("GET", path, schema, undefined, options);
+  return dedupeGet(path, schema, options);
 }
 
 export function clientApiPost<TSchema extends z.ZodTypeAny>(

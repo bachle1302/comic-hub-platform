@@ -24,6 +24,10 @@ const coinPackageSelect = {
   },
 } satisfies Prisma.CoinPackageSelect;
 
+type CoinPackagePayload = Prisma.CoinPackageGetPayload<{
+  select: typeof coinPackageSelect;
+}>;
+
 @Injectable()
 export class CoinPackagesService {
   constructor(
@@ -59,7 +63,7 @@ export class CoinPackagesService {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      items,
+      items: items.map((item) => this.serializeCoinPackage(item)),
       meta: {
         page,
         limit,
@@ -83,7 +87,7 @@ export class CoinPackagesService {
       throw new NotFoundException('Coin package not found');
     }
 
-    return coinPackage;
+    return this.serializeCoinPackage(coinPackage);
   }
 
   async create(dto: CreateCoinPackageDto) {
@@ -101,7 +105,7 @@ export class CoinPackagesService {
 
     await this.clearPublicCache();
 
-    return coinPackage;
+    return this.serializeCoinPackage(coinPackage);
   }
 
   async update(id: number, dto: UpdateCoinPackageDto) {
@@ -124,7 +128,7 @@ export class CoinPackagesService {
 
     await this.clearPublicCache();
 
-    return coinPackage;
+    return this.serializeCoinPackage(coinPackage);
   }
 
   async disable(id: number) {
@@ -144,7 +148,7 @@ export class CoinPackagesService {
 
     return {
       message: 'Coin package disabled successfully',
-      coinPackage,
+      coinPackage: this.serializeCoinPackage(coinPackage),
     };
   }
 
@@ -186,5 +190,16 @@ export class CoinPackagesService {
     }
 
     return Math.min(Math.max(Math.trunc(limit), 1), 100);
+  }
+
+  private serializeCoinPackage(coinPackage: CoinPackagePayload) {
+    const { _count, ...rest } = coinPackage;
+
+    return {
+      ...rest,
+      orderCount: _count.orders,
+      totalCoin: rest.coin + rest.bonusCoin,
+      _count,
+    };
   }
 }

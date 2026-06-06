@@ -10,6 +10,7 @@ import {
   type AdminCommentsPaginated,
   type AdminCommentsQuery,
 } from "@/features/admin/comments";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminCommentsQuery = {
   limit: 20,
@@ -48,11 +49,17 @@ export default function AdminCommentsPage() {
   }, [loadComments, query]);
 
   function handleFilterChange(nextQuery: AdminCommentsQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {
@@ -68,7 +75,25 @@ export default function AdminCommentsPage() {
 
     try {
       await deleteAdminComment(id);
-      await loadComments(query);
+      setCommentsData((currentData) => {
+        if (!currentData) {
+          return currentData;
+        }
+
+        if (query.deleted === "all") {
+          return {
+            ...currentData,
+            items: currentData.items.map((comment) =>
+              comment.id === id ? { ...comment, isDeleted: true } : comment,
+            ),
+          };
+        }
+
+        return {
+          ...currentData,
+          items: currentData.items.filter((comment) => comment.id !== id),
+        };
+      });
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Xoa binh luan that bai",

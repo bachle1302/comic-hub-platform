@@ -102,18 +102,25 @@ export default function AdminChaptersPage() {
 
     try {
       if (editingChapter) {
-        await updateAdminChapter(editingChapter.id, input);
+        const updatedChapter = await updateAdminChapter(editingChapter.id, input);
+        setChapters((currentChapters) =>
+          currentChapters.map((chapter) =>
+            chapter.id === updatedChapter.id ? updatedChapter : chapter,
+          ),
+        );
         setSuccessMessage("Cap nhat chapter thanh cong");
       } else {
-        await createAdminChapter(
+        const createdChapter = await createAdminChapter(
           selectedComic.id,
           input as CreateAdminChapterInput,
         );
+        if (deletedFilter !== "deleted") {
+          setChapters((currentChapters) => [createdChapter, ...currentChapters]);
+        }
         setSuccessMessage("Them chapter thanh cong");
       }
 
       setEditingChapter(null);
-      await loadChapters(selectedComic.id, deletedFilter);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Luu chapter that bai",
@@ -150,12 +157,23 @@ export default function AdminChaptersPage() {
     try {
       const result = await deleteAdminChapter(chapter.id);
       setSuccessMessage(result.message);
+      setChapters((currentChapters) => {
+        if (deletedFilter === "all") {
+          return currentChapters.map((currentChapter) =>
+            currentChapter.id === chapter.id
+              ? { ...currentChapter, isDeleted: true }
+              : currentChapter,
+          );
+        }
+
+        return currentChapters.filter(
+          (currentChapter) => currentChapter.id !== chapter.id,
+        );
+      });
 
       if (editingChapter?.id === chapter.id) {
         setEditingChapter(null);
       }
-
-      await loadChapters(selectedComic.id, deletedFilter);
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Xoa chapter that bai",

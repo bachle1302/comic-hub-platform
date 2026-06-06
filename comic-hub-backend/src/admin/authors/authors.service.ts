@@ -24,8 +24,8 @@ export class AuthorsService {
     private readonly redis: RedisService,
   ) {}
 
-  findAll() {
-    return this.prisma.author.findMany({
+  async findAll() {
+    const authors = await this.prisma.author.findMany({
       select: {
         ...authorSelect,
         _count: {
@@ -38,6 +38,12 @@ export class AuthorsService {
         createdAt: 'desc',
       },
     });
+
+    return authors.map(({ _count, ...author }) => ({
+      ...author,
+      comicCount: _count.comics,
+      _count,
+    }));
   }
 
   async create(dto: CreateAdminAuthorDto) {

@@ -52,15 +52,23 @@ export default function AdminCategoriesPage() {
 
     try {
       if (editingCategory) {
-        await updateAdminCategory(editingCategory.id, input);
+        const updatedCategory = await updateAdminCategory(editingCategory.id, input);
+        setCategories((currentCategories) =>
+          currentCategories.map((category) =>
+            category.id === updatedCategory.id ? updatedCategory : category,
+          ),
+        );
         setSuccessMessage("Cap nhat the loai thanh cong");
       } else {
-        await createAdminCategory(input);
+        const createdCategory = await createAdminCategory(input);
+        setCategories((currentCategories) => [
+          createdCategory,
+          ...currentCategories,
+        ]);
         setSuccessMessage("Them the loai thanh cong");
       }
 
       setEditingCategory(null);
-      await loadCategories();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Luu the loai that bai",
@@ -83,13 +91,16 @@ export default function AdminCategoriesPage() {
 
     try {
       await deleteAdminCategory(category.id);
+      setCategories((currentCategories) =>
+        currentCategories.filter(
+          (currentCategory) => currentCategory.id !== category.id,
+        ),
+      );
       setSuccessMessage("Xoa the loai thanh cong");
 
       if (editingCategory?.id === category.id) {
         setEditingCategory(null);
       }
-
-      await loadCategories();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Xoa the loai that bai",
