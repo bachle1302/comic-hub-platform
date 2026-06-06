@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getPublicSystemSettingsClientSafe } from "@/features/system-settings/api/public-system-settings.client-api";
-import type { PublicSystemSettings } from "@/features/system-settings/api/system-settings.schema";
+import { usePublicSettings } from "@/features/system-settings/model/PublicSettingsProvider";
 
 const DEFAULT_SITE_NAME = "Comic Hub";
 const DEFAULT_SITE_DESCRIPTION =
@@ -13,25 +11,7 @@ const DEFAULT_SUPPORT_EMAIL = "support@example.com";
 
 export function SiteFooter() {
   const pathname = usePathname();
-  const [settings, setSettings] = useState<PublicSystemSettings>({});
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (pathname.startsWith("/admin")) {
-      return undefined;
-    }
-
-    getPublicSystemSettingsClientSafe().then((nextSettings) => {
-      if (isMounted) {
-        setSettings(nextSettings);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [pathname]);
+  const { settings } = usePublicSettings();
 
   if (pathname.startsWith("/admin")) {
     return null;
