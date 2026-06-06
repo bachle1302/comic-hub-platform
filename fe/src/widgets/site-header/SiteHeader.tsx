@@ -1,14 +1,34 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/modetoggle";
-import { LogoutButton, useAuth } from "@/features/auth";
-import { NotificationBell } from "@/features/notifications";
-import { WalletBadge } from "@/features/wallet";
+import { useAuth } from "@/features/auth/model/auth-store";
+import { LogoutButton } from "@/features/auth/ui/LogoutButton";
+
+const NotificationBell = dynamic(
+  () =>
+    import("@/features/notifications/ui/NotificationBell").then(
+      (module) => module.NotificationBell,
+    ),
+  {
+    ssr: false,
+  },
+);
+
+const WalletBadge = dynamic(
+  () =>
+    import("@/features/wallet/ui/WalletBadge").then(
+      (module) => module.WalletBadge,
+    ),
+  {
+    ssr: false,
+  },
+);
 
 export function SiteHeader() {
   const pathname = usePathname();

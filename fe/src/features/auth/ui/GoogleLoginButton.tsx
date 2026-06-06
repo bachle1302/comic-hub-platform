@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,40 +22,44 @@ export function GoogleLoginButton() {
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-center">
-        <GoogleLogin
-          onSuccess={(credentialResponse) => {
-            const idToken = credentialResponse.credential;
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <div className="space-y-2">
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              const idToken = credentialResponse.credential;
 
-            if (!idToken) {
-              setErrorMessage("Google did not return an id token");
-              return;
-            }
+              if (!idToken) {
+                setErrorMessage("Google did not return an id token");
+                return;
+              }
 
-            void loginWithGoogle(idToken)
-              .then((result) => {
-                const next = searchParams.get("next");
-                router.push(
-                  next ?? (result.user.role === "ADMIN" ? "/admin" : "/"),
-                );
-                router.refresh();
-              })
-              .catch((error: unknown) => {
-                setErrorMessage(
-                  error instanceof Error
-                    ? error.message
-                    : "Google login failed",
-                );
-              });
-          }}
-          onError={() => setErrorMessage("Google login failed")}
-          useOneTap={false}
-        />
+              void loginWithGoogle(idToken)
+                .then((result) => {
+                  const next = searchParams.get("next");
+                  router.push(
+                    next ?? (result.user.role === "ADMIN" ? "/admin" : "/"),
+                  );
+                  router.refresh();
+                })
+                .catch((error: unknown) => {
+                  setErrorMessage(
+                    error instanceof Error
+                      ? error.message
+                      : "Google login failed",
+                  );
+                });
+            }}
+            onError={() => setErrorMessage("Google login failed")}
+            useOneTap={false}
+          />
+        </div>
+        {errorMessage ? (
+          <p className="text-center text-sm text-destructive">
+            {errorMessage}
+          </p>
+        ) : null}
       </div>
-      {errorMessage ? (
-        <p className="text-center text-sm text-destructive">{errorMessage}</p>
-      ) : null}
-    </div>
+    </GoogleOAuthProvider>
   );
 }

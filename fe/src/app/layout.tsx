@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AnnouncementBannerList } from "@/features/announcements";
+import { AnnouncementBannerList } from "@/features/announcements/ui/AnnouncementBannerList";
 import { SITE_URL } from "@/shared/config/env";
 import {
   DEFAULT_DESCRIPTION,
