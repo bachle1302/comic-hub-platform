@@ -11,12 +11,9 @@ import {
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/model/auth-store";
 import { getAccessToken } from "@/shared/auth/token-storage";
-import {
-  connectNotificationSocket,
-  type NotificationSocket,
-} from "@/shared/realtime/socket";
+import type { NotificationSocket } from "@/shared/realtime/socket";
 import {
   realtimeNotificationSchema,
   type RealtimeNotification,
@@ -82,30 +79,42 @@ export function NotificationRealtimeProvider({
       return;
     }
 
-    const socket = connectNotificationSocket({
-      token,
-      onNewNotification: (notification) => {
-        const parsed = realtimeNotificationSchema.safeParse(notification);
+    let isActive = true;
 
-        if (!parsed.success || receivedIdsRef.current.has(parsed.data.id)) {
+    void import("@/shared/realtime/socket").then(
+      ({ connectNotificationSocket }) => {
+        if (!isActive) {
           return;
         }
 
-        receivedIdsRef.current.add(parsed.data.id);
-        setLatestNotification(parsed.data);
+        const socket = connectNotificationSocket({
+          token,
+          onNewNotification: (notification) => {
+            const parsed = realtimeNotificationSchema.safeParse(notification);
 
-        if (!parsed.data.isRead) {
-          setUnreadBump((current) => current + 1);
-        }
+            if (!parsed.success || receivedIdsRef.current.has(parsed.data.id)) {
+              return;
+            }
+
+            receivedIdsRef.current.add(parsed.data.id);
+            setLatestNotification(parsed.data);
+
+            if (!parsed.data.isRead) {
+              setUnreadBump((current) => current + 1);
+            }
+          },
+        });
+
+        socketRef.current = socket;
       },
-    });
-
-    socketRef.current = socket;
+    );
 
     return () => {
-      socket.disconnect();
+      isActive = false;
+      const socket = socketRef.current;
+      socket?.disconnect();
 
-      if (socketRef.current === socket) {
+      if (socket && socketRef.current === socket) {
         socketRef.current = null;
       }
     };
