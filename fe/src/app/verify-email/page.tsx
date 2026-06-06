@@ -9,13 +9,13 @@ import { PageContainer } from "@/shared/ui/PageContainer";
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const [message, setMessage] = useState("Verifying email...");
+  const [message, setMessage] = useState("Đang xác minh email...");
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!token) {
       const task = window.setTimeout(() => {
-        setMessage("Missing verification token.");
+        setMessage("Thiếu token xác minh email.");
         setIsError(true);
       }, 0);
 
@@ -29,7 +29,14 @@ export default function VerifyEmailPage() {
           setIsError(false);
         })
         .catch((error: unknown) => {
-          setMessage(error instanceof Error ? error.message : "Verify failed");
+          const errorMessage =
+            error instanceof Error ? error.message : "Xác minh email thất bại";
+          const friendlyMessage =
+            errorMessage === "Invalid or expired token"
+              ? "Link xác minh không hợp lệ, đã hết hạn hoặc đã được sử dụng."
+              : errorMessage;
+
+          setMessage(friendlyMessage);
           setIsError(true);
         });
     }, 0);
@@ -40,13 +47,20 @@ export default function VerifyEmailPage() {
   return (
     <PageContainer>
       <div className="mx-auto max-w-md space-y-4 rounded-lg border bg-card p-6">
-        <h1 className="text-2xl font-bold">Verify email</h1>
+        <h1 className="text-2xl font-bold">Xác minh email</h1>
         <p className={isError ? "text-sm text-destructive" : "text-sm"}>
           {message}
         </p>
-        <Link href="/login" className="inline-flex text-sm font-medium text-primary">
-          Go to login
-        </Link>
+        <div className="flex flex-wrap gap-3 text-sm font-medium">
+          <Link href="/login" className="inline-flex text-primary">
+            Đăng nhập
+          </Link>
+          {isError ? (
+            <Link href="/resend-verification" className="inline-flex text-primary">
+              Gửi lại email xác minh
+            </Link>
+          ) : null}
+        </div>
       </div>
     </PageContainer>
   );

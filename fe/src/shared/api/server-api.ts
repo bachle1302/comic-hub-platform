@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   apiErrorResponseSchema,
-  apiSuccessResponseSchema,
+  parseApiSuccessData,
 } from "./api-response.schema";
 import { getServerApiBaseUrl } from "@/shared/config/env";
 
@@ -55,13 +55,5 @@ export async function serverApiGet<TSchema extends z.ZodTypeAny>(
     throw new Error(getErrorMessage(payload));
   }
 
-  const parsed = apiSuccessResponseSchema(schema).safeParse(payload);
-
-  if (!parsed.success) {
-    throw new Error("Invalid API response shape");
-  }
-
-  const successPayload = parsed.data as { data: z.infer<TSchema> };
-
-  return successPayload.data;
+  return parseApiSuccessData(payload, schema);
 }

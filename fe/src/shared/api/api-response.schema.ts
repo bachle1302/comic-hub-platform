@@ -32,6 +32,33 @@ export function apiSuccessResponseSchema<TSchema extends z.ZodTypeAny>(
   });
 }
 
+export function parseApiSuccessData<TSchema extends z.ZodTypeAny>(
+  payload: unknown,
+  schema: TSchema,
+): z.infer<TSchema> {
+  const envelopeParsed = apiSuccessResponseSchema(z.unknown()).safeParse(payload);
+
+  if (!envelopeParsed.success) {
+    throw new Error("Invalid API response shape");
+  }
+
+  const dataParsed = schema.safeParse(envelopeParsed.data.data);
+
+  if (dataParsed.success) {
+    return dataParsed.data;
+  }
+
+  const messageFallbackParsed = schema.safeParse({
+    message: envelopeParsed.data.message,
+  });
+
+  if (messageFallbackParsed.success) {
+    return messageFallbackParsed.data;
+  }
+
+  throw new Error("Invalid API response shape");
+}
+
 export function paginatedDataSchema<TSchema extends z.ZodTypeAny>(
   itemSchema: TSchema,
 ) {
@@ -42,4 +69,3 @@ export function paginatedDataSchema<TSchema extends z.ZodTypeAny>(
 }
 
 export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
-

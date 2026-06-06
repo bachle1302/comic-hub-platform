@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import {
   apiErrorResponseSchema,
-  apiSuccessResponseSchema,
+  parseApiSuccessData,
 } from "@/shared/api/api-response.schema";
 import { authSessionCookieName } from "@/shared/auth/session-marker";
 import { getServerApiBaseUrl } from "@/shared/config/env";
@@ -103,13 +103,5 @@ export function parseBackendSuccess<TSchema extends z.ZodTypeAny>(
   payload: unknown,
   schema: TSchema,
 ): z.infer<TSchema> {
-  const parsed = apiSuccessResponseSchema(schema).safeParse(payload);
-
-  if (!parsed.success) {
-    throw new Error("Invalid backend response shape");
-  }
-
-  const successPayload = parsed.data as { data: z.infer<TSchema> };
-
-  return successPayload.data;
+  return parseApiSuccessData(payload, schema);
 }

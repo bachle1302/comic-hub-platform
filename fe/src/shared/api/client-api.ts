@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   apiErrorResponseSchema,
-  apiSuccessResponseSchema,
+  parseApiSuccessData,
 } from "./api-response.schema";
 import { getApiBaseUrl } from "@/shared/config/env";
 import { clearAccessToken, getAccessToken } from "@/shared/auth/token-storage";
@@ -80,15 +80,7 @@ async function request<TSchema extends z.ZodTypeAny>(
     throw new Error(getErrorMessage(payload));
   }
 
-  const parsed = apiSuccessResponseSchema(schema).safeParse(payload);
-
-  if (!parsed.success) {
-    throw new Error("Invalid API response shape");
-  }
-
-  const successPayload = parsed.data as { data: z.infer<TSchema> };
-
-  return successPayload.data;
+  return parseApiSuccessData(payload, schema);
 }
 
 export function clientApiGet<TSchema extends z.ZodTypeAny>(
