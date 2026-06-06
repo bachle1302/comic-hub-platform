@@ -12,6 +12,7 @@ import {
   type AdminAnnouncementsQuery,
   type AnnouncementsPaginated,
 } from "@/features/announcements";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminAnnouncementsQuery = {
   limit: 20,
@@ -56,11 +57,17 @@ export default function AdminAnnouncementsPage() {
   }, [loadAnnouncements, query]);
 
   function handleFilterChange(nextQuery: AdminAnnouncementsQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {
@@ -78,7 +85,29 @@ export default function AdminAnnouncementsPage() {
     try {
       await deleteAdminAnnouncement(id);
       setSuccessMessage("Da disable announcement.");
-      await loadAnnouncements(query);
+      setData((currentData) => {
+        if (!currentData) {
+          return currentData;
+        }
+
+        if (query.isActive === true) {
+          return {
+            ...currentData,
+            items: currentData.items.filter(
+              (announcement) => announcement.id !== id,
+            ),
+          };
+        }
+
+        return {
+          ...currentData,
+          items: currentData.items.map((announcement) =>
+            announcement.id === id
+              ? { ...announcement, isActive: false }
+              : announcement,
+          ),
+        };
+      });
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Disable announcement that bai",

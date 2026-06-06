@@ -51,15 +51,20 @@ export default function AdminAuthorsPage() {
 
     try {
       if (editingAuthor) {
-        await updateAdminAuthor(editingAuthor.id, input);
+        const updatedAuthor = await updateAdminAuthor(editingAuthor.id, input);
+        setAuthors((currentAuthors) =>
+          currentAuthors.map((author) =>
+            author.id === updatedAuthor.id ? updatedAuthor : author,
+          ),
+        );
         setSuccessMessage("Cap nhat tac gia thanh cong");
       } else {
-        await createAdminAuthor(input);
+        const createdAuthor = await createAdminAuthor(input);
+        setAuthors((currentAuthors) => [createdAuthor, ...currentAuthors]);
         setSuccessMessage("Them tac gia thanh cong");
       }
 
       setEditingAuthor(null);
-      await loadAuthors();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Luu tac gia that bai",
@@ -82,13 +87,14 @@ export default function AdminAuthorsPage() {
 
     try {
       await deleteAdminAuthor(author.id);
+      setAuthors((currentAuthors) =>
+        currentAuthors.filter((currentAuthor) => currentAuthor.id !== author.id),
+      );
       setSuccessMessage("Xoa tac gia thanh cong");
 
       if (editingAuthor?.id === author.id) {
         setEditingAuthor(null);
       }
-
-      await loadAuthors();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Xoa tac gia that bai",

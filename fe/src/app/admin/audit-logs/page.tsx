@@ -9,6 +9,7 @@ import {
   type AdminAuditLogsPaginated,
   type AdminAuditLogsQuery,
 } from "@/features/admin/audit-logs";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminAuditLogsQuery = {
   limit: 20,
@@ -47,11 +48,17 @@ export default function AdminAuditLogsPage() {
   }, [loadAuditLogs, query]);
 
   function handleFilterChange(nextQuery: AdminAuditLogsQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {

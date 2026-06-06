@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth";
 import { getAccessToken } from "@/shared/auth/token-storage";
 import {
@@ -37,6 +38,7 @@ type NotificationRealtimeProviderProps = {
 export function NotificationRealtimeProvider({
   children,
 }: NotificationRealtimeProviderProps) {
+  const pathname = usePathname();
   const { isAuthenticated, isLoading } = useAuth();
   const [latestNotification, setLatestNotification] =
     useState<RealtimeNotification | null>(null);
@@ -49,6 +51,14 @@ export function NotificationRealtimeProvider({
   }, []);
 
   useEffect(() => {
+    const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
+
+    if (isAdminPath) {
+      socketRef.current?.disconnect();
+      socketRef.current = null;
+      return;
+    }
+
     if (isLoading) {
       return;
     }
@@ -99,7 +109,7 @@ export function NotificationRealtimeProvider({
         socketRef.current = null;
       }
     };
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, pathname]);
 
   const value = useMemo<NotificationRealtimeContextValue>(
     () => ({

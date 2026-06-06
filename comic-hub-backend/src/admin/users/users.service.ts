@@ -315,6 +315,9 @@ export class UsersService {
       role: true,
       avatar: true,
       coin: true,
+      emailVerifiedAt: true,
+      provider: true,
+      googleId: true,
       bannedAt: true,
       banReason: true,
       createdAt: true,
@@ -339,6 +342,9 @@ export class UsersService {
       role: true,
       avatar: true,
       coin: true,
+      emailVerifiedAt: true,
+      provider: true,
+      googleId: true,
       bannedAt: true,
       banReason: true,
       createdAt: true,
@@ -402,12 +408,24 @@ export class UsersService {
     } satisfies Prisma.TransactionSelect;
   }
 
-  private addBanStatus<T extends { bannedAt: Date | null }>(
+  private addBanStatus<
+    T extends {
+      bannedAt: Date | null;
+      emailVerifiedAt: Date | null;
+      googleId: string | null;
+    },
+  >(
     user: T,
-  ): T & { isBanned: boolean } {
+  ): T & {
+    hasGoogleLinked: boolean;
+    isBanned: boolean;
+    isEmailVerified: boolean;
+  } {
     return {
       ...user,
+      hasGoogleLinked: user.googleId !== null,
       isBanned: user.bannedAt !== null,
+      isEmailVerified: user.emailVerifiedAt !== null,
     };
   }
 

@@ -24,8 +24,8 @@ export class CategoriesService {
     private readonly redis: RedisService,
   ) {}
 
-  findAll() {
-    return this.prisma.category.findMany({
+  async findAll() {
+    const categories = await this.prisma.category.findMany({
       select: {
         ...categorySelect,
         _count: {
@@ -38,6 +38,12 @@ export class CategoriesService {
         createdAt: 'desc',
       },
     });
+
+    return categories.map(({ _count, ...category }) => ({
+      ...category,
+      comicCount: _count.comics,
+      _count,
+    }));
   }
 
   async create(dto: CreateAdminCategoryDto) {

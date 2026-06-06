@@ -27,44 +27,62 @@ export default function AdminComicsPage() {
   const [editingComic, setEditingComic] = useState<AdminComic | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletedFilter, setDeletedFilter] = useState<DeletedFilter>("active");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const loadData = useCallback(async (deleted: DeletedFilter) => {
+  const loadComics = useCallback(async (deleted: DeletedFilter) => {
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const [nextComics, nextAuthors, nextCategories] = await Promise.all([
-        getAdminComics({ deleted }),
-        getAdminAuthors(),
-        getAdminCategories(),
-      ]);
-
-      setComics(nextComics);
-      setAuthors(nextAuthors);
-      setCategories(nextCategories);
+      setComics(await getAdminComics({ deleted }));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc du lieu admin",
+        error instanceof Error ? error.message : "Khong tai duoc danh sach truyen",
       );
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const reloadComics = useCallback(async () => {
-    setComics(await getAdminComics({ deleted: deletedFilter }));
-  }, [deletedFilter]);
+  const loadOptions = useCallback(async () => {
+    setIsLoadingOptions(true);
+    setErrorMessage(null);
+
+    try {
+      const [nextAuthors, nextCategories] = await Promise.all([
+        getAdminAuthors(),
+        getAdminCategories(),
+      ]);
+
+      setAuthors(nextAuthors);
+      setCategories(nextCategories);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Khong tai duoc options admin",
+      );
+    } finally {
+      setIsLoadingOptions(false);
+    }
+  }, []);
 
   useEffect(() => {
     const task = window.setTimeout(() => {
-      void loadData(deletedFilter);
+      void loadOptions();
     }, 0);
 
     return () => window.clearTimeout(task);
-  }, [deletedFilter, loadData]);
+  }, [loadOptions]);
+
+  useEffect(() => {
+    const task = window.setTimeout(() => {
+      void loadComics(deletedFilter);
+    }, 0);
+
+    return () => window.clearTimeout(task);
+  }, [deletedFilter, loadComics]);
 
   async function handleSubmit(input: CreateAdminComicInput) {
     setIsSubmitting(true);
@@ -73,15 +91,22 @@ export default function AdminComicsPage() {
 
     try {
       if (editingComic) {
-        await updateAdminComic(editingComic.id, input);
+        const updatedComic = await updateAdminComic(editingComic.id, input);
+        setComics((currentComics) =>
+          currentComics.map((comic) =>
+            comic.id === updatedComic.id ? updatedComic : comic,
+          ),
+        );
         setSuccessMessage("Cap nhat truyen thanh cong");
       } else {
-        await createAdminComic(input);
+        const createdComic = await createAdminComic(input);
+        if (deletedFilter !== "deleted") {
+          setComics((currentComics) => [createdComic, ...currentComics]);
+        }
         setSuccessMessage("Them truyen thanh cong");
       }
 
       setEditingComic(null);
-      await reloadComics();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Luu truyen that bai",
@@ -107,12 +132,21 @@ export default function AdminComicsPage() {
     try {
       const result = await deleteAdminComic(comic.id);
       setSuccessMessage(result.message || "Xoa truyen thanh cong");
+      setComics((currentComics) => {
+        if (deletedFilter === "all") {
+          return currentComics.map((currentComic) =>
+            currentComic.id === comic.id
+              ? { ...currentComic, isDeleted: true }
+              : currentComic,
+          );
+        }
+
+        return currentComics.filter((currentComic) => currentComic.id !== comic.id);
+      });
 
       if (editingComic?.id === comic.id) {
         setEditingComic(null);
       }
-
-      await reloadComics();
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Xoa truyen that bai",
@@ -131,7 +165,7 @@ export default function AdminComicsPage() {
         </p>
       </div>
 
-      {isLoading ? (
+      {isLoading || isLoadingOptions ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
           Dang tai du lieu admin comics...
         </div>

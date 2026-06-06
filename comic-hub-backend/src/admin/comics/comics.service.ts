@@ -58,6 +58,10 @@ const comicInclude = {
 
 type DeletedFilter = 'active' | 'deleted' | 'all';
 
+type ComicPayload = Prisma.ComicGetPayload<{
+  include: typeof comicInclude;
+}>;
+
 @Injectable()
 export class ComicsService {
   constructor(
@@ -65,14 +69,16 @@ export class ComicsService {
     private readonly redis: RedisService,
   ) {}
 
-  findAll(deleted: DeletedFilter = 'active') {
-    return this.prisma.comic.findMany({
+  async findAll(deleted: DeletedFilter = 'active') {
+    const comics = await this.prisma.comic.findMany({
       where: this.withDeletedFilter({}, deleted),
       orderBy: {
         createdAt: 'desc',
       },
       include: comicInclude,
     });
+
+    return comics.map((comic) => this.serializeComic(comic));
   }
 
   async create(dto: CreateAdminComicDto) {
@@ -102,7 +108,7 @@ export class ComicsService {
 
     await this.clearPublicCatalogCache(comic.slug);
 
-    return comic;
+    return this.serializeComic(comic);
   }
 
   async update(id: number, dto: UpdateAdminComicDto) {
@@ -176,7 +182,7 @@ export class ComicsService {
     await this.clearPublicCatalogCache(existingComic.slug);
     await this.clearPublicCatalogCache(updatedComic.slug);
 
-    return updatedComic;
+    return this.serializeComic(updatedComic);
   }
 
   async remove(id: number, deletedById: number) {
@@ -298,6 +304,22 @@ export class ComicsService {
     const trimmed = value.trim();
 
     return trimmed ? trimmed : null;
+  }
+
+  private serializeComic(comic: ComicPayload) {
+    const { _count, chapters, ...rest } = comic;
+
+    return {
+      ...rest,
+      chapters,
+      commentCount: _count.comments,
+      chapterTotal: _count.chapters,
+      followCount: _count.follows,
+      isDeleted: rest.deletedAt !== null,
+      latestChapter: chapters[0] ?? null,
+      likeCount: _count.likes,
+      _count,
+    };
   }
 
   private async clearPublicCatalogCache(slug: string) {

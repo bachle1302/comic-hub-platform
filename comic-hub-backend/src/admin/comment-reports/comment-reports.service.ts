@@ -31,7 +31,7 @@ export class CommentReportsService {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      items,
+      items: items.map((item) => this.serializeReport(item)),
       meta: {
         page,
         limit,
@@ -46,7 +46,7 @@ export class CommentReportsService {
   async updateStatus(id: number, dto: UpdateCommentReportStatusDto) {
     await this.ensureReportExists(id);
 
-    return this.prisma.commentReport.update({
+    const report = await this.prisma.commentReport.update({
       where: {
         id,
       },
@@ -55,6 +55,8 @@ export class CommentReportsService {
       },
       select: this.commentReportSelect(),
     });
+
+    return this.serializeReport(report);
   }
 
   async deleteReportedComment(id: number, deletedById: number) {
@@ -151,6 +153,18 @@ export class CommentReportsService {
     }
 
     return Math.min(Math.max(Math.trunc(limit), 1), 100);
+  }
+
+  private serializeReport<T extends { comment: { deletedAt: Date | null } }>(
+    report: T,
+  ): T & { comment: T['comment'] & { isDeleted: boolean } } {
+    return {
+      ...report,
+      comment: {
+        ...report.comment,
+        isDeleted: report.comment.deletedAt !== null,
+      },
+    };
   }
 
   private commentReportSelect() {

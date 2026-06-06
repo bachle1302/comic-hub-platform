@@ -1,12 +1,46 @@
-import Link from "next/link";
-import { getPublicSystemSettingsSafe } from "@/features/system-settings";
+"use client";
 
-export async function SiteFooter() {
-  const settings = await getPublicSystemSettingsSafe();
-  const siteName = settings.general?.siteName ?? "Comic Hub";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getPublicSystemSettingsClientSafe } from "@/features/system-settings/api/public-system-settings.client-api";
+import type { PublicSystemSettings } from "@/features/system-settings/api/system-settings.schema";
+
+const DEFAULT_SITE_NAME = "Comic Hub";
+const DEFAULT_SITE_DESCRIPTION =
+  "Doc truyen tranh online, cap nhat nhanh.";
+const DEFAULT_SUPPORT_EMAIL = "support@example.com";
+
+export function SiteFooter() {
+  const pathname = usePathname();
+  const [settings, setSettings] = useState<PublicSystemSettings>({});
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (pathname.startsWith("/admin")) {
+      return undefined;
+    }
+
+    getPublicSystemSettingsClientSafe().then((nextSettings) => {
+      if (isMounted) {
+        setSettings(nextSettings);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname]);
+
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
+  const siteName = settings.general?.siteName ?? DEFAULT_SITE_NAME;
   const siteDescription =
-    settings.general?.siteDescription ?? "Đọc truyện tranh online, cập nhật nhanh.";
-  const supportEmail = settings.general?.supportEmail ?? "support@example.com";
+    settings.general?.siteDescription ?? DEFAULT_SITE_DESCRIPTION;
+  const supportEmail = settings.general?.supportEmail ?? DEFAULT_SUPPORT_EMAIL;
   const socialLinks = [
     {
       href: settings.social?.facebookUrl,
@@ -31,7 +65,7 @@ export async function SiteFooter() {
           <p className="font-medium text-foreground">{siteName}</p>
           <p>{siteDescription}</p>
           <p>
-            Hỗ trợ:{" "}
+            Ho tro:{" "}
             <a href={`mailto:${supportEmail}`} className="hover:text-foreground">
               {supportEmail}
             </a>
@@ -53,38 +87,38 @@ export async function SiteFooter() {
           ) : null}
         </div>
 
-        <nav className="space-y-2" aria-label="Liên kết chính">
-          <p className="font-medium text-foreground">Khám phá</p>
+        <nav className="space-y-2" aria-label="Lien ket chinh">
+          <p className="font-medium text-foreground">Kham pha</p>
           <div className="flex flex-wrap gap-x-4 gap-y-2 md:flex-col md:gap-2">
             <Link href="/" className="hover:text-foreground">
-              Trang chủ
+              Trang chu
             </Link>
             <Link href="/truyen" className="hover:text-foreground">
-              Truyện
+              Truyen
             </Link>
             <Link href="/tim-kiem" className="hover:text-foreground">
-              Tìm kiếm
+              Tim kiem
             </Link>
           </div>
         </nav>
 
-        <nav className="space-y-2" aria-label="Chính sách">
-          <p className="font-medium text-foreground">Chính sách</p>
+        <nav className="space-y-2" aria-label="Chinh sach">
+          <p className="font-medium text-foreground">Chinh sach</p>
           <div className="flex flex-wrap gap-x-4 gap-y-2 md:flex-col md:gap-2">
             <Link href="/dieu-khoan" className="hover:text-foreground">
-              Điều khoản
+              Dieu khoan
             </Link>
             <Link href="/chinh-sach-bao-mat" className="hover:text-foreground">
-              Chính sách bảo mật
+              Chinh sach bao mat
             </Link>
             <Link
               href="/chinh-sach-thanh-toan"
               className="hover:text-foreground"
             >
-              Thanh toán / hoàn tiền
+              Thanh toan / hoan tien
             </Link>
             <Link href="/lien-he" className="hover:text-foreground">
-              Liên hệ
+              Lien he
             </Link>
           </div>
         </nav>
@@ -92,4 +126,3 @@ export async function SiteFooter() {
     </footer>
   );
 }
-

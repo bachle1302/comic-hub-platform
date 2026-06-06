@@ -11,6 +11,7 @@ import {
   type AdminCoinPackagesPaginated,
   type AdminCoinPackagesQuery,
 } from "@/features/admin/coin-packages";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminCoinPackagesQuery = {
   limit: 20,
@@ -52,11 +53,17 @@ export default function AdminCoinPackagesPage() {
   }, [loadCoinPackages, query]);
 
   function handleFilterChange(nextQuery: AdminCoinPackagesQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {
@@ -74,7 +81,27 @@ export default function AdminCoinPackagesPage() {
     try {
       await deleteAdminCoinPackage(id);
       setSuccessMessage("Da tat goi coin.");
-      await loadCoinPackages(query);
+      setData((currentData) => {
+        if (!currentData) {
+          return currentData;
+        }
+
+        if (query.isActive === true) {
+          return {
+            ...currentData,
+            items: currentData.items.filter((coinPackage) => coinPackage.id !== id),
+          };
+        }
+
+        return {
+          ...currentData,
+          items: currentData.items.map((coinPackage) =>
+            coinPackage.id === id
+              ? { ...coinPackage, isActive: false }
+              : coinPackage,
+          ),
+        };
+      });
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Tat goi coin that bai",

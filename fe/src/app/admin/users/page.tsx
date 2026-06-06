@@ -9,6 +9,7 @@ import {
   type AdminUsersPaginated,
   type AdminUsersQuery,
 } from "@/features/admin/users";
+import { areShallowObjectsEqual } from "@/shared/utils/object";
 
 const DEFAULT_QUERY: AdminUsersQuery = {
   limit: 20,
@@ -45,11 +46,17 @@ export default function AdminUsersPage() {
   }, [loadUsers, query]);
 
   function handleFilterChange(nextQuery: AdminUsersQuery) {
-    setQuery({
+    const normalizedQuery = {
       ...nextQuery,
       limit: nextQuery.limit ?? 20,
       page: 1,
-    });
+    };
+
+    setQuery((currentQuery) =>
+      areShallowObjectsEqual(currentQuery, normalizedQuery)
+        ? currentQuery
+        : normalizedQuery,
+    );
   }
 
   function handlePageChange(page: number) {

@@ -33,6 +33,7 @@ export const adminChapterSchema = z.object({
   deleteReason: z.string().nullable().optional(),
   isDeleted: z.boolean().optional().default(false),
   viewTotal: z.number(),
+  commentCount: z.number().optional(),
   comicId: z.number().optional(),
   comic: z
     .object({
@@ -43,6 +44,8 @@ export const adminChapterSchema = z.object({
     })
     .optional(),
   images: z.array(chapterImageSchema).optional(),
+  imageCount: z.number().optional(),
+  purchaseCount: z.number().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   _count: z

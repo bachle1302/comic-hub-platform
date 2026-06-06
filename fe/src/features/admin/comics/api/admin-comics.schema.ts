@@ -53,11 +53,15 @@ export const adminComicSchema = z.object({
   viewTotal: z.number(),
   followCount: z.number().optional(),
   chapterCount: z.number().optional(),
+  chapterTotal: z.number().optional(),
+  commentCount: z.number().optional(),
+  likeCount: z.number().optional(),
   lastChapterAt: z.string().nullable().optional(),
   authorId: z.number().optional(),
   author: adminComicAuthorSchema.optional(),
   categories: z.array(adminComicCategoryRelationSchema).optional(),
   chapters: z.array(adminComicChapterSummarySchema).optional(),
+  latestChapter: adminComicChapterSummarySchema.nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   _count: z
@@ -65,6 +69,7 @@ export const adminComicSchema = z.object({
       chapters: z.number().optional(),
       follows: z.number().optional(),
       comments: z.number().optional(),
+      likes: z.number().optional(),
     })
     .optional(),
 });
