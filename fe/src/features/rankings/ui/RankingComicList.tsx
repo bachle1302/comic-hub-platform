@@ -17,10 +17,10 @@ type RankingComicListProps = {
 };
 
 const statusLabels: Record<ComicStatus, string> = {
-  CANCELLED: "Da huy",
-  COMPLETED: "Hoan thanh",
-  HIATUS: "Tam dung",
-  ONGOING: "Dang ra",
+  CANCELLED: "Đã hủy",
+  COMPLETED: "Hoàn thành",
+  HIATUS: "Tạm dừng",
+  ONGOING: "Đang ra",
 };
 
 function rankClassName(rank: number): string {
@@ -35,20 +35,21 @@ function rankClassName(rank: number): string {
   return "bg-card";
 }
 
+// Map Vietnamese rankings type periods
 function viewMetricName(period: RankingPeriod): string {
   if (period === "day") {
-    return "luot xem hom nay";
+    return "lượt xem hôm nay";
   }
 
   if (period === "week") {
-    return "luot xem tuan nay";
+    return "lượt xem tuần này";
   }
 
   if (period === "month") {
-    return "luot xem thang nay";
+    return "lượt xem tháng này";
   }
 
-  return "luot xem";
+  return "lượt xem";
 }
 
 function metricLabel(
@@ -57,17 +58,17 @@ function metricLabel(
   comic: RankingComic,
 ): string {
   if (type === "likes") {
-    return `${formatCompactNumber(comic.likeCount)} luot thich`;
+    return `${formatCompactNumber(comic.likeCount)} lượt thích`;
   }
 
   if (type === "follows") {
-    return `${formatCompactNumber(comic.followCount)} theo doi`;
+    return `${formatCompactNumber(comic.followCount)} theo dõi`;
   }
 
   if (type === "latest") {
     return comic.lastChapterAt
-      ? `Cap nhat ${formatDate(comic.lastChapterAt)}`
-      : "Chua co ngay cap nhat";
+      ? `Cập nhật ${formatDate(comic.lastChapterAt)}`
+      : "Chưa có ngày cập nhật";
   }
 
   return `${formatCompactNumber(comic.viewTotal)} ${viewMetricName(period)}`;
@@ -75,7 +76,7 @@ function metricLabel(
 
 function latestUpdatedLabel(comic: RankingComic): string {
   const value = comic.lastChapterAt ?? comic.updatedAt ?? comic.createdAt;
-  return value ? formatDate(value) : "Dang cap nhat";
+  return value ? formatDate(value) : "Đang cập nhật";
 }
 
 export function RankingComicList({
@@ -87,8 +88,8 @@ export function RankingComicList({
   if (comics.length === 0) {
     return (
       <EmptyState
-        title="Chua co truyen trong bang xep hang"
-        description="Hay thu doi bo loc hoac quay lai sau."
+        title="Chưa có truyện trong bảng xếp hạng"
+        description="Hãy thử đổi bộ lọc hoặc quay lại sau."
       />
     );
   }
@@ -125,7 +126,7 @@ export function RankingComicList({
                 />
               ) : (
                 <div className="flex h-full items-center justify-center px-2 text-center text-xs text-muted-foreground">
-                  Chua co anh
+                  Chưa có ảnh
                 </div>
               )}
             </Link>
@@ -140,7 +141,7 @@ export function RankingComicList({
                     {comic.name}
                   </Link>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Tac gia: {comic.author?.name ?? "Dang cap nhat"}
+                    Tác giả: {comic.author?.name ?? "Đang cập nhật"}
                   </p>
                 </div>
                 <span className="hidden rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary md:inline-flex">
@@ -150,11 +151,11 @@ export function RankingComicList({
 
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground md:grid-cols-6">
                 <span>{statusLabels[comic.status]}</span>
-                <span>{formatCompactNumber(comic.viewTotal)} view</span>
-                <span>{formatCompactNumber(comic.likeCount)} thich</span>
-                <span>{formatCompactNumber(comic.followCount)} follow</span>
-                <span>{comic.chapterCount} chuong</span>
-                <span>Cap nhat {latestUpdatedLabel(comic)}</span>
+                <span>{formatCompactNumber(comic.viewTotal)} lượt xem</span>
+                <span>{formatCompactNumber(comic.likeCount)} thích</span>
+                <span>{formatCompactNumber(comic.followCount)} theo dõi</span>
+                <span>{comic.chapterCount} chương</span>
+                <span>Cập nhật {latestUpdatedLabel(comic)}</span>
               </div>
             </div>
           </article>

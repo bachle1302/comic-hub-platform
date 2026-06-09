@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
       });
       setMessage(result.message);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Reset failed");
+      setErrorMessage(error instanceof Error ? error.message : "Đặt lại mật khẩu thất bại");
     }
   }
 
@@ -47,12 +47,12 @@ export default function ResetPasswordPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="mx-auto max-w-md space-y-4 rounded-lg border bg-card p-6"
       >
-        <h1 className="text-2xl font-bold">Reset password</h1>
-        {!token ? <p className="text-sm text-destructive">Missing token.</p> : null}
+        <h1 className="text-2xl font-bold">Đặt lại mật khẩu</h1>
+        {!token ? <p className="text-sm text-destructive">Thiếu mã xác thực.</p> : null}
         <input type="hidden" {...register("token")} />
         <div className="space-y-2">
           <label htmlFor="newPassword" className="text-sm font-medium">
-            New password
+            Mật khẩu mới
           </label>
           <input
             id="newPassword"
@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
         </div>
         <div className="space-y-2">
           <label htmlFor="confirmPassword" className="text-sm font-medium">
-            Confirm password
+            Xác nhận mật khẩu
           </label>
           <input
             id="confirmPassword"
@@ -87,10 +87,10 @@ export default function ResetPasswordPage() {
           <p className="text-sm text-destructive">{errorMessage}</p>
         ) : null}
         <Button type="submit" className="w-full" disabled={isSubmitting || !token}>
-          {isSubmitting ? "Resetting..." : "Reset password"}
+          {isSubmitting ? "Đang đặt lại..." : "Đặt lại mật khẩu"}
         </Button>
         <Link href="/login" className="text-sm font-medium text-primary">
-          Back to login
+          Quay lại đăng nhập
         </Link>
       </form>
     </PageContainer>

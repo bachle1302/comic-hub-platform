@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
       const result = await forgotPassword(input);
       setMessage(result.message);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Request failed");
+      setErrorMessage(error instanceof Error ? error.message : "Yêu cầu thất bại");
     }
   }
 
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="mx-auto max-w-md space-y-4 rounded-lg border bg-card p-6"
       >
-        <h1 className="text-2xl font-bold">Forgot password</h1>
+        <h1 className="text-2xl font-bold">Quên mật khẩu</h1>
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium">
             Email
@@ -62,10 +62,10 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-destructive">{errorMessage}</p>
         ) : null}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Sending..." : "Send reset email"}
+          {isSubmitting ? "Đang gửi..." : "Gửi email đặt lại mật khẩu"}
         </Button>
         <Link href="/login" className="text-sm font-medium text-primary">
-          Back to login
+          Quay lại đăng nhập
         </Link>
       </form>
     </PageContainer>

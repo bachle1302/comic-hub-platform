@@ -124,7 +124,7 @@ export function ReaderClientSection({
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Khong tai duoc noi dung protected",
+          : "Không tải được nội dung chương",
       );
     } finally {
       setIsLoadingProtected(false);
@@ -149,7 +149,7 @@ export function ReaderClientSection({
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong kiem tra duoc quyen doc",
+        error instanceof Error ? error.message : "Không kiểm tra được quyền đọc",
       );
     } finally {
       setIsLoadingProtected(false);
@@ -232,7 +232,7 @@ export function ReaderClientSection({
       <>
         {shouldPauseProgressForResume ? (
           <p className="text-center text-sm text-muted-foreground">
-            Dang dua ban toi vi tri da doc...
+            Đang đưa bạn tới vị trí đã đọc...
           </p>
         ) : null}
         {chapterId ? (
@@ -260,7 +260,7 @@ export function ReaderClientSection({
       <>
         {shouldPauseProgressForResume ? (
           <p className="text-center text-sm text-muted-foreground">
-            Dang dua ban toi vi tri da doc...
+            Đang đưa bạn tới vị trí đã đọc...
           </p>
         ) : null}
         {currentChapterId ? (
@@ -289,18 +289,18 @@ export function ReaderClientSection({
         <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-amber-500/10 text-xl">
           $
         </div>
-        <h2 className="text-lg font-semibold">Chuong nay can mua de doc</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Gia: {chapterPrice} coin</p>
+        <h2 className="text-lg font-semibold">Chương này cần mua để đọc</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Giá: {chapterPrice} coin</p>
 
         {isLoading ? (
           <p className="mt-4 text-sm text-muted-foreground">
-            Dang kiem tra dang nhap...
+            Đang kiểm tra đăng nhập...
           </p>
         ) : null}
 
         {isLoadingProtected ? (
           <p className="mt-4 text-sm text-muted-foreground">
-            Dang kiem tra quyen doc...
+            Đang kiểm tra quyền đọc...
           </p>
         ) : null}
 
@@ -316,13 +316,13 @@ export function ReaderClientSection({
 
         {!isLoading && !isAuthenticated ? (
           <p className="mt-4 text-sm text-muted-foreground">
-            Dang nhap de mua va doc chapter tra phi.
+            Đăng nhập để mua và đọc chapter trả phí.
           </p>
         ) : null}
 
         {shouldShowPurchase && !chapterId ? (
           <p className="mt-4 text-sm text-destructive">
-            Khong xac dinh duoc chapter de mua.
+            Không xác định được chapter để mua.
           </p>
         ) : null}
 
@@ -352,7 +352,7 @@ export function ReaderClientSection({
 function EmptyFreeChapter() {
   return (
     <div className="mx-auto max-w-3xl rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-      Chuong nay chua co anh.
+      Chương này chưa có ảnh.
     </div>
   );
 }

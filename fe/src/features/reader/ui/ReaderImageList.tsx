@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { EmptyState } from "@/shared/ui";
 import type { ChapterImage } from "@/features/comics";
 
@@ -13,6 +13,82 @@ type ReaderImageListProps = {
   resumeImageIndex?: number | null;
   shouldScrollToResume?: boolean;
 };
+
+type LazyImageProps = {
+  image: ChapterImage;
+  index: number;
+  priority: boolean;
+  onImageError?: () => void;
+};
+
+function LazyImage({ image, index, priority, onImageError }: LazyImageProps) {
+  const [isIntersecting, setIsIntersecting] = useState(priority);
+  const ref = useRef<HTMLDivElement>(null);
+
+  if (priority && !isIntersecting) {
+    setIsIntersecting(true);
+  }
+
+  useEffect(() => {
+    if (priority) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: "800px 0px 800px 0px", // Preload ahead by 800px (approx. 1-1.5 screens)
+      }
+    );
+
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [priority]);
+
+  // Use natural aspect ratio if available to prevent layout shift
+  const aspectRatioStyle =
+    image.width && image.height
+      ? { aspectRatio: `${image.width} / ${image.height}` }
+      : { minHeight: "500px" };
+
+  return (
+    <div
+      ref={ref}
+      id={`page-${index}`}
+      className="w-full max-w-[960px] bg-muted/10 flex items-center justify-center overflow-hidden"
+      style={{
+        ...aspectRatioStyle,
+        maxWidth: image.width ? `${image.width}px` : undefined,
+      }}
+    >
+      {isIntersecting ? (
+        <img
+          src={image.url}
+          alt={`Page ${image.order}`}
+          width={image.width ?? undefined}
+          height={image.height ?? undefined}
+          onError={onImageError}
+          className="block w-full h-auto object-contain transition-opacity duration-300"
+        />
+      ) : (
+        <div className="text-xs text-muted-foreground/30 animate-pulse py-20">
+          Đang tải trang {image.order}...
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ReaderImageList({
   images,
@@ -67,24 +143,19 @@ export function ReaderImageList({
 
   return (
     <>
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center">
-        {sortedImages.map((image, index) => (
-          <img
-            key={`${image.id ?? image.order}-${image.url}`}
-            id={`page-${index}`}
-            src={image.url}
-            alt={`Page ${image.order}`}
-            width={image.width ?? undefined}
-            height={image.height ?? undefined}
-            loading="lazy"
-            onError={onImageError}
-            className="block w-full max-w-[960px] object-contain"
-            style={{
-              height: "auto",
-              maxWidth: image.width ? `${image.width}px` : undefined,
-            }}
-          />
-        ))}
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-0">
+        {sortedImages.map((image, index) => {
+          const priority = index < 2 || index === resumeImageIndex;
+          return (
+            <LazyImage
+              key={`${image.id ?? image.order}-${image.url}`}
+              image={image}
+              index={index}
+              priority={priority}
+              onImageError={onImageError}
+            />
+          );
+        })}
       </div>
       {onReloadChapter ? (
         <div className="mx-auto mt-3 max-w-[1200px] rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-center text-sm text-amber-900 dark:text-amber-100">

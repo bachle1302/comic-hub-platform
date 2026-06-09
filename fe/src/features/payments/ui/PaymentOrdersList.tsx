@@ -29,15 +29,15 @@ function formatDate(value?: string | null): string {
 function getStatusLabel(status: PaymentOrder["status"]): string {
   switch (status) {
     case "PENDING":
-      return "Dang cho";
+      return "Đang chờ";
     case "PAID":
-      return "Da thanh toan";
+      return "Đã thanh toán";
     case "CANCELLED":
-      return "Da huy";
+      return "Đã hủy";
     case "EXPIRED":
-      return "Het han";
+      return "Hết hạn";
     case "FAILED":
-      return "That bai";
+      return "Thất bại";
   }
 }
 
@@ -58,8 +58,8 @@ export function PaymentOrdersList({ orders }: PaymentOrdersListProps) {
   if (orders.length === 0) {
     return (
       <EmptyState
-        title="Chua co don nap coin"
-        description="Cac don nap coin cua ban se hien tai day."
+        title="Chưa có đơn nạp coin"
+        description="Các đơn nạp coin của bạn sẽ hiện tại đây."
       />
     );
   }
@@ -69,13 +69,13 @@ export function PaymentOrdersList({ orders }: PaymentOrdersListProps) {
       <table className="w-full min-w-[760px] text-sm">
         <thead className="bg-muted/60 text-left">
           <tr>
-            <th className="px-4 py-3 font-medium">Ma don</th>
-            <th className="px-4 py-3 font-medium">Trang thai</th>
-            <th className="px-4 py-3 font-medium">So tien</th>
+            <th className="px-4 py-3 font-medium">Mã đơn</th>
+            <th className="px-4 py-3 font-medium">Trạng thái</th>
+            <th className="px-4 py-3 font-medium">Số tiền</th>
             <th className="px-4 py-3 font-medium">Coin</th>
-            <th className="px-4 py-3 font-medium">Tao luc</th>
-            <th className="px-4 py-3 font-medium">Thanh toan luc</th>
-            <th className="px-4 py-3 font-medium">Hanh dong</th>
+            <th className="px-4 py-3 font-medium">Tạo lúc</th>
+            <th className="px-4 py-3 font-medium">Thanh toán lúc</th>
+            <th className="px-4 py-3 font-medium">Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -105,7 +105,7 @@ export function PaymentOrdersList({ orders }: PaymentOrdersListProps) {
                       window.location.href = order.checkoutUrl ?? "";
                     }}
                   >
-                    Tiep tuc thanh toan
+                    Tiếp tục thanh toán
                   </Button>
                 ) : (
                   <span className="text-xs text-muted-foreground">-</span>

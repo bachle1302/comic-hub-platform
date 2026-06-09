@@ -40,8 +40,8 @@ export function CoinPackageList({
   if (coinPackages.length === 0) {
     return (
       <EmptyState
-        title="Chua co goi coin"
-        description="Hien chua co goi nap coin nao dang hoat dong."
+        title="Chưa có gói coin"
+        description="Hiện chưa có gói nạp coin nào đang hoạt động."
       />
     );
   }

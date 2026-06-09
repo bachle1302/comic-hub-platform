@@ -72,7 +72,7 @@ export function WalletPaymentPageClient({
       setPaymentOrders(nextPaymentOrders.items);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc du lieu vi",
+        error instanceof Error ? error.message : "Không tải được dữ liệu ví",
       );
     } finally {
       setIsLoading(false);
@@ -107,7 +107,7 @@ export function WalletPaymentPageClient({
       window.location.href = result.checkoutUrl;
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tao duoc don thanh toan",
+        error instanceof Error ? error.message : "Không tạo được đơn thanh toán",
       );
       setPendingPackageId(null);
     }
@@ -116,7 +116,7 @@ export function WalletPaymentPageClient({
   if (isAuthLoading || !isAuthenticated) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Dang kiem tra dang nhap...</p>
+        <p className="text-sm text-muted-foreground">Đang kiểm tra đăng nhập...</p>
       </PageContainer>
     );
   }
@@ -124,25 +124,25 @@ export function WalletPaymentPageClient({
   return (
     <PageContainer>
       <SectionHeader
-        title="Vi coin"
-        description="Nap coin, xem so du va lich su giao dich cua ban."
+        title="Ví Coin"
+        description="Nạp coin, xem số dư và lịch sử giao dịch của bạn."
         action={
           <Button type="button" variant="outline" onClick={() => void loadWalletData()}>
-            Lam moi
+            Làm mới
           </Button>
         }
       />
 
       {paymentStatus === "success" ? (
         <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-300">
-          Thanh toan dang duoc xu ly. Coin se duoc cong sau khi he thong xac
-          nhan.
+          Thanh toán đang được xử lý. Coin sẽ được cộng sau khi hệ thống xác
+          nhận.
         </div>
       ) : null}
 
       {paymentStatus === "cancel" ? (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300">
-          Ban da huy thanh toan.
+          Bạn đã hủy thanh toán.
         </div>
       ) : null}
 
@@ -154,7 +154,7 @@ export function WalletPaymentPageClient({
 
       <section className="grid gap-4 lg:grid-cols-[280px_1fr]">
         <div className="rounded-lg border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">So du hien tai</p>
+          <p className="text-sm text-muted-foreground">Số dư hiện tại</p>
           <p className="mt-2 text-3xl font-bold">
             {isLoading ? "..." : formatCurrency(wallet?.coin ?? 0)}
           </p>
@@ -162,9 +162,9 @@ export function WalletPaymentPageClient({
         </div>
 
         <div className="rounded-lg border bg-card p-5 shadow-sm">
-          <h2 className="text-lg font-semibold">Goi nap coin</h2>
+          <h2 className="text-lg font-semibold">Gói nạp coin</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Chon goi coin, he thong se chuyen ban sang trang thanh toan PayOS.
+            Chọn gói coin, hệ thống sẽ chuyển bạn sang trang thanh toán PayOS.
           </p>
           <div className="mt-4">
             <CoinPackageList
@@ -178,7 +178,7 @@ export function WalletPaymentPageClient({
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Don nap coin gan day</h2>
+        <h2 className="text-lg font-semibold">Đơn nạp coin gần đây</h2>
         {isLoading ? (
           <div className="h-32 animate-pulse rounded-lg bg-muted" />
         ) : (
@@ -187,24 +187,24 @@ export function WalletPaymentPageClient({
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Giao dich gan day</h2>
+        <h2 className="text-lg font-semibold">Giao dịch gần đây</h2>
         {isLoading ? (
           <div className="h-32 animate-pulse rounded-lg bg-muted" />
         ) : transactions.length === 0 ? (
           <div className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">
-            Chua co giao dich nao.
+            Chưa có giao dịch nào.
           </div>
         ) : (
           <div className="overflow-x-auto rounded-lg border">
             <table className="w-full min-w-[680px] text-sm">
               <thead className="bg-muted/60 text-left">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Loai</th>
-                  <th className="px-4 py-3 font-medium">Trang thai</th>
-                  <th className="px-4 py-3 font-medium">So coin</th>
-                  <th className="px-4 py-3 font-medium">Sau giao dich</th>
-                  <th className="px-4 py-3 font-medium">Thoi gian</th>
-                  <th className="px-4 py-3 font-medium">Mo ta</th>
+                  <th className="px-4 py-3 font-medium">Loại</th>
+                  <th className="px-4 py-3 font-medium">Trạng thái</th>
+                  <th className="px-4 py-3 font-medium">Số coin</th>
+                  <th className="px-4 py-3 font-medium">Sau giao dịch</th>
+                  <th className="px-4 py-3 font-medium">Thời gian</th>
+                  <th className="px-4 py-3 font-medium">Mô tả</th>
                 </tr>
               </thead>
               <tbody>

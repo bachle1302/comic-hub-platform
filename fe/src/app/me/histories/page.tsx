@@ -25,7 +25,7 @@ export default function MyHistoriesPage() {
       setHistories(await getMyHistories());
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc lich su doc",
+        error instanceof Error ? error.message : "Không tải được lịch sử đọc",
       );
     } finally {
       setIsFetching(false);
@@ -50,7 +50,7 @@ export default function MyHistoriesPage() {
   }, [isAuthenticated, isLoading, loadHistories, router]);
 
   async function handleDelete(id: number) {
-    if (!window.confirm("Xoa lich su doc nay?")) {
+    if (!window.confirm("Xóa lịch sử đọc này?")) {
       return;
     }
 
@@ -61,7 +61,7 @@ export default function MyHistoriesPage() {
   if (isLoading || isFetching) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Dang tai lich su doc...
+        Đang tải lịch sử đọc...
       </div>
     );
   }
@@ -73,9 +73,9 @@ export default function MyHistoriesPage() {
   return (
     <section className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Lich su doc</h1>
+        <h1 className="text-2xl font-bold">Lịch sử đọc</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tiep tuc doc tu chuong gan nhat.
+          Tiếp tục đọc từ chương gần nhất.
         </p>
       </div>
       <HistoryList histories={histories} onDelete={handleDelete} />

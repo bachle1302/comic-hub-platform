@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -84,16 +85,45 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+    <header className="sticky top-0 z-50 bg-zinc-100/95 dark:bg-zinc-900/95 backdrop-blur">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4">
         {/* Left Section: Logo & Links */}
-        <div className="flex items-center gap-6">
-          <Link href="/" prefetch={false} className="text-lg font-black tracking-wider text-foreground">
-            COMIC HUB
+        <div className="flex items-center gap-8">
+          <Link href="/" prefetch={false} className="flex items-center gap-2.5 cursor-pointer group shrink-0">
+            <svg 
+              width="48" 
+              height="48" 
+              viewBox="0 0 100 100" 
+              className="group-hover:rotate-90 transition-transform duration-500 ease-in-out drop-shadow-md shrink-0"
+            >
+              {/* Nền tròn Đỏ chuẩn */}
+              <circle cx="50" cy="50" r="36" fill="#E53935" />
+              
+              {/* Lưỡi phi tiêu cong Đen (Base) */}
+              <path d="M 50 2 Q 58 42 98 50 Q 58 58 50 98 Q 42 58 2 50 Q 42 42 50 2 Z" fill="#111111" />
+              
+              {/* Mảng màu Xám Than tạo khối 3D cắt vát cho phi tiêu */}
+              <path d="M 50 2 Q 58 42 98 50 L 50 50 Z" fill="#1f2937" />
+              <path d="M 50 98 Q 42 58 2 50 L 50 50 Z" fill="#1f2937" />
+              
+              {/* Tâm Sharingan Tối giản */}
+              <circle cx="50" cy="50" r="12" fill="#E53935" />
+              <circle cx="50" cy="50" r="5" fill="#111111" />
+              <circle cx="50" cy="50" r="1.5" fill="#ffffff" />
+            </svg>
+
+            <span className="font-extrabold text-3xl tracking-tighter ml-0.5 flex items-center select-none">
+              <span className="bg-gradient-to-r from-zinc-950 via-zinc-800 to-zinc-700 dark:from-zinc-50 dark:via-zinc-200 dark:to-zinc-400 bg-clip-text text-transparent font-black tracking-tight">
+                Comic
+              </span>
+              <span className="relative ml-1.5 px-2.5 py-1 rounded bg-gradient-to-br from-[#E53935] to-orange-500 text-white text-sm font-black tracking-normal shadow-[0_0_12px_rgba(229,57,53,0.3)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-300">
+                HUB
+              </span>
+            </span>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
+          <nav className="hidden items-center gap-6 text-base font-semibold md:flex">
             <Link
               href="/truyen"
               prefetch={false}
@@ -262,7 +292,7 @@ export function SiteHeader() {
               <Link
                 href="/login"
                 prefetch={false}
-                className="rounded-full border border-border px-4 py-1.5 text-xs font-bold text-foreground transition hover:bg-muted"
+                className="rounded-full border border-border px-4 py-1.5 text-xs font-bold text-foreground transition hover:text-[#E53935] hover:border-[#E53935] hover:bg-[#E53935]/5"
               >
                 Đăng nhập
               </Link>
@@ -275,7 +305,7 @@ export function SiteHeader() {
               size="icon"
               className="md:hidden size-9 rounded-full border border-border"
               onClick={() => setIsOpen((value) => !value)}
-              aria-label="Mo menu"
+              aria-label="Mở menu"
             >
               {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
             </Button>
@@ -285,7 +315,7 @@ export function SiteHeader() {
 
       {/* Mobile Drawer */}
       {isOpen ? (
-        <div className="border-t border-border px-4 py-4 md:hidden bg-background space-y-4">
+        <div className="border-t border-border px-4 py-4 md:hidden bg-zinc-100 dark:bg-zinc-900 space-y-4">
           {/* Mobile Search */}
           <form onSubmit={handleSubmit} className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />

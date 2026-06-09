@@ -68,7 +68,7 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
         setPage(result.meta.page);
       } catch (error) {
         setErrorMessage(
-          error instanceof Error ? error.message : "Khong tai duoc binh luan",
+          error instanceof Error ? error.message : "Không tải được bình luận",
         );
       } finally {
         setIsLoading(false);
@@ -139,16 +139,16 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
     <section className="mx-auto max-w-5xl space-y-4 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-xl font-semibold">Binh luan</h2>
+          <h2 className="text-xl font-semibold">Bình luận</h2>
           <p className="text-sm text-muted-foreground">
-            {comments?.meta.total ?? 0} binh luan
+            {comments?.meta.total ?? 0} bình luận
           </p>
         </div>
       </div>
 
       {isAuthLoading ? (
         <p className="text-sm text-muted-foreground">
-          Dang kiem tra dang nhap...
+          Đang kiểm tra đăng nhập...
         </p>
       ) : isAuthenticated ? (
         <CommentForm onSubmit={handleCreate} />
@@ -158,9 +158,9 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
             href={`/login?next=${encodeURIComponent(pathname)}`}
             className="font-medium text-primary"
           >
-            Dang nhap
+            Đăng nhập
           </Link>{" "}
-          de binh luan.
+          để bình luận.
         </p>
       )}
 
@@ -171,7 +171,7 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
       ) : null}
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Dang tai binh luan...</p>
+        <p className="text-sm text-muted-foreground">Đang tải bình luận...</p>
       ) : comments && comments.items.length > 0 ? (
         <div className="space-y-3">
           {comments.items.map((comment) => (
@@ -190,7 +190,7 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
         </div>
       ) : (
         <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
-          Chua co binh luan nao.
+          Chưa có bình luận nào.
         </div>
       )}
 
@@ -202,7 +202,7 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
             disabled={!comments.meta.hasPreviousPage || isLoading}
             onClick={() => void goToPage(page - 1)}
           >
-            Trang truoc
+            Trang trước
           </Button>
           <span className="text-sm text-muted-foreground">
             Trang {comments.meta.page}/{comments.meta.totalPages}

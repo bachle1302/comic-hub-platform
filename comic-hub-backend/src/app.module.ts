@@ -36,6 +36,7 @@ import { StorageModule } from './storage/storage.module';
 import { envValidationSchema } from './config/env.validation';
 import { MaintenanceGuard } from './common/guards/maintenance.guard';
 import { SystemSettingsModule } from './system-settings/system-settings.module';
+import { RecommendationsModule } from './recommendations/recommendations.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { SystemSettingsModule } from './system-settings/system-settings.module';
     HistoriesModule,
     NotificationsModule,
     SystemSettingsModule,
+    RecommendationsModule,
   ],
   controllers: [AppController],
   providers: [

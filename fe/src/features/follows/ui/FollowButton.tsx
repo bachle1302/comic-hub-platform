@@ -41,7 +41,7 @@ export function FollowButton({ comicId }: FollowButtonProps) {
           setErrorMessage(
             error instanceof Error
               ? error.message
-              : "Khong kiem tra duoc theo doi",
+              : "Không kiểm tra được theo dõi",
           );
         });
     }, 0);
@@ -73,7 +73,7 @@ export function FollowButton({ comicId }: FollowButtonProps) {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Cap nhat theo doi that bai",
+        error instanceof Error ? error.message : "Cập nhật theo dõi thất bại",
       );
     } finally {
       setIsBusy(false);
@@ -89,12 +89,12 @@ export function FollowButton({ comicId }: FollowButtonProps) {
         onClick={handleClick}
       >
         {isLoading
-          ? "Dang kiem tra..."
+          ? "Đang kiểm tra..."
           : isBusy
-            ? "Dang xu ly..."
+            ? "Đang xử lý..."
             : displayIsFollowing
-              ? "Bo theo doi"
-              : "Theo doi"}
+              ? "Bỏ theo dõi"
+              : "Theo dõi"}
       </Button>
 
       {errorMessage ? (

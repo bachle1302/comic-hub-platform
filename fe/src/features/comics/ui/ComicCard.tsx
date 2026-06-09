@@ -8,10 +8,10 @@ type ComicCardProps = {
 };
 
 const statusLabels: Record<ComicStatus, string> = {
-  CANCELLED: "Da huy",
-  COMPLETED: "Hoan thanh",
-  HIATUS: "Tam dung",
-  ONGOING: "Dang ra",
+  CANCELLED: "Đã hủy",
+  COMPLETED: "Hoàn thành",
+  HIATUS: "Tạm dừng",
+  ONGOING: "Đang ra",
 };
 
 export function ComicCard({ comic }: ComicCardProps) {
@@ -30,7 +30,7 @@ export function ComicCard({ comic }: ComicCardProps) {
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted to-muted/50 px-3 text-center text-xs text-muted-foreground">
-              Chua co anh
+              Chưa có ảnh
             </div>
           )}
           <span className="absolute left-2 top-2 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-medium shadow-sm">
@@ -48,14 +48,14 @@ export function ComicCard({ comic }: ComicCardProps) {
         </Link>
 
         <p className="truncate text-xs text-muted-foreground">
-          {comic.author?.name ?? "Dang cap nhat"}
+          {comic.author?.name ?? "Đang cập nhật"}
         </p>
 
         <div className="flex items-center justify-between gap-2 text-xs">
           <span className="truncate font-medium text-primary">
             {latestChapter
               ? `Chapter ${latestChapter.chapterNumber}`
-              : "Chua co chapter"}
+              : "Chưa có chapter"}
           </span>
           <span className="shrink-0 text-muted-foreground">
             {formatCompactNumber(comic.viewTotal)} view
@@ -63,8 +63,8 @@ export function ComicCard({ comic }: ComicCardProps) {
         </div>
 
         <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-          <span>{formatCompactNumber(comic.followCount)} theo doi</span>
-          <span>{formatCompactNumber(comic.likeCount)} thich</span>
+          <span>{formatCompactNumber(comic.followCount)} theo dõi</span>
+          <span>{formatCompactNumber(comic.likeCount)} thích</span>
         </div>
       </div>
     </article>

@@ -8,3 +8,7 @@ export * from "./ui/HeroImageCarousel";
 export * from "./ui/ComicPosterCard";
 export * from "./ui/ComicSection";
 export * from "./ui/PopularComicSidebar";
+export * from "./ui/FeaturedComicsSection";
+export * from "./ui/LatestComicsSection";
+export * from "./ui/CompletedComicsSection";
+export * from "./ui/PopularComicsSidebarSection";

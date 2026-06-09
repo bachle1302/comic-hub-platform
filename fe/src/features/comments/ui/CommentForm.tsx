@@ -19,7 +19,7 @@ export function CommentForm({
   initialContent = "",
   onCancel,
   onSubmit,
-  submitLabel = "Gui binh luan",
+  submitLabel = "Gửi bình luận",
 }: CommentFormProps) {
   const {
     formState: { errors, isSubmitting },
@@ -48,7 +48,7 @@ export function CommentForm({
       <div className="space-y-2">
         <textarea
           rows={4}
-          placeholder="Viet binh luan..."
+          placeholder="Viết bình luận..."
           className="min-h-24 w-full resize-y rounded-md border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
           {...register("content")}
         />
@@ -59,11 +59,11 @@ export function CommentForm({
 
       <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Dang gui..." : submitLabel}
+          {isSubmitting ? "Đang gửi..." : submitLabel}
         </Button>
         {onCancel ? (
           <Button type="button" variant="outline" onClick={onCancel}>
-            Huy
+            Hủy
           </Button>
         ) : null}
       </div>

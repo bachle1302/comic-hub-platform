@@ -43,7 +43,7 @@ export function NotificationDropdown({
       setNotifications(result.items);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc thong bao",
+        error instanceof Error ? error.message : "Không tải được thông báo",
       );
     } finally {
       setIsLoading(false);
@@ -90,14 +90,14 @@ export function NotificationDropdown({
       await loadNotifications();
       await onChanged?.();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Cap nhat that bai");
+      setErrorMessage(error instanceof Error ? error.message : "Cập nhật thất bại");
     }
   }
 
   return (
     <div className="absolute right-0 top-11 z-50 w-80 overflow-hidden rounded-lg border bg-background shadow-lg">
       <div className="flex items-center justify-between border-b px-3 py-2">
-        <p className="font-semibold">Thong bao</p>
+        <p className="font-semibold">Thông báo</p>
         <Button
           type="button"
           variant="ghost"
@@ -105,13 +105,13 @@ export function NotificationDropdown({
           className="h-8 px-2 text-xs"
           onClick={() => void handleMarkAllRead()}
         >
-          Danh dau da doc
+          Đánh dấu đã đọc
         </Button>
       </div>
 
       {isLoading ? (
         <p className="px-3 py-4 text-sm text-muted-foreground">
-          Dang tai thong bao...
+          Đang tải thông báo...
         </p>
       ) : errorMessage ? (
         <p className="px-3 py-4 text-sm text-destructive">{errorMessage}</p>
@@ -129,7 +129,7 @@ export function NotificationDropdown({
           className="text-sm text-primary hover:underline"
           onClick={onClose}
         >
-          Xem tat ca
+          Xem tất cả
         </Link>
       </div>
     </div>

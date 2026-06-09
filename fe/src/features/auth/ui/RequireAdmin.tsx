@@ -22,7 +22,7 @@ export function RequireAdmin({ children }: RequireAdminProps) {
   if (isLoading) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Dang kiem tra quyen truy cap...
+        Đang kiểm tra quyền truy cập...
       </div>
     );
   }
@@ -34,9 +34,9 @@ export function RequireAdmin({ children }: RequireAdminProps) {
   if (user?.role !== "ADMIN") {
     return (
       <div className="rounded-lg border p-6">
-        <h1 className="text-xl font-semibold">Ban khong co quyen truy cap</h1>
+        <h1 className="text-xl font-semibold">Bạn không có quyền truy cập</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Khu vuc nay chi danh cho tai khoan quan tri.
+          Khu vực này chỉ dành cho tài khoản quản trị.
         </p>
       </div>
     );

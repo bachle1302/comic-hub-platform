@@ -36,7 +36,7 @@ export function ComicLikeButton({
           setErrorMessage(
             error instanceof Error
               ? error.message
-              : "Khong kiem tra duoc luot thich",
+              : "Không kiểm tra được lượt thích",
           );
         });
     }, 0);
@@ -58,7 +58,7 @@ export function ComicLikeButton({
       setLikeCount(status.likeCount);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Cap nhat luot thich that bai",
+        error instanceof Error ? error.message : "Cập nhật lượt thích thất bại",
       );
     } finally {
       setIsBusy(false);
@@ -75,7 +75,7 @@ export function ComicLikeButton({
         className="gap-2"
       >
         <Heart className={isLiked ? "h-4 w-4 fill-current" : "h-4 w-4"} />
-        {isBusy ? "Dang xu ly..." : isLiked ? "Da thich" : "Thich"}
+        {isBusy ? "Đang xử lý..." : isLiked ? "Đã thích" : "Thích"}
         <span className="text-xs opacity-80">
           {formatCompactNumber(likeCount)}
         </span>

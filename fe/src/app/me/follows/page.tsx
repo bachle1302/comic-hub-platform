@@ -36,7 +36,7 @@ export default function MyFollowsPage() {
           setErrorMessage(
             error instanceof Error
               ? error.message
-              : "Khong tai duoc danh sach theo doi",
+              : "Không tải được danh sách theo dõi",
           );
         })
         .finally(() => setIsFetching(false));
@@ -48,7 +48,7 @@ export default function MyFollowsPage() {
   if (isLoading || isFetching) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Dang tai danh sach theo doi...
+        Đang tải danh sách theo dõi...
       </div>
     );
   }
@@ -60,9 +60,9 @@ export default function MyFollowsPage() {
   return (
     <section className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Truyen dang theo doi</h1>
+        <h1 className="text-2xl font-bold">Truyện đang theo dõi</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Danh sach truyen ban da theo doi.
+          Danh sách truyện bạn đã theo dõi.
         </p>
       </div>
       <FollowedComicsList follows={follows} />

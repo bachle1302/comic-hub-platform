@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -11,6 +11,7 @@ import {
 } from "@/shared/seo/metadata";
 import { SiteFooter } from "@/widgets/site-footer";
 import { SiteHeader } from "@/widgets/site-header";
+import { WelcomeBanner } from "@/shared/ui";
 import { Providers } from "./providers";
 
 const geistSans = Geist({
@@ -44,6 +45,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#E53935",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,6 +68,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
+            <WelcomeBanner />
             <SiteHeader />
             <AnnouncementBannerList />
             <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">

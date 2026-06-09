@@ -20,13 +20,13 @@ function formatNotificationDate(value: string): string {
 function getNotificationTypeLabel(type: Notification["type"]): string {
   switch (type) {
     case "NEW_CHAPTER":
-      return "Chuong moi";
+      return "Chương mới";
     case "COMMENT":
-      return "Binh luan";
+      return "Bình luận";
     case "REPLY_COMMENT":
-      return "Phan hoi";
+      return "Phản hồi";
     case "SYSTEM":
-      return "He thong";
+      return "Hệ thống";
   }
 }
 
@@ -39,7 +39,7 @@ export function NotificationList({
   if (notifications.length === 0) {
     return (
       <p className="px-3 py-4 text-sm text-muted-foreground">
-        Chua co thong bao nao.
+        Chưa có thông báo nào.
       </p>
     );
   }
@@ -93,7 +93,7 @@ export function NotificationList({
                 className="h-8 px-2 text-xs"
                 onClick={() => void onDelete(notification.id)}
               >
-                Xoa
+                Xóa
               </Button>
             ) : null}
           </div>

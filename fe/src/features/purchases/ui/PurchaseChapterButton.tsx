@@ -41,11 +41,11 @@ export function PurchaseChapterButton({
 
     try {
       await purchaseChapter(chapterId);
-      setSuccessMessage("Mua chuong thanh cong");
+      setSuccessMessage("Mua chương thành công");
       await onPurchased?.();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Mua chuong that bai",
+        error instanceof Error ? error.message : "Mua chương thất bại",
       );
     } finally {
       setIsPurchasing(false);
@@ -59,7 +59,7 @@ export function PurchaseChapterButton({
         disabled={isLoading || isPurchasing}
         onClick={handlePurchase}
       >
-        {isPurchasing ? "Dang mua..." : `Mua chuong - ${price} coin`}
+        {isPurchasing ? "Đang mua..." : `Mua chương - ${price} coin`}
       </Button>
 
       {successMessage ? (

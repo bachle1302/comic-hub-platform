@@ -10,7 +10,7 @@ export function FollowedComicsList({ follows }: FollowedComicsListProps) {
   if (follows.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-        Ban chua theo doi truyen nao.
+        Bạn chưa theo dõi truyện nào.
       </div>
     );
   }
@@ -38,19 +38,19 @@ export function FollowedComicsList({ follows }: FollowedComicsListProps) {
             <div className="min-w-0 space-y-1">
               <h2 className="truncate font-semibold">{follow.comic.name}</h2>
               <p className="text-sm text-muted-foreground">
-                {follow.comic.author?.name ?? "Dang cap nhat"} ·{" "}
+                {follow.comic.author?.name ?? "Đang cập nhật"} ·{" "}
                 {follow.comic.status}
               </p>
               {latestChapter ? (
                 <p className="text-sm">
-                  Moi nhat: Chapter {latestChapter.chapterNumber} -{" "}
+                  Mới nhất: Chapter {latestChapter.chapterNumber} -{" "}
                   {latestChapter.name}
                 </p>
               ) : (
-                <p className="text-sm text-muted-foreground">Chua co chuong</p>
+                <p className="text-sm text-muted-foreground">Chưa có chương</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Theo doi luc{" "}
+                Theo dõi lúc{" "}
                 {new Date(follow.createdAt).toLocaleDateString("vi-VN")}
               </p>
             </div>
