@@ -3,9 +3,10 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   Menu,
+  Search,
   X,
   User,
   Clock,
@@ -18,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/modetoggle";
 import { useAuth } from "@/features/auth/model/auth-store";
-import { SearchAutocomplete } from "@/features/search";
 
 const NotificationBell = dynamic(
   () =>
@@ -46,6 +46,7 @@ export function SiteHeader() {
   const { isAuthenticated, isLoading, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (!showDropdown) return;
@@ -63,7 +64,14 @@ export function SiteHeader() {
     return null;
   }
 
-
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmedQuery = query.trim();
+    router.push(
+      trimmedQuery ? `/tim-kiem?q=${encodeURIComponent(trimmedQuery)}` : "/tim-kiem",
+    );
+    setIsOpen(false);
+  }
 
   async function handleLogout() {
     try {
@@ -106,10 +114,15 @@ export function SiteHeader() {
         {/* Right Section: Search & Actions */}
         <div className="flex items-center gap-3">
           {/* Desktop Search */}
-          <SearchAutocomplete
-            className="hidden sm:block w-48 md:w-64 lg:w-72"
-            placeholder="Tìm truyện..."
-          />
+          <form onSubmit={handleSubmit} className="relative hidden sm:block w-48 md:w-64 lg:w-72">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Tìm truyện..."
+              className="h-9 w-full rounded-full border border-border bg-muted/40 pl-9 pr-3 text-xs outline-none transition focus:border-primary focus:bg-background focus:ring-1 focus:ring-primary"
+            />
+          </form>
 
           {/* Actions Menu */}
           <div className="flex items-center gap-2">
@@ -274,12 +287,15 @@ export function SiteHeader() {
       {isOpen ? (
         <div className="border-t border-border px-4 py-4 md:hidden bg-background space-y-4">
           {/* Mobile Search */}
-          <SearchAutocomplete
-            className="w-full"
-            inputClassName="h-10"
-            placeholder="Tìm truyện..."
-            onSelectSuggestion={() => setIsOpen(false)}
-          />
+          <form onSubmit={handleSubmit} className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Tìm truyện..."
+              className="h-10 w-full rounded-full border border-border bg-muted/40 pl-9 pr-3 text-xs outline-none focus:border-primary focus:bg-background"
+            />
+          </form>
 
           {/* Navigation Links */}
           <nav className="flex flex-col gap-1 text-sm font-semibold">
