@@ -17,7 +17,6 @@ export function SiteFooter() {
     return null;
   }
 
-  const siteName = settings.general?.siteName ?? DEFAULT_SITE_NAME;
   const siteDescription =
     settings.general?.siteDescription ?? DEFAULT_SITE_DESCRIPTION;
   const supportEmail = settings.general?.supportEmail ?? DEFAULT_SUPPORT_EMAIL;

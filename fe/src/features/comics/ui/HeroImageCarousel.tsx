@@ -175,8 +175,6 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
       >
         {extendedSlides.map((comic, index) => {
           const isActive = index === currentIndex;
-          const isActuallyActive = (index - 2) % slides.length === activeIndex || 
-            ((index - 2) % slides.length < 0 && (index - 2) % slides.length + slides.length === activeIndex);
           const tags = getCategoryTags(comic);
 
           return (

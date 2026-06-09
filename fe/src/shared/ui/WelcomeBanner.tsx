@@ -11,7 +11,10 @@ export function WelcomeBanner() {
   useEffect(() => {
     const isDismissed = sessionStorage.getItem("comichub-welcome-dismissed");
     if (!isDismissed) {
-      setIsVisible(true);
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, []);
 

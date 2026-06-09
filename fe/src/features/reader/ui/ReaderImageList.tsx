@@ -25,9 +25,12 @@ function LazyImage({ image, index, priority, onImageError }: LazyImageProps) {
   const [isIntersecting, setIsIntersecting] = useState(priority);
   const ref = useRef<HTMLDivElement>(null);
 
+  if (priority && !isIntersecting) {
+    setIsIntersecting(true);
+  }
+
   useEffect(() => {
     if (priority) {
-      setIsIntersecting(true);
       return;
     }
 
