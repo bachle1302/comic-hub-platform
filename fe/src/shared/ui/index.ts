@@ -5,4 +5,5 @@ export * from "./LoadingSpinner";
 export * from "./MaintenancePage";
 export * from "./PageContainer";
 export * from "./SectionHeader";
+export * from "./SectionTitle";
 export * from "./SkeletonCard";
