@@ -5,6 +5,10 @@ import { CommentSection } from "@/features/comments";
 import { ChapterList, ComicLikeButton, getComicDetail } from "@/features/comics";
 import { FollowButton } from "@/features/follows";
 import { ContinueReadingButton } from "@/features/histories";
+import {
+  RecommendationSection,
+  getSimilarComics,
+} from "@/features/recommendations";
 import { PageContainer, SectionHeader } from "@/shared/ui";
 import { formatCompactNumber } from "@/shared/utils/format";
 import {
@@ -12,6 +16,7 @@ import {
   createOpenGraphImages,
   createPageTitle,
 } from "@/shared/seo/metadata";
+import { ComicDescription } from "./ComicDescription";
 
 type ComicDetailPageProps = {
   params: Promise<{
@@ -64,9 +69,19 @@ export async function generateMetadata({
   }
 }
 
+const statusLabels: Record<string, string> = {
+  CANCELLED: "Đã hủy",
+  COMPLETED: "Hoàn thành",
+  HIATUS: "Tạm dừng",
+  ONGOING: "Đang ra",
+};
+
 export default async function ComicDetailPage({ params }: ComicDetailPageProps) {
   const { slug } = await params;
-  const comic = await getComicDetail(slug);
+  const [comic, similarComicsResult] = await Promise.all([
+    getComicDetail(slug),
+    getSimilarComics(slug, 6).catch(() => ({ items: [], meta: { total: 0, limit: 6 } })),
+  ]);
   const sortedChapters = [...comic.chapters].sort(
     (left, right) => right.chapterNumber - left.chapterNumber,
   );
@@ -85,7 +100,7 @@ export default async function ComicDetailPage({ params }: ComicDetailPageProps) 
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted to-muted/50 text-sm text-muted-foreground">
-              Chua co anh
+              Chưa có ảnh
             </div>
           )}
         </div>
@@ -96,7 +111,7 @@ export default async function ComicDetailPage({ params }: ComicDetailPageProps) 
               {comic.name}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Tac gia: {comic.author?.name ?? "Dang cap nhat"}
+              Tác giả: {comic.author?.name ?? "Đang cập nhật"}
             </p>
           </div>
 
@@ -114,25 +129,25 @@ export default async function ComicDetailPage({ params }: ComicDetailPageProps) 
 
           <dl className="grid grid-cols-2 gap-3 text-sm md:grid-cols-5">
             <div className="rounded-lg border p-3">
-              <dt className="text-muted-foreground">Trang thai</dt>
-              <dd className="font-medium">{comic.status}</dd>
+              <dt className="text-muted-foreground">Trạng thái</dt>
+              <dd className="font-medium">{statusLabels[comic.status] ?? comic.status}</dd>
             </div>
             <div className="rounded-lg border p-3">
-              <dt className="text-muted-foreground">Tong luot xem</dt>
+              <dt className="text-muted-foreground">Tổng lượt xem</dt>
               <dd className="font-medium">{formatCompactNumber(comic.viewTotal)}</dd>
             </div>
             <div className="rounded-lg border p-3">
-              <dt className="text-muted-foreground">Chuong</dt>
+              <dt className="text-muted-foreground">Chương</dt>
               <dd className="font-medium">{comic.chapters.length}</dd>
             </div>
             <div className="rounded-lg border p-3">
-              <dt className="text-muted-foreground">Theo doi</dt>
+              <dt className="text-muted-foreground">Theo dõi</dt>
               <dd className="font-medium">
                 {formatCompactNumber(comic.followCount)}
               </dd>
             </div>
             <div className="rounded-lg border p-3">
-              <dt className="text-muted-foreground">Luot thich</dt>
+              <dt className="text-muted-foreground">Lượt thích</dt>
               <dd className="font-medium">
                 {formatCompactNumber(comic.likeCount)}
               </dd>
@@ -147,7 +162,7 @@ export default async function ComicDetailPage({ params }: ComicDetailPageProps) 
                   href={`/truyen/${comic.slug}/chapter/${firstChapter.chapterNumber}`}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                 >
-                  Doc tu dau
+                  Đọc từ đầu
                 </Link>
               ) : null}
               {latestChapter ? (
@@ -155,7 +170,7 @@ export default async function ComicDetailPage({ params }: ComicDetailPageProps) 
                   href={`/truyen/${comic.slug}/chapter/${latestChapter.chapterNumber}`}
                   className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                 >
-                  Doc moi nhat
+                  Đọc mới nhất
                 </Link>
               ) : null}
             </div>
@@ -170,23 +185,26 @@ export default async function ComicDetailPage({ params }: ComicDetailPageProps) 
           </div>
 
           <div className="rounded-lg bg-muted/30 p-4">
-            {comic.description ? (
-              <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
-                {comic.description}
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground">Chua co mo ta.</p>
-            )}
+            <ComicDescription description={comic.description} />
           </div>
         </div>
       </div>
 
       <section className="space-y-3">
-        <SectionHeader title="Danh sach chuong" />
+        <SectionHeader title="Danh sách chương" />
         <ChapterList chapters={sortedChapters} comicSlug={comic.slug} />
       </section>
 
       <CommentSection targetId={comic.id} targetType="comic" />
+
+      {/* Similar Comics */}
+      {similarComicsResult.items.length > 0 ? (
+        <RecommendationSection
+          title="Truyện tương tự"
+          description="Có thể bạn cũng sẽ thích những bộ truyện này."
+          items={similarComicsResult.items}
+        />
+      ) : null}
     </PageContainer>
   );
 }

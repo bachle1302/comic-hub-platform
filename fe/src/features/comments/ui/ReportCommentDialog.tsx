@@ -20,7 +20,7 @@ type ReportCommentDialogProps = {
 
 function getFriendlyErrorMessage(message: string): string {
   if (message.toLowerCase().includes("already reported")) {
-    return "Ban da bao cao binh luan nay roi.";
+    return "Bạn đã báo cáo bình luận này rồi.";
   }
 
   return message;
@@ -80,8 +80,8 @@ export function ReportCommentDialog({
       const result = await reportComment(commentId, input);
       setMessage(
         result.report.status === "PENDING"
-          ? "Da gui bao cao binh luan."
-          : "Bao cao da duoc ghi nhan.",
+          ? "Đã gửi báo cáo bình luận."
+          : "Báo cáo đã được ghi nhận.",
       );
       await onReported?.();
       handleClose();
@@ -89,7 +89,7 @@ export function ReportCommentDialog({
       setErrorMessage(
         error instanceof Error
           ? getFriendlyErrorMessage(error.message)
-          : "Bao cao binh luan that bai",
+          : "Báo cáo bình luận thất bại",
       );
     }
   }
@@ -101,7 +101,7 @@ export function ReportCommentDialog({
         className="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
         onClick={handleOpen}
       >
-        {trigger ?? "Bao cao"}
+        {trigger ?? "Báo cáo"}
       </button>
 
       {message ? <span className="text-xs text-muted-foreground">{message}</span> : null}
@@ -110,9 +110,9 @@ export function ReportCommentDialog({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-lg rounded-lg border bg-background p-5 shadow-lg">
             <div className="space-y-1">
-              <h2 className="text-lg font-semibold">Bao cao binh luan</h2>
+              <h2 className="text-lg font-semibold">Báo cáo bình luận</h2>
               <p className="text-sm text-muted-foreground">
-                Cho admin biet ly do binh luan nay can duoc xem xet.
+                Cho admin biết lý do bình luận này cần được xem xét.
               </p>
             </div>
 
@@ -121,11 +121,11 @@ export function ReportCommentDialog({
               className="mt-4 space-y-4"
             >
               <label className="block space-y-2 text-sm">
-                <span className="font-medium">Ly do</span>
+                <span className="font-medium">Lý do</span>
                 <textarea
                   rows={5}
                   className="min-h-28 w-full resize-y rounded-md border bg-background px-3 py-2 outline-none focus:border-primary"
-                  placeholder="Spam, noi dung khong phu hop..."
+                  placeholder="Spam, nội dung không phù hợp..."
                   {...register("reason")}
                 />
               </label>
@@ -142,10 +142,10 @@ export function ReportCommentDialog({
 
               <div className="flex flex-wrap justify-end gap-2">
                 <Button type="button" variant="outline" onClick={handleClose}>
-                  Huy
+                  Hủy
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Dang gui..." : "Gui bao cao"}
+                  {isSubmitting ? "Đang gửi..." : "Gửi báo cáo"}
                 </Button>
               </div>
             </form>

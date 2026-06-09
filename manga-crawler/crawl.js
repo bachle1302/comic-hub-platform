@@ -8,10 +8,10 @@ const prisma = new PrismaClient();
 
 const MAX_CHAPTERS_TO_DOWNLOAD = 7;
 
-const targetUrl = 'https://truyenggvn.com/truyen-tranh/cao-vo-mot-tay-nghien-nat-ba-ngan-dai-de-22841';
+const targetUrl = 'https://truyenggvn.com/truyen-tranh/trong-sinh-do-thi-tu-tien-5492';
 
 // Nếu muốn map vào truyện có sẵn trong DB thì sửa 2 dòng này
-const COMIC_SLUG_IN_DB = 'cao-vo-mot-tay-nghien-nat-ba-ngan-dai-de';
+const COMIC_SLUG_IN_DB = 'trong-sinh-do-thi-tu-tien';
 
 // Nếu chỉ muốn crawl 10 chương mới nhất thì để true
 const ONLY_LAST_CHAPTERS = true;

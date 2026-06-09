@@ -52,14 +52,14 @@ export default function ChangePasswordPage() {
       });
       setMessage(result.message);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Change failed");
+      setErrorMessage(error instanceof Error ? error.message : "Đổi mật khẩu thất bại");
     }
   }
 
   if (isAuthLoading || !isAuthenticated) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Checking login...</p>
+        <p className="text-sm text-muted-foreground">Đang kiểm tra đăng nhập...</p>
       </PageContainer>
     );
   }
@@ -70,10 +70,10 @@ export default function ChangePasswordPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="mx-auto max-w-md space-y-4 rounded-lg border bg-card p-6"
       >
-        <h1 className="text-2xl font-bold">Change password</h1>
+        <h1 className="text-2xl font-bold">Đổi mật khẩu</h1>
         <div className="space-y-2">
           <label htmlFor="currentPassword" className="text-sm font-medium">
-            Current password
+            Mật khẩu hiện tại
           </label>
           <input
             id="currentPassword"
@@ -89,7 +89,7 @@ export default function ChangePasswordPage() {
         </div>
         <div className="space-y-2">
           <label htmlFor="newPassword" className="text-sm font-medium">
-            New password
+            Mật khẩu mới
           </label>
           <input
             id="newPassword"
@@ -105,7 +105,7 @@ export default function ChangePasswordPage() {
         </div>
         <div className="space-y-2">
           <label htmlFor="confirmPassword" className="text-sm font-medium">
-            Confirm password
+            Xác nhận mật khẩu
           </label>
           <input
             id="confirmPassword"
@@ -124,7 +124,7 @@ export default function ChangePasswordPage() {
           <p className="text-sm text-destructive">{errorMessage}</p>
         ) : null}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Change password"}
+          {isSubmitting ? "Đang lưu..." : "Đổi mật khẩu"}
         </Button>
       </form>
     </PageContainer>

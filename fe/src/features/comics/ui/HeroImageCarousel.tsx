@@ -30,11 +30,29 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
     [comics],
   );
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const extendedSlides = useMemo(() => {
+    if (slides.length <= 1) return slides;
+    // Prepend last 2 slides, append first 2 slides
+    return [
+      ...slides.slice(-2),
+      ...slides,
+      ...slides.slice(0, 2),
+    ];
+  }, [slides]);
+
+  const [currentIndex, setCurrentIndex] = useState(slides.length > 1 ? 2 : 0);
+  const [disableTransition, setDisableTransition] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [width, setWidth] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Compute active original index (0 to N-1) from currentIndex
+  const activeIndex = useMemo(() => {
+    if (slides.length <= 1) return 0;
+    const originalIndex = (currentIndex - 2) % slides.length;
+    return originalIndex < 0 ? originalIndex + slides.length : originalIndex;
+  }, [currentIndex, slides.length]);
 
   // Track responsive screen size
   useEffect(() => {
@@ -60,16 +78,40 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
 
   // Auto slide every 5 seconds, pause on hover
   useEffect(() => {
-    if (slides.length <= 1 || isHovered) {
+    if (slides.length <= 1 || isHovered || disableTransition) {
       return undefined;
     }
 
     const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % slides.length);
+      setCurrentIndex((current) => current + 1);
     }, SLIDE_INTERVAL_MS);
 
     return () => window.clearInterval(timer);
-  }, [slides.length, isHovered]);
+  }, [slides.length, isHovered, disableTransition]);
+
+  // Handle instant jump when crossing boundaries to simulate infinite scroll
+  const handleTransitionEnd = () => {
+    if (slides.length <= 1) return;
+    if (currentIndex >= slides.length + 2) {
+      setDisableTransition(true);
+      setCurrentIndex(2);
+    } else if (currentIndex <= 1) {
+      setDisableTransition(true);
+      setCurrentIndex(slides.length + 1);
+    }
+  };
+
+  // Re-enable transition after the instant jump has completed rendering
+  useEffect(() => {
+    if (disableTransition) {
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setDisableTransition(false);
+        });
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [disableTransition]);
 
   if (slides.length === 0) {
     return (
@@ -80,18 +122,28 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
   }
 
   function goToPrevious() {
-    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
+    if (disableTransition) return;
+    setCurrentIndex((current) => current - 1);
   }
 
   function goToNext() {
-    setActiveIndex((current) => (current + 1) % slides.length);
+    if (disableTransition) return;
+    setCurrentIndex((current) => current + 1);
   }
 
-  const handleSlideClick = (e: React.MouseEvent, index: number) => {
-    if (index !== activeIndex) {
+  const handleSlideClick = (e: React.MouseEvent, indexInExtended: number) => {
+    const originalIndex = (indexInExtended - 2) % slides.length;
+    const normalizedIndex = originalIndex < 0 ? originalIndex + slides.length : originalIndex;
+    if (normalizedIndex !== activeIndex) {
       e.preventDefault();
-      setActiveIndex(index);
+      if (disableTransition) return;
+      setCurrentIndex(indexInExtended);
     }
+  };
+
+  const handleDotClick = (dotIndex: number) => {
+    if (disableTransition) return;
+    setCurrentIndex(dotIndex + 2);
   };
 
   // Calculations for sliding translate offset:
@@ -100,8 +152,8 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
   const slideWidth = isMobile ? width : width * 0.6;
   const gap = 16;
   const translateValue = isMobile
-    ? -activeIndex * (width + gap)
-    : width * 0.2 - activeIndex * (slideWidth + gap);
+    ? -currentIndex * (width + gap)
+    : width * 0.2 - currentIndex * (slideWidth + gap);
 
   return (
     <section
@@ -113,19 +165,23 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
     >
       {/* Outer track wrapper */}
       <div
-        className="flex h-[280px] transition-transform duration-700 ease-out sm:h-[360px] md:h-[460px] xl:h-[548px]"
+        className="flex h-[280px] sm:h-[360px] md:h-[460px] xl:h-[548px]"
+        onTransitionEnd={handleTransitionEnd}
         style={{
           transform: `translateX(${translateValue}px)`,
           gap: `${gap}px`,
+          transition: disableTransition ? "none" : "transform 700ms ease-out",
         }}
       >
-        {slides.map((comic, index) => {
-          const isActive = index === activeIndex;
+        {extendedSlides.map((comic, index) => {
+          const isActive = index === currentIndex;
+          const isActuallyActive = (index - 2) % slides.length === activeIndex || 
+            ((index - 2) % slides.length < 0 && (index - 2) % slides.length + slides.length === activeIndex);
           const tags = getCategoryTags(comic);
 
           return (
             <div
-              key={comic.id}
+              key={`${comic.id}-${index}`}
               style={{
                 width: isMobile ? "100%" : "60%",
                 flexShrink: 0,
@@ -149,7 +205,7 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
                       src={comic.thumbnail}
                       alt={comic.name}
                       fill
-                      priority={index === 0}
+                      priority={index === 2}
                       sizes={
                         isMobile
                           ? "100vw"
@@ -216,7 +272,7 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
             <button
               key={index}
               type="button"
-              onClick={() => setActiveIndex(index)}
+              onClick={() => handleDotClick(index)}
               className={`h-1.5 rounded-full transition-all duration-350 ${
                 index === activeIndex ? "w-6 bg-[#E53935]" : "w-1.5 bg-white/50 hover:bg-white/80"
               }`}

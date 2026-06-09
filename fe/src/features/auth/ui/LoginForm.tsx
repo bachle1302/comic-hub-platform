@@ -37,7 +37,7 @@ export function LoginForm() {
       router.refresh();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Dang nhap that bai",
+        error instanceof Error ? error.message : "Đăng nhập thất bại",
       );
     }
   }
@@ -48,16 +48,16 @@ export function LoginForm() {
       className="mx-auto w-full max-w-md space-y-5 rounded-lg border bg-card p-6 shadow-sm"
     >
       <div>
-        <h1 className="text-2xl font-bold">Dang nhap</h1>
+        <h1 className="text-2xl font-bold">Đăng nhập</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Dung tai khoan cua ban de tiep tuc.
+          Sử dụng tài khoản của bạn để tiếp tục.
         </p>
       </div>
 
       <GoogleLoginButton />
 
       <div className="text-center text-xs text-muted-foreground">
-        or login with email
+        Hoặc đăng nhập bằng email
       </div>
 
       <div className="space-y-2">
@@ -78,7 +78,7 @@ export function LoginForm() {
 
       <div className="space-y-2">
         <label htmlFor="password" className="text-sm font-medium">
-          Mat khau
+          Mật khẩu
         </label>
         <input
           id="password"
@@ -97,26 +97,26 @@ export function LoginForm() {
           <p>{errorMessage}</p>
           {errorMessage.toLowerCase().includes("verify") ? (
             <Link href="/resend-verification" className="mt-2 inline-block underline">
-              Resend verification email
+              Gửi lại email xác thực
             </Link>
           ) : null}
         </div>
       ) : null}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Dang dang nhap..." : "Dang nhap"}
+        {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         <Link href="/forgot-password" className="font-medium text-primary">
-          Forgot password?
+          Quên mật khẩu?
         </Link>
       </p>
 
       <p className="text-center text-sm text-muted-foreground">
-        Chua co tai khoan?{" "}
+        Chưa có tài khoản?{" "}
         <Link href="/register" className="font-medium text-primary">
-          Dang ky
+          Đăng ký
         </Link>
       </p>
     </form>

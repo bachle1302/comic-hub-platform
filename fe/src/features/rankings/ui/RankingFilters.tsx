@@ -10,17 +10,17 @@ type RankingFiltersProps = {
 
 const rankingTypeOptions: Array<{ label: string; value: RankingType }> = [
   { label: "Hot", value: "hot" },
-  { label: "Luot xem", value: "views" },
-  { label: "Luot thich", value: "likes" },
-  { label: "Theo doi", value: "follows" },
-  { label: "Moi cap nhat", value: "latest" },
+  { label: "Lượt xem", value: "views" },
+  { label: "Lượt thích", value: "likes" },
+  { label: "Theo dõi", value: "follows" },
+  { label: "Mới cập nhật", value: "latest" },
 ];
 
 const rankingPeriodOptions: Array<{ label: string; value: RankingPeriod }> = [
-  { label: "Tat ca", value: "all" },
-  { label: "Ngay", value: "day" },
-  { label: "Tuan", value: "week" },
-  { label: "Thang", value: "month" },
+  { label: "Tất cả", value: "all" },
+  { label: "Ngày", value: "day" },
+  { label: "Tuần", value: "week" },
+  { label: "Tháng", value: "month" },
 ];
 
 export function RankingFilters({ period, type }: RankingFiltersProps) {
@@ -41,7 +41,7 @@ export function RankingFilters({ period, type }: RankingFiltersProps) {
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
       <div className="space-y-2">
-        <p className="text-sm font-medium">Sap xep</p>
+        <p className="text-sm font-medium">Sắp xếp</p>
         <div className="flex flex-wrap gap-2">
           {rankingTypeOptions.map((option) => (
             <button
@@ -61,7 +61,7 @@ export function RankingFilters({ period, type }: RankingFiltersProps) {
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">Thoi gian</p>
+        <p className="text-sm font-medium">Thời gian</p>
         <div className="flex flex-wrap gap-2">
           {rankingPeriodOptions.map((option) => (
             <button

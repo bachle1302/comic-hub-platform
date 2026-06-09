@@ -37,9 +37,9 @@ export function CoinPackageCard({
         <div className="rounded-md bg-muted p-3">
           <p className="text-2xl font-bold">{totalCoin} coin</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Goc {coinPackage.coin} coin
+            Gốc {coinPackage.coin} coin
             {coinPackage.bonusCoin > 0
-              ? ` + thuong ${coinPackage.bonusCoin} coin`
+              ? ` + thưởng ${coinPackage.bonusCoin} coin`
               : ""}
           </p>
         </div>
@@ -51,7 +51,7 @@ export function CoinPackageCard({
         disabled={isSubmitting}
         onClick={() => void onSelect(coinPackage.id)}
       >
-        {isSubmitting ? "Dang tao don..." : "Nap coin"}
+        {isSubmitting ? "Đang tạo đơn..." : "Nạp coin"}
       </Button>
     </article>
   );

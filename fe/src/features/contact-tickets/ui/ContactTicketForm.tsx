@@ -13,11 +13,11 @@ import {
 import { createContactTicket } from "../api/contact-tickets.api";
 
 const ticketTypeOptions: Array<{ label: string; value: ContactTicketType }> = [
-  { value: "TECHNICAL", label: "Bao loi ky thuat" },
-  { value: "PAYMENT", label: "Khieu nai thanh toan" },
-  { value: "COPYRIGHT", label: "Ban quyen / noi dung" },
-  { value: "ACCOUNT", label: "Tai khoan" },
-  { value: "OTHER", label: "Khac" },
+  { value: "TECHNICAL", label: "Báo lỗi kỹ thuật" },
+  { value: "PAYMENT", label: "Khiếu nại thanh toán" },
+  { value: "COPYRIGHT", label: "Bản quyền / nội dung" },
+  { value: "ACCOUNT", label: "Tài khoản" },
+  { value: "OTHER", label: "Khác" },
 ];
 
 function optionalText(value?: string): string | undefined {
@@ -74,7 +74,7 @@ export function ContactTicketForm() {
         orderCode: optionalText(input.orderCode),
       });
       setSuccessMessage(
-        "Yeu cau cua ban da duoc gui. Chung toi se phan hoi som nhat co the.",
+        "Yêu cầu của bạn đã được gửi. Chúng tôi sẽ phản hồi sớm nhất có thể.",
       );
       reset({
         type: "TECHNICAL",
@@ -87,7 +87,7 @@ export function ContactTicketForm() {
       });
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Gui yeu cau ho tro that bai",
+        error instanceof Error ? error.message : "Gửi yêu cầu hỗ trợ thất bại",
       );
     }
   }
@@ -98,16 +98,16 @@ export function ContactTicketForm() {
       className="space-y-4 rounded-lg border bg-card p-4"
     >
       <div>
-        <h2 className="text-xl font-semibold">Gui yeu cau ho tro</h2>
+        <h2 className="text-xl font-semibold">Gửi yêu cầu hỗ trợ</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Dien thong tin ben duoi de gui bao loi, khieu nai thanh toan hoac bao
-          cao noi dung.
+          Điền thông tin bên dưới để gửi báo lỗi, khiếu nại thanh toán hoặc báo
+          cáo nội dung.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Loai yeu cau</span>
+          <span className="font-medium">Loại yêu cầu</span>
           <select
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
             {...register("type")}
@@ -124,10 +124,10 @@ export function ContactTicketForm() {
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Ho ten</span>
+          <span className="font-medium">Họ tên</span>
           <input
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-            placeholder="Ten cua ban"
+            placeholder="Tên của bạn"
             {...register("name")}
           />
           {errors.name ? (
@@ -149,10 +149,10 @@ export function ContactTicketForm() {
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Ma don hang</span>
+          <span className="font-medium">Mã đơn hàng</span>
           <input
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-            placeholder="Neu lien quan thanh toan"
+            placeholder="Nếu liên quan thanh toán"
             {...register("orderCode")}
           />
           {errors.orderCode ? (
@@ -164,10 +164,10 @@ export function ContactTicketForm() {
       </div>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Tieu de</span>
+        <span className="font-medium">Tiêu đề</span>
         <input
           className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-          placeholder="Tom tat van de"
+          placeholder="Tóm tắt vấn đề"
           {...register("subject")}
         />
         {errors.subject ? (
@@ -176,10 +176,10 @@ export function ContactTicketForm() {
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Link lien quan</span>
+        <span className="font-medium">Link liên quan</span>
         <input
           className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-          placeholder="/truyen/one-piece-demo/chapter/1 hoac URL lien quan"
+          placeholder="/truyen/one-piece-demo/chapter/1 hoặc URL liên quan"
           {...register("relatedUrl")}
         />
         {errors.relatedUrl ? (
@@ -190,11 +190,11 @@ export function ContactTicketForm() {
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Noi dung</span>
+        <span className="font-medium">Nội dung</span>
         <textarea
           rows={6}
           className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:border-primary"
-          placeholder="Mo ta van de, thoi diem xay ra, trinh duyet/thiet bi va thong tin can thiet."
+          placeholder="Mô tả vấn đề, thời điểm xảy ra, trình duyệt/thiết bị và thông tin cần thiết."
           {...register("message")}
         />
         {errors.message ? (
@@ -203,8 +203,8 @@ export function ContactTicketForm() {
       </label>
 
       <div className="rounded-md bg-muted/60 p-3 text-sm text-muted-foreground">
-        <p>Khieu nai thanh toan: nhap ma don hang neu co.</p>
-        <p>Bao cao noi dung: nhap link truyen, chapter hoac comment lien quan.</p>
+        <p>Khiếu nại thanh toán: nhập mã đơn hàng nếu có.</p>
+        <p>Báo cáo nội dung: nhập link truyện, chapter hoặc comment liên quan.</p>
       </div>
 
       {successMessage ? (
@@ -219,7 +219,7 @@ export function ContactTicketForm() {
       ) : null}
 
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Dang gui..." : "Gui yeu cau"}
+        {isSubmitting ? "Đang gửi..." : "Gửi yêu cầu"}
       </Button>
     </form>
   );

@@ -40,7 +40,7 @@ export default function NotificationsPage() {
       setData(result);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc thong bao",
+        error instanceof Error ? error.message : "Không tải được thông báo",
       );
     } finally {
       setIsLoading(false);
@@ -79,7 +79,7 @@ export default function NotificationsPage() {
   }
 
   async function handleDelete(id: number) {
-    if (!window.confirm("Xoa thong bao nay?")) {
+    if (!window.confirm("Xóa thông báo này?")) {
       return;
     }
 
@@ -100,7 +100,7 @@ export default function NotificationsPage() {
   if (isAuthLoading || !isAuthenticated) {
     return (
       <PageContainer>
-        <p className="text-sm text-muted-foreground">Dang kiem tra dang nhap...</p>
+        <p className="text-sm text-muted-foreground">Đang kiểm tra đăng nhập...</p>
       </PageContainer>
     );
   }
@@ -108,11 +108,11 @@ export default function NotificationsPage() {
   return (
     <PageContainer>
       <SectionHeader
-        title="Thong bao"
-        description="Theo doi cac cap nhat moi tu nhung truyen ban dang theo doi."
+        title="Thông báo"
+        description="Theo dõi các cập nhật mới từ những truyện bạn đang theo dõi."
         action={
           <Button type="button" onClick={() => void handleMarkAllRead()}>
-            Danh dau tat ca da doc
+            Đánh dấu tất cả đã đọc
           </Button>
         }
       />
@@ -123,19 +123,19 @@ export default function NotificationsPage() {
           variant={!unreadOnly ? "default" : "outline"}
           onClick={() => handleFilterChange(false)}
         >
-          Tat ca
+          Tất cả
         </Button>
         <Button
           type="button"
           variant={unreadOnly ? "default" : "outline"}
           onClick={() => handleFilterChange(true)}
         >
-          Chua doc
+          Chưa đọc
         </Button>
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Dang tai thong bao...</p>
+        <p className="text-sm text-muted-foreground">Đang tải thông báo...</p>
       ) : errorMessage ? (
         <p className="text-sm text-destructive">{errorMessage}</p>
       ) : (
@@ -154,7 +154,7 @@ export default function NotificationsPage() {
                 disabled={!data.meta.hasPreviousPage}
                 onClick={() => setPage((current) => Math.max(current - 1, 1))}
               >
-                Trang truoc
+                Trang trước
               </Button>
               <span className="text-sm text-muted-foreground">
                 Trang {data.meta.page}/{Math.max(data.meta.totalPages, 1)}

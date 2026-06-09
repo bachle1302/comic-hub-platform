@@ -126,5 +126,10 @@
   }
   html {
     @apply font-sans;
+    background-color: #E53935;
+  }
+  ::selection {
+    background-color: #E53935;
+    color: #ffffff;
   }
 }

@@ -32,7 +32,7 @@ export default function ResendVerificationPage() {
       const result = await resendVerification(input);
       setMessage(result.message);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Request failed");
+      setErrorMessage(error instanceof Error ? error.message : "Yêu cầu thất bại");
     }
   }
 
@@ -42,7 +42,7 @@ export default function ResendVerificationPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="mx-auto max-w-md space-y-4 rounded-lg border bg-card p-6"
       >
-        <h1 className="text-2xl font-bold">Resend verification</h1>
+        <h1 className="text-2xl font-bold">Gửi lại email xác thực</h1>
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium">
             Email
@@ -62,10 +62,10 @@ export default function ResendVerificationPage() {
           <p className="text-sm text-destructive">{errorMessage}</p>
         ) : null}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Sending..." : "Send verification email"}
+          {isSubmitting ? "Đang gửi..." : "Gửi email xác thực"}
         </Button>
         <Link href="/login" className="text-sm font-medium text-primary">
-          Back to login
+          Quay lại đăng nhập
         </Link>
       </form>
     </PageContainer>

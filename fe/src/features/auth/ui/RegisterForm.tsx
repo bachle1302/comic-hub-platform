@@ -33,11 +33,11 @@ export function RegisterForm() {
       const result = await registerAccount(input);
       setSuccessMessage(
         result.message ??
-          "Register successful. Please check your email to verify your account.",
+          "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
       );
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Dang ky that bai",
+        error instanceof Error ? error.message : "Đăng ký thất bại",
       );
     }
   }
@@ -48,15 +48,15 @@ export function RegisterForm() {
       className="mx-auto w-full max-w-md space-y-5 rounded-lg border bg-card p-6 shadow-sm"
     >
       <div>
-        <h1 className="text-2xl font-bold">Dang ky</h1>
+        <h1 className="text-2xl font-bold">Đăng ký</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tao tai khoan moi de theo doi truyen.
+          Tạo tài khoản mới để theo dõi truyện.
         </p>
       </div>
 
       <div className="space-y-2">
         <label htmlFor="name" className="text-sm font-medium">
-          Ten
+          Tên
         </label>
         <input
           id="name"
@@ -87,7 +87,7 @@ export function RegisterForm() {
 
       <div className="space-y-2">
         <label htmlFor="password" className="text-sm font-medium">
-          Mat khau
+          Mật khẩu
         </label>
         <input
           id="password"
@@ -106,10 +106,10 @@ export function RegisterForm() {
           <p>{successMessage}</p>
           <div className="flex flex-wrap gap-3">
             <Link href="/login" className="font-medium underline">
-              Login
+              Đăng nhập
             </Link>
             <Link href="/resend-verification" className="font-medium underline">
-              Resend verification
+              Gửi lại email xác thực
             </Link>
           </div>
         </div>
@@ -121,13 +121,13 @@ export function RegisterForm() {
       ) : null}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Dang dang ky..." : "Dang ky"}
+        {isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Da co tai khoan?{" "}
+        Đã có tài khoản?{" "}
         <Link href="/login" className="font-medium text-primary">
-          Dang nhap
+          Đăng nhập
         </Link>
       </p>
     </form>

@@ -12,8 +12,8 @@ export function ChapterList({ chapters, comicSlug }: ChapterListProps) {
   if (chapters.length === 0) {
     return (
       <EmptyState
-        title="Truyen chua co chuong"
-        description="Theo doi truyen de quay lai khi co chapter moi."
+        title="Truyện chưa có chương"
+        description="Theo dõi truyện để quay lại khi có chapter mới."
       />
     );
   }
@@ -50,7 +50,7 @@ export function ChapterList({ chapters, comicSlug }: ChapterListProps) {
             <span className="flex shrink-0 items-center gap-2">
               {index === 0 ? (
                 <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-                  Moi nhat
+                  Mới nhất
                 </span>
               ) : null}
               <span
@@ -60,7 +60,7 @@ export function ChapterList({ chapters, comicSlug }: ChapterListProps) {
                     : "rounded-full border border-green-600/40 bg-green-600/10 px-2 py-0.5 text-xs text-green-700 dark:text-green-300"
                 }
               >
-                {chapter.price > 0 ? `${chapter.price} coin` : "Mien phi"}
+                {chapter.price > 0 ? `${chapter.price} coin` : "Miễn phí"}
               </span>
             </span>
           </Link>

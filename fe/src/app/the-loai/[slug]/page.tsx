@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ComicGrid, type ComicStatus } from "@/features/comics";
 import {
   getCategoryComics,
+  getCategories,
   type CategoryComicsQuery,
 } from "@/features/categories";
 import type { ComicSort } from "@/features/search";
@@ -34,10 +35,21 @@ export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
+  let categoryName = slug;
+
+  try {
+    const categoriesData = await getCategories();
+    const category = categoriesData.categories.find((c) => c.slug === slug);
+    if (category) {
+      categoryName = category.name;
+    }
+  } catch (error) {
+    console.error("Failed to load category metadata:", error);
+  }
 
   return {
-    title: `Thể loại ${slug} - Đọc truyện tranh online`,
-    description: `Danh sách truyện thuộc thể loại ${slug}.`,
+    title: `Thể loại ${categoryName} - Đọc truyện tranh online`,
+    description: `Danh sách truyện thuộc thể loại ${categoryName}.`,
     alternates: {
       canonical: `/the-loai/${slug}`,
     },
@@ -55,13 +67,20 @@ export default async function CategoryPage({
     page: toNumber(firstParam(rawSearchParams.page)),
     limit: toNumber(firstParam(rawSearchParams.limit)),
   };
-  const result = await getCategoryComics(slug, query);
+
+  const [result, categoriesData] = await Promise.all([
+    getCategoryComics(slug, query),
+    getCategories().catch(() => ({ categories: [] })),
+  ]);
+
+  const category = categoriesData.categories.find((c) => c.slug === slug);
+  const categoryName = category ? category.name : slug;
 
   return (
     <PageContainer>
       <SectionHeader
-        title={`The loai ${slug}`}
-        description={`${result.meta.total.toLocaleString("vi-VN")} truyen`}
+        title={`Thể loại ${categoryName}`}
+        description={`${result.meta.total.toLocaleString("vi-VN")} truyện`}
       />
       <ComicGrid comics={result.items} />
     </PageContainer>

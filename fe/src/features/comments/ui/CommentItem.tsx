@@ -57,13 +57,13 @@ export function CommentItem({
       await onUpdated();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Cap nhat binh luan that bai",
+        error instanceof Error ? error.message : "Cập nhật bình luận thất bại",
       );
     }
   }
 
   async function handleDelete() {
-    if (!window.confirm("Xoa binh luan nay?")) {
+    if (!window.confirm("Xóa bình luận này?")) {
       return;
     }
 
@@ -74,7 +74,7 @@ export function CommentItem({
       await onDeleted();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Xoa binh luan that bai",
+        error instanceof Error ? error.message : "Xóa bình luận thất bại",
       );
     }
   }
@@ -91,7 +91,7 @@ export function CommentItem({
       await onReplyCreated?.();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Tra loi binh luan that bai",
+        error instanceof Error ? error.message : "Trả lời bình luận thất bại",
       );
     }
   }
@@ -120,7 +120,7 @@ export function CommentItem({
 
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-medium">{comment.user?.name ?? "Nguoi dung"}</h3>
+            <h3 className="font-medium">{comment.user?.name ?? "Người dùng"}</h3>
             <span className="text-xs text-muted-foreground">
               {new Date(comment.createdAt).toLocaleString("vi-VN", {
                 dateStyle: "short",
@@ -131,12 +131,12 @@ export function CommentItem({
 
           {isDeleted ? (
             <p className="text-sm italic leading-6 text-muted-foreground">
-              Binh luan da bi xoa
+              Bình luận đã bị xóa
             </p>
           ) : isEditing ? (
             <CommentForm
               initialContent={comment.content}
-              submitLabel="Luu"
+              submitLabel="Lưu"
               onCancel={() => setIsEditing(false)}
               onSubmit={handleUpdate}
             />
@@ -165,7 +165,7 @@ export function CommentItem({
                   variant="ghost"
                   onClick={() => setIsReplying((current) => !current)}
                 >
-                  Tra loi
+                  Trả lời
                 </Button>
               ) : null}
               {canReport ? (
@@ -178,7 +178,7 @@ export function CommentItem({
                   variant="outline"
                   onClick={() => setIsEditing(true)}
                 >
-                  Sua
+                  Sửa
                 </Button>
               ) : null}
               {canDelete ? (
@@ -188,7 +188,7 @@ export function CommentItem({
                   variant="outline"
                   onClick={() => void handleDelete()}
                 >
-                  Xoa
+                  Xóa
                 </Button>
               ) : null}
             </div>
@@ -197,7 +197,7 @@ export function CommentItem({
           {isReplying ? (
             <div className="rounded-md bg-muted/40 p-3">
               <CommentForm
-                submitLabel="Gui tra loi"
+                submitLabel="Gửi trả lời"
                 onCancel={() => setIsReplying(false)}
                 onSubmit={handleReply}
               />

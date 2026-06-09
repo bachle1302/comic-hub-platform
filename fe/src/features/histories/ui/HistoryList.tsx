@@ -12,7 +12,7 @@ export function HistoryList({ histories, onDelete }: HistoryListProps) {
   if (histories.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-        Ban chua co lich su doc.
+        Bạn chưa có lịch sử đọc.
       </div>
     );
   }
@@ -47,11 +47,11 @@ export function HistoryList({ histories, onDelete }: HistoryListProps) {
               Chapter {history.chapter.chapterNumber}: {history.chapter.name}
             </p>
             <p className="text-sm">
-              Tien do {Math.round(history.progress * 100)}% · Anh{" "}
+              Tiến độ {Math.round(history.progress * 100)}% · Ảnh{" "}
               {history.imageIndex + 1}
             </p>
             <p className="text-xs text-muted-foreground">
-              Cap nhat{" "}
+              Cập nhật{" "}
               {new Date(history.updatedAt).toLocaleString("vi-VN", {
                 dateStyle: "short",
                 timeStyle: "short",
@@ -63,7 +63,7 @@ export function HistoryList({ histories, onDelete }: HistoryListProps) {
               <Link
                 href={`/truyen/${history.comic.slug}/chapter/${history.chapter.chapterNumber}?continue=1`}
               >
-                Doc tiep
+                Đọc tiếp
               </Link>
             </Button>
             {onDelete ? (
@@ -73,7 +73,7 @@ export function HistoryList({ histories, onDelete }: HistoryListProps) {
                 variant="outline"
                 onClick={() => void onDelete(history.id)}
               >
-                Xoa
+                Xóa
               </Button>
             ) : null}
           </div>

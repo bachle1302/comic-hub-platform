@@ -20,9 +20,9 @@ const DEFAULT_PERIOD: RankingPeriod = "all";
 const DEFAULT_LIMIT = 20;
 
 export const metadata: Metadata = {
-  title: "Bang xep hang truyen - Doc truyen tranh online",
+  title: "Bảng xếp hạng truyện - Đọc truyện tranh online",
   description:
-    "Xem truyen hot, truyen nhieu luot xem, nhieu luot thich va duoc theo doi nhieu nhat.",
+    "Xem truyện hot, truyện nhiều lượt xem, nhiều lượt thích và được theo dõi nhiều nhất.",
 };
 
 export const revalidate = 60;
@@ -81,8 +81,8 @@ export default async function RankingPage({ searchParams }: RankingPageProps) {
   return (
     <PageContainer>
       <SectionHeader
-        title="Bang xep hang truyen"
-        description="Theo doi nhung truyen dang noi bat theo luot xem, luot thich, theo doi va cap nhat moi."
+        title="Bảng xếp hạng truyện"
+        description="Theo dõi những truyện đang nổi bật theo lượt xem, lượt thích, theo dõi và cập nhật mới."
       />
 
       <RankingFilters period={period} type={type} />
@@ -95,7 +95,7 @@ export default async function RankingPage({ searchParams }: RankingPageProps) {
       />
 
       <p className="rounded-lg border bg-muted/20 p-3 text-sm text-muted-foreground">
-        Du lieu co the duoc cache trong vai phut.
+        Dữ liệu có thể được cache trong vài phút.
       </p>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/20 p-3 text-sm">
@@ -112,11 +112,11 @@ export default async function RankingPage({ searchParams }: RankingPageProps) {
               })}
               className="rounded-md border px-3 py-1.5 hover:bg-muted"
             >
-              Trang truoc
+              Trang trước
             </Link>
           ) : (
             <span className="rounded-md border px-3 py-1.5 text-muted-foreground">
-              Trang truoc
+              Trang trước
             </span>
           )}
           {result.meta.hasNextPage ? (

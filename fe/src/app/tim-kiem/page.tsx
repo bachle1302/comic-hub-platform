@@ -48,11 +48,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <PageContainer>
       <SectionHeader
-        title="Tim kiem"
+        title="Tìm kiếm"
         description={
           keyword
-            ? `${result.meta.total.toLocaleString("vi-VN")} ket qua cho "${keyword}"`
-            : `${result.meta.total.toLocaleString("vi-VN")} ket qua`
+            ? `${result.meta.total.toLocaleString("vi-VN")} kết quả cho "${keyword}"`
+            : `${result.meta.total.toLocaleString("vi-VN")} kết quả`
         }
       />
       <ComicGrid comics={result.items} />

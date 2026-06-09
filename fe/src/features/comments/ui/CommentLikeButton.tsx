@@ -65,7 +65,7 @@ export function CommentLikeButton({
         }
 
         setErrorMessage(
-          error instanceof Error ? error.message : "Khong tai duoc trang thai thich",
+          error instanceof Error ? error.message : "Không tải được trạng thái thích",
         );
       } finally {
         if (isMounted) {
@@ -104,7 +104,7 @@ export function CommentLikeButton({
         likeCount: status.likeCount,
       });
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Thao tac that bai");
+      setErrorMessage(error instanceof Error ? error.message : "Thao tác thất bại");
     } finally {
       setIsMutating(false);
     }
@@ -120,7 +120,7 @@ export function CommentLikeButton({
         disabled={isAuthLoading || isLoadingStatus || isMutating}
         onClick={() => void handleToggleLike()}
       >
-        <span>{isAuthenticated && displayedIsLiked ? "Da thich" : "Thich"}</span>
+        <span>{isAuthenticated && displayedIsLiked ? "Đã thích" : "Thích"}</span>
         <span>{displayedLikeCount}</span>
       </Button>
       {errorMessage ? (
