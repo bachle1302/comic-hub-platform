@@ -1,10 +1,15 @@
 import Link from "next/link";
-import { Eye, TrendingUp } from "lucide-react";
+import { Heart } from "lucide-react";
 import { formatCompactNumber } from "@/shared/utils/format";
-import type { Comic } from "../api/comics.schema";
 
 type PopularComicSidebarProps = {
-  comics: Comic[];
+  comics: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    likeCount?: number;
+    viewTotal?: number;
+  }>;
 };
 
 function getRankClassName(index: number): string {
@@ -21,14 +26,14 @@ export function PopularComicSidebar({ comics }: PopularComicSidebarProps) {
     <aside className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-4 flex items-center gap-2">
         <span className="grid size-9 place-items-center rounded-full bg-primary/15 text-primary">
-          <TrendingUp className="size-4" />
+          <Heart className="size-4 fill-primary text-primary" />
         </span>
         <div>
           <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">
-            Truyện nổi bật
+            Truyện được yêu thích
           </h2>
           <p className="text-xs text-muted-foreground">
-            Xếp theo lượt đọc và độ hot
+            Xếp theo lượt yêu thích từ độc giả
           </p>
         </div>
       </div>
@@ -56,8 +61,8 @@ export function PopularComicSidebar({ comics }: PopularComicSidebarProps) {
                     {comic.name}
                   </span>
                   <span className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                    <Eye className="size-3.5 text-muted-foreground" />
-                    {formatCompactNumber(comic.viewTotal)} lượt xem
+                    <Heart className="size-3.5 text-red-500 fill-red-500" />
+                    {formatCompactNumber(comic.likeCount ?? 0)} lượt thích
                   </span>
                 </span>
               </Link>
@@ -68,3 +73,4 @@ export function PopularComicSidebar({ comics }: PopularComicSidebarProps) {
     </aside>
   );
 }
+

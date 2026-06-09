@@ -67,7 +67,7 @@ export function ReaderImageList({
 
   return (
     <>
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-1 md:gap-2">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center">
         {sortedImages.map((image, index) => (
           <img
             key={`${image.id ?? image.order}-${image.url}`}
@@ -78,7 +78,7 @@ export function ReaderImageList({
             height={image.height ?? undefined}
             loading="lazy"
             onError={onImageError}
-            className="w-full max-w-[960px] object-contain"
+            className="block w-full max-w-[960px] object-contain"
             style={{
               height: "auto",
               maxWidth: image.width ? `${image.width}px` : undefined,
