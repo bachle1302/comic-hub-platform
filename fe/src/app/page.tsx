@@ -12,6 +12,7 @@ import {
   getLatestComics,
   type Comic,
 } from "@/features/comics";
+import { getComicRankings } from "@/features/rankings";
 import { SectionTitle } from "@/shared/ui";
 
 export const metadata: Metadata = {
@@ -42,12 +43,16 @@ function uniqueComics(comics: Comic[]): Comic[] {
 }
 
 export default async function HomePage() {
-  const [latestComics, hotComics, allComics, categoriesData] =
+  const [latestComics, hotComics, allComics, categoriesData, likedComicsData] =
     await Promise.all([
       safeLoad(getLatestComics(), []),
       safeLoad(getHotComics(), []),
       safeLoad(getAllComics(), []),
       safeLoad(getCategories(), { categories: [] }),
+      safeLoad(getComicRankings({ type: "likes", limit: 6 }), {
+        items: [],
+        meta: { page: 1, limit: 6, total: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+      }),
     ]);
 
   const heroComics = uniqueComics([...hotComics, ...latestComics]).slice(0, 8);
@@ -128,7 +133,7 @@ export default async function HomePage() {
 
           {/* Sidebar Area */}
           <div className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-            <PopularComicSidebar comics={hotComics} />
+            <PopularComicSidebar comics={likedComicsData.items} />
             <CategoryCloud categories={categoriesData.categories} />
           </div>
         </div>

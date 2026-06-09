@@ -1,190 +1,398 @@
+require('dotenv').config();
+
 const puppeteer = require('puppeteer');
-const fs = require('fs');
-const path = require('path');
+const { v2: cloudinary } = require('cloudinary');
+const { PrismaClient } = require('@prisma/client');
 
-// Cấu hình số lượng chapter muốn tải (Để Infinity nếu muốn tải HẾT SẠCH truyện tự động)
-const MAX_CHAPTERS_TO_DOWNLOAD = 2; 
+const prisma = new PrismaClient();
 
-// Tách slug truyện thông minh từ URL trang chi tiết
-function parseMangaSlug(url) {
-    try {
-        const cleanUrl = url.replace(/\/$/, "");
-        const parts = cleanUrl.split('/');
-        const lastPart = parts[parts.length - 1].replace('.html', '');
-        
-        if (lastPart.includes('-chap-')) {
-            const index = lastPart.indexOf('-chap-');
-            return lastPart.substring(0, index);
-        }
-        return lastPart;
-    } catch (e) {
-        return 'unknown-comic';
-    }
-}
+const MAX_CHAPTERS_TO_DOWNLOAD = 7;
 
-async function autoCrawlAndDownload(mangaDetailUrl) {
-    console.log(`🚀 KHỞI ĐỘNG CÔNG NGHỆ CHẶN BẮT ĐƯỜNG TRUYỀN MẠNG (NETWORK INTERCEPTION)...`);
-    
-    const browser = await puppeteer.launch({ 
-        headless: false, // Để false để quan sát quá trình chạy và giải mã của Chrome
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1400,900']
+const targetUrl = 'https://truyenggvn.com/truyen-tranh/cao-vo-mot-tay-nghien-nat-ba-ngan-dai-de-22841';
+
+// Nếu muốn map vào truyện có sẵn trong DB thì sửa 2 dòng này
+const COMIC_SLUG_IN_DB = 'cao-vo-mot-tay-nghien-nat-ba-ngan-dai-de';
+
+// Nếu chỉ muốn crawl 10 chương mới nhất thì để true
+const ONLY_LAST_CHAPTERS = true;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const cleanDirName = (name) =>
+  name
+    .replace(/[^a-zA-Z0-9 \u00C0-\u024F\u1E00-\u1EFF.-]/g, '')
+    .trim();
+
+const normalizeChapterNumber = (chapterName) => {
+  const match = chapterName.match(/(?:chap|chapter|chương)\s*([\d.]+)/i);
+  if (match) return match[1];
+
+  const numberOnly = chapterName.match(/([\d.]+)/);
+  if (numberOnly) return numberOnly[1];
+
+  return cleanDirName(chapterName).replace(/\s+/g, '-').toLowerCase();
+};
+
+// Trích xuất thư mục gốc để gom nhóm ảnh
+const getDirName = (urlStr) => {
+  try {
+    const urlObj = new URL(urlStr.startsWith('//') ? 'https:' + urlStr : urlStr);
+    const pathname = urlObj.pathname;
+    return pathname.substring(0, pathname.lastIndexOf('/'));
+  } catch {
+    return urlStr;
+  }
+};
+
+const uploadBufferToCloudinary = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: 'image',
+        folder: options.folder,
+        public_id: options.publicId,
+        overwrite: true,
+        invalidate: true,
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        return resolve(result);
+      },
+    );
+
+    stream.end(buffer);
+  });
+};
+
+const findOrCreateChapter = async ({ comicId, chapterName, chapterNumber }) => {
+  const parsedNum = parseFloat(chapterNumber);
+  return prisma.chapter.upsert({
+    where: {
+      comicId_chapterNumber: {
+        comicId,
+        chapterNumber: parsedNum,
+      },
+    },
+    update: {
+      name: chapterName,
+    },
+    create: {
+      comicId,
+      chapterNumber: parsedNum,
+      name: chapterName,
+    },
+  });
+};
+
+const saveImageToDb = async ({ chapterId, order, url, key, width, height, size, mimeType }) => {
+  return prisma.chapterImage.upsert({
+    where: {
+      chapterId_order: {
+        chapterId,
+        order,
+      },
+    },
+    update: {
+      url,
+      key,
+      width,
+      height,
+      size,
+      mimeType,
+    },
+    create: {
+      chapterId,
+      order,
+      url,
+      key,
+      width,
+      height,
+      size,
+      mimeType,
+    },
+  });
+};
+
+async function autoCrawlUploadAndSave(mangaUrl) {
+  console.log(`🚀 Bắt đầu cào dữ liệu: ${mangaUrl}`);
+
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    throw new Error('Thiếu CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET trong .env');
+  }
+
+  const comic = await prisma.comic.findUnique({
+    where: {
+      slug: COMIC_SLUG_IN_DB,
+    },
+  });
+
+  if (!comic) {
+    throw new Error(`Không tìm thấy comic trong DB với slug: ${COMIC_SLUG_IN_DB}`);
+  }
+
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  const page = await browser.newPage();
+
+  await page.setViewport({ width: 1280, height: 900 });
+  await page.setUserAgent(
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  );
+  await page.setCacheEnabled(false);
+
+  try {
+    await page.goto(mangaUrl, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
     });
-    
-    const page = await browser.newPage();
-    // Kích hoạt Retina để ép CDN nhả file ảnh to và nét nhất có thể
-    await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 2 }); 
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    
-    // 🔥 Kích hoạt tính năng cache của trình duyệt để đảm bảo ảnh load mượt và đủ dữ liệu
-    await page.setCacheEnabled(true);
 
-    try {
-        // ==========================================
-        // BƯỚC 1: QUÉT TRANG CHI TIẾT LẤY DANH SÁCH CHAPTER
-        // ==========================================
-        console.log(`🔍 Phân tích danh sách chương từ: ${mangaDetailUrl}`);
-        await page.goto(mangaDetailUrl, { waitUntil: 'networkidle2', timeout: 90000 });
+    const mangaData = await page.evaluate(() => {
+      const title =
+        document.querySelector('h1, .title-manga, .name-manga')?.textContent?.trim() ||
+        'Truyen_An_Danh';
 
-        const mangaData = await page.evaluate(() => {
-            const title = document.querySelector('.title-manga, h1, .name-manga')?.textContent?.trim() || 'Truyen Tranh';
-            const allLinks = document.querySelectorAll('a');
-            const chapters = [];
+      const allLinks = document.querySelectorAll('a');
+      const chapters = [];
+      const urlSet = new Set();
 
-            allLinks.forEach((element) => {
-                const url = element.href;
-                const name = element.textContent?.trim() || '';
-                if (!url) return;
+      allLinks.forEach((a) => {
+        const url = a.href;
+        const name = a.textContent?.trim() || '';
+        if (!url) return;
 
-                const isChapterUrl = url.includes('-chap-') || url.includes('/chap-') || url.includes('chapter-');
-                const hasChapterContext = element.closest('.works-chapter-list') || 
-                                          element.closest('.list-chapter') || 
-                                          element.closest('#nt_listchapter') || 
-                                          element.closest('.chapter-list') ||
-                                          element.closest('.box-list-chapter') ||
-                                          name.toLowerCase().includes('chap') ||
-                                          name.toLowerCase().includes('chương');
+        const isChapterUrl =
+          url.includes('chap') ||
+          name.toLowerCase().includes('chap') ||
+          name.toLowerCase().includes('chương');
 
-                if (isChapterUrl && hasChapterContext) {
-                    if (!chapters.some((chapter) => chapter.url === url)) {
-                        chapters.push({ url, name });
-                    }
-                }
-            });
-            return { title, chapters: chapters.reverse() };
-        });
+        const isInChapterList = a.closest(
+          '.list-chapter, #nt_listchapter, .works-chapter-list, .chapter-list, .box-list-chapter',
+        );
 
-        const comicSlug = parseMangaSlug(mangaDetailUrl);
-        console.log(`📦 Bộ truyện: [ ${mangaData.title} ] - Tìm thấy ${mangaData.chapters.length} chương.`);
-
-        if (mangaData.chapters.length === 0) {
-            console.log('❌ Thất bại! Không tìm thấy danh sách chapter nào.');
-            return;
+        if (isChapterUrl && isInChapterList) {
+          if (!urlSet.has(url)) {
+            urlSet.add(url);
+            chapters.push({ url, name });
+          }
         }
+      });
 
-        const totalChaptersToDownload = Math.min(MAX_CHAPTERS_TO_DOWNLOAD, mangaData.chapters.length);
+      return {
+        title,
+        chapters: chapters.reverse(),
+      };
+    });
 
-        // ==========================================
-        // BƯỚC 2: VÒNG LẶP ĐI VÀO TỪNG CHAPTER ĐỂ "BẮT SỐNG" ẢNH MẠNG
-        // ==========================================
-        for (let i = 0; i < totalChaptersToDownload; i++) {
-            const currentChapter = mangaData.chapters[i];
-            
-            // Làm sạch tên folder của chapter để tránh dính lỗi ký tự đặc biệt
-            const cleanChapterFolder = currentChapter.name.replace(/[^a-zA-Z0-9 ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯưăâêôơư]/g, '-').trim();
-
-            console.log(`\n--------------------------------------------------`);
-            console.log(`⏳ Đang mở cổng mạng đánh chặn Chapter: ${currentChapter.name}`);
-
-            // Khởi tạo thư mục vật lý lưu truyện trên máy tính của bạn
-            const outputFolder = path.join(__dirname, 'manga-storage', comicSlug, cleanChapterFolder);
-            if (!fs.existsSync(outputFolder)) fs.mkdirSync(outputFolder, { recursive: true });
-
-            // 🔥 MẤU CHỐT: Đặt bẫy lắng nghe mọi gói tin Response chạy qua trình duyệt Chrome
-            const downloadedUrls = new Set();
-            let imageCounter = 1;
-
-            const onResponseHandler = async (response) => {
-                const url = response.url();
-                const lowerUrl = url.toLowerCase();
-                
-                // Bộ lọc nhận diện chính xác link ảnh truyện từ CDN (ĐÃ SỬA LỖI lowerSrc)
-                const isMangaReal = lowerUrl.includes('cdn') || lowerUrl.includes('storage') || lowerUrl.includes('upload') || lowerUrl.includes('truyenvua') || lowerUrl.includes('nettruyen') || /\/\d+\/\d+\/\d+\./i.test(lowerUrl);
-                
-                const isNoise = lowerUrl.includes('avatar') || lowerUrl.includes('logo') || lowerUrl.includes('banner') || lowerUrl.includes('thumb') || lowerUrl.includes('cover') || lowerUrl.includes('zone') || lowerUrl.includes('credit') || lowerUrl.includes('sticker') || lowerUrl.endsWith('.gif');
-
-                if (isMangaReal && !isNoise && !downloadedUrls.has(url)) {
-                    // Kiểm tra xem gói tin trả về có phải là định dạng hình ảnh hay không
-                    const headers = response.headers();
-                    const contentType = headers['content-type'] || '';
-                    
-                    if (contentType.startsWith('image/') || lowerUrl.includes('.jpg') || lowerUrl.includes('.webp') || lowerUrl.includes('.png') || lowerUrl.includes('.avif')) {
-                        downloadedUrls.add(url);
-                        
-                        try {
-                            // Tự động nhận diện đuôi file thật từ Header phản hồi mạng hệ thống
-                            let ext = '.jpg';
-                            if (contentType.includes('webp') || lowerUrl.includes('.webp')) ext = '.webp';
-                            else if (contentType.includes('png') || lowerUrl.includes('.png')) ext = '.png';
-                            else if (contentType.includes('avif') || lowerUrl.includes('.avif')) ext = '.avif';
-
-                            // "Hứng" trọn vẹn Buffer nhị phân thô của file ảnh gốc từ luồng mạng
-                            const buffer = await response.buffer();
-                            
-                            const fileName = `page_${String(imageCounter++).padStart(3, '0')}${ext}`;
-                            const localPath = path.resolve(outputFolder, fileName);
-                            
-                            fs.writeFileSync(localPath, buffer);
-                            console.log(`💾 [NETWORK CAPTURE] Đã tóm gọn file gốc: ${fileName}`);
-                        } catch (e) {
-                            // Bỏ qua lỗi nếu gói tin phản hồi bị ngắt quãng
-                        }
-                    }
-                }
-            };
-
-            // Bật bộ lắng nghe mạng
-            page.on('response', onResponseHandler);
-
-            // Điều hướng tới trang đọc truyện
-            await page.goto(currentChapter.url, { waitUntil: 'networkidle2', timeout: 90000 });
-            await page.evaluate(() => new Promise((resolve) => window.setTimeout(resolve, 2000)));
-
-            console.log("⬇️  Đang cuộn chuột thật chậm để ép Chrome kích hoạt tải dữ liệu ảnh gốc...");
-            // Cuộn chuột mịn để kích hoạt gói tin mạng đổ về
-            await page.evaluate(async () => {
-                await new Promise((resolve) => {
-                    let totalHeight = 0;
-                    const distance = 150; 
-                    const timer = window.setInterval(() => {
-                        const scrollHeight = document.body.scrollHeight;
-                        window.scrollBy(0, distance);
-                        totalHeight += distance;
-                        if (totalHeight >= scrollHeight) {
-                            window.clearInterval(timer);
-                            resolve();
-                        }
-                    }, 300); // Tốc độ cuộn chuẩn mắt người đọc truyện
-                });
-            });
-
-            // Đợi thêm 5 giây cuối cùng cho các gói tin hình ảnh cuối trang tải về nốt
-            await page.evaluate(() => new Promise((resolve) => window.setTimeout(resolve, 5000)));
-
-            // Tắt bộ lắng nghe mạng của chapter này để giải phóng RAM và reset Counter trước khi sang chapter mới
-            page.off('response', onResponseHandler);
-
-            console.log(`✅ Hoàn thành đánh chặn và tải xong: ${currentChapter.name}`);
-        }
-
-        console.log(`\n🎉🎉🎉 TUYỆT VỜI! Toàn bộ ảnh gốc nguyên bản, chuẩn định dạng CDN đã được bóc tách thành công.`);
-
-    } catch (error) {
-        console.error('❌ Lỗi hệ thống:', error.message);
-    } finally {
-        await browser.close();
+    if (mangaData.chapters.length === 0) {
+      console.log('❌ Không tìm thấy chapter nào.');
+      return;
     }
+
+    const safeMangaName = cleanDirName(mangaData.title);
+
+    const chaptersToRun = ONLY_LAST_CHAPTERS
+      ? mangaData.chapters.slice(-MAX_CHAPTERS_TO_DOWNLOAD)
+      : mangaData.chapters.slice(0, MAX_CHAPTERS_TO_DOWNLOAD);
+
+    console.log(`📦 Bộ truyện: [${safeMangaName}]`);
+    console.log(`📚 Số chương sẽ xử lý: ${chaptersToRun.length}`);
+
+    for (const chapter of chaptersToRun) {
+      const safeChapterName = cleanDirName(chapter.name);
+      const chapterNumber = normalizeChapterNumber(chapter.name);
+
+      console.log('\n-----------------------------------------');
+      console.log(`⏳ Đang cào chương: ${chapter.name}`);
+      console.log(`🔢 Chapter number: ${chapterNumber}`);
+      console.log(`🔗 URL: ${chapter.url}`);
+
+      const dbChapter = await findOrCreateChapter({
+        comicId: comic.id,
+        chapterName: chapter.name,
+        chapterNumber,
+      });
+
+      const interceptedImages = [];
+
+      const onResponse = async (response) => {
+        const url = response.url();
+        const contentType = response.headers()['content-type'] || '';
+        const status = response.status();
+
+        const isImage =
+          contentType.startsWith('image/') ||
+          /\.(jpg|jpeg|png|webp|avif)(\?.*)?$/i.test(url);
+
+        const isNoise =
+          /(avatar|logo|banner|thumb|icon|gif|qc|ads|header|footer|bg|quang-cao)/i.test(url);
+
+        if (isImage && !isNoise && status === 200) {
+          try {
+            const buffer = await response.buffer();
+
+            if (buffer.length > 10000) {
+              interceptedImages.push({
+                url,
+                buffer,
+                contentType,
+              });
+            }
+          } catch {
+            // Bỏ qua ảnh lỗi
+          }
+        }
+      };
+
+      page.on('response', onResponse);
+
+      await page.goto(chapter.url, {
+        waitUntil: 'domcontentloaded',
+        timeout: 60000,
+      });
+
+      console.log('🏃‍♂️ Đang cuộn trang để kích hoạt lazy-load ảnh...');
+
+      await page.evaluate(async () => {
+        await new Promise((resolve) => {
+          let totalHeight = 0;
+          let retries = 0;
+          const distance = 800;
+
+          const timer = setInterval(() => {
+            const scrollHeight = document.body.scrollHeight;
+            window.scrollBy(0, distance);
+            totalHeight += distance;
+
+            if (totalHeight >= scrollHeight) {
+              retries++;
+
+              if (retries >= 15) {
+                clearInterval(timer);
+                resolve();
+              }
+            } else {
+              retries = 0;
+            }
+          }, 200);
+        });
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      page.off('response', onResponse);
+
+      const groups = {};
+
+      for (const img of interceptedImages) {
+        const cleanUrl = img.url.split('?')[0];
+        const dir = getDirName(cleanUrl);
+
+        if (!groups[dir]) groups[dir] = [];
+
+        if (!groups[dir].some((existing) => existing.url === img.url)) {
+          groups[dir].push(img);
+        }
+      }
+
+      let maxGroupSize = 0;
+
+      for (const dir in groups) {
+        if (groups[dir].length > maxGroupSize) {
+          maxGroupSize = groups[dir].length;
+        }
+      }
+
+      let finalImages = [];
+
+      if (maxGroupSize >= 3) {
+        for (const dir in groups) {
+          if (groups[dir].length >= 2) {
+            finalImages.push(...groups[dir]);
+          }
+        }
+      } else {
+        for (const dir in groups) {
+          finalImages.push(...groups[dir]);
+        }
+      }
+
+      if (finalImages.length === 0) {
+        console.log('⚠️ Không bắt được ảnh nào. Bỏ qua chương này.');
+        continue;
+      }
+
+      finalImages.sort((a, b) =>
+        a.url.localeCompare(b.url, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
+      );
+
+      const uniqueFinalImages = [];
+      const seenUrls = new Set();
+
+      for (const img of finalImages) {
+        if (!seenUrls.has(img.url)) {
+          seenUrls.add(img.url);
+          uniqueFinalImages.push(img);
+        }
+      }
+
+      console.log(`🎯 Tổng ảnh sau khi lọc: ${uniqueFinalImages.length}`);
+
+      let imageCounter = 1;
+
+      for (const img of uniqueFinalImages) {
+        const pageNumber = imageCounter;
+        const paddedPage = String(pageNumber).padStart(3, '0');
+
+        const cloudFolder = `comics/${COMIC_SLUG_IN_DB}/chapters/${chapterNumber}`;
+        const publicId = `${paddedPage}`;
+
+        process.stdout.write(
+          `\r☁️ Đang upload page ${paddedPage}/${uniqueFinalImages.length} lên Cloudinary...`,
+        );
+
+        try {
+          const uploadResult = await uploadBufferToCloudinary(img.buffer, {
+            folder: cloudFolder,
+            publicId,
+          });
+
+          await saveImageToDb({
+            chapterId: dbChapter.id,
+            order: pageNumber,
+            url: uploadResult.secure_url,
+            key: uploadResult.public_id,
+            width: uploadResult.width,
+            height: uploadResult.height,
+            size: uploadResult.bytes,
+            mimeType: img.contentType,
+          });
+
+          imageCounter++;
+        } catch (error) {
+          console.log(`\n❌ Lỗi upload page ${paddedPage}:`, error.message);
+        }
+      }
+
+      console.log(`\n✅ Hoàn tất chương: ${safeChapterName}`);
+      console.log(`💾 Đã lưu URL ảnh vào DB cho chapterId=${dbChapter.id}`);
+    }
+  } catch (error) {
+    console.error('\n❌ Lỗi hệ thống:', error);
+  } finally {
+    await browser.close();
+    await prisma.$disconnect();
+    console.log('\n🎉 Tiến trình hoàn thành!');
+  }
 }
 
-// Đường link truyện bạn muốn tải
-const targetMangaUrl = "https://truyenggvn.com/truyen-tranh/chu-thien-ky-4127"; 
-autoCrawlAndDownload(targetMangaUrl);
+autoCrawlUploadAndSave(targetUrl);
