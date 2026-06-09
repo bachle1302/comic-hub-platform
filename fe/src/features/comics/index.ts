@@ -4,3 +4,7 @@ export * from "./ui/ChapterList";
 export * from "./ui/ComicCard";
 export * from "./ui/ComicGrid";
 export * from "./ui/ComicLikeButton";
+export * from "./ui/HeroImageCarousel";
+export * from "./ui/ComicPosterCard";
+export * from "./ui/ComicSection";
+export * from "./ui/PopularComicSidebar";
