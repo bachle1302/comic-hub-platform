@@ -28,9 +28,16 @@ type AdminComicFormProps = {
   onSubmit: (input: CreateAdminComicInput) => Promise<void>;
 };
 
+const statusLabels: Record<ComicStatus, string> = {
+  ONGOING: "Đang tiến hành",
+  COMPLETED: "Hoàn thành",
+  HIATUS: "Tạm ngưng",
+  CANCELLED: "Đã hủy",
+};
+
 const statusOptions: Array<{ label: string; value: ComicStatus }> =
   comicStatusSchema.options.map((value) => ({
-    label: value,
+    label: statusLabels[value],
     value,
   }));
 
@@ -138,18 +145,18 @@ export function AdminComicForm({
 
     if (!comicSlug) {
       setAvatarUploadStatus("error");
-      setAvatarUploadMessage("Vui long nhap slug truoc khi upload anh.");
+      setAvatarUploadMessage("Vui lòng nhập slug trước khi tải ảnh lên.");
       return;
     }
 
     if (!acceptedAvatarTypes.includes(file.type)) {
       setAvatarUploadStatus("error");
-      setAvatarUploadMessage("Chi ho tro anh JPG, PNG hoac WEBP.");
+      setAvatarUploadMessage("Chỉ hỗ trợ ảnh JPG, PNG hoặc WEBP.");
       return;
     }
 
     setAvatarUploadStatus("uploading");
-    setAvatarUploadMessage("Dang upload anh dai dien...");
+    setAvatarUploadMessage("Đang tải ảnh đại diện lên...");
 
     try {
       const { upload } = await createPresignedComicAvatarUploadUrl({
@@ -173,11 +180,11 @@ export function AdminComicForm({
         shouldValidate: true,
       });
       setAvatarUploadStatus("done");
-      setAvatarUploadMessage("Da upload anh dai dien.");
+      setAvatarUploadMessage("Đã tải ảnh đại diện lên.");
     } catch (error) {
       setAvatarUploadStatus("error");
       setAvatarUploadMessage(
-        error instanceof Error ? error.message : "Upload anh dai dien that bai.",
+        error instanceof Error ? error.message : "Tải ảnh đại diện lên thất bại.",
       );
     }
   }
@@ -200,17 +207,17 @@ export function AdminComicForm({
     >
       <div>
         <h2 className="text-lg font-semibold">
-          {mode === "edit" ? "Sua truyen" : "Them truyen"}
+          {mode === "edit" ? "Sửa truyện" : "Thêm truyện"}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Nhap thong tin catalog, SEO va lien ket tac gia/the loai.
+          Nhập thông tin danh mục, SEO và liên kết tác giả/thể loại.
         </p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="comic-name" className="text-sm font-medium">
-            Ten truyen
+            Tên truyện
           </label>
           <input
             id="comic-name"
@@ -233,7 +240,7 @@ export function AdminComicForm({
               {...register("slug")}
             />
             <Button type="button" variant="outline" onClick={generateSlug}>
-              Tao slug
+              Tạo slug
             </Button>
           </div>
           {errors.slug ? (
@@ -244,7 +251,7 @@ export function AdminComicForm({
 
       <div className="space-y-2">
         <label htmlFor="comic-description" className="text-sm font-medium">
-          Mo ta
+          Mô tả
         </label>
         <textarea
           id="comic-description"
@@ -257,7 +264,7 @@ export function AdminComicForm({
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="comic-thumbnail" className="text-sm font-medium">
-            Anh dai dien / Thumbnail URL
+            Ảnh đại diện / URL ảnh
           </label>
           <input
             id="comic-thumbnail"
@@ -274,7 +281,7 @@ export function AdminComicForm({
               onChange={handleAvatarChange}
             />
             {avatarUploadStatus === "uploading" ? (
-              <span className="text-sm text-muted-foreground">Dang upload...</span>
+              <span className="text-sm text-muted-foreground">Đang tải lên...</span>
             ) : null}
           </div>
           {avatarUploadMessage ? (
@@ -293,7 +300,7 @@ export function AdminComicForm({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={watchedThumbnail}
-                alt="Anh dai dien truyen"
+                alt="Ảnh đại diện truyện"
                 className="aspect-[2/3] w-full object-cover"
               />
             </div>
@@ -326,7 +333,7 @@ export function AdminComicForm({
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-2">
           <label htmlFor="comic-status" className="text-sm font-medium">
-            Trang thai
+            Trạng thái
           </label>
           <select
             id="comic-status"
@@ -343,14 +350,14 @@ export function AdminComicForm({
 
         <div className="space-y-2">
           <label htmlFor="comic-author" className="text-sm font-medium">
-            Tac gia
+            Tác giả
           </label>
           <select
             id="comic-author"
             className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:border-primary"
             {...register("authorId", { valueAsNumber: true })}
           >
-            <option value={0}>Chon tac gia</option>
+            <option value={0}>Chọn tác giả</option>
             {authors.map((author) => (
               <option key={author.id} value={author.id}>
                 {author.name}
@@ -366,15 +373,15 @@ export function AdminComicForm({
 
         <label className="flex items-center gap-2 self-end rounded-md border px-3 py-2 text-sm">
           <input type="checkbox" {...register("isPublic")} />
-          Public
+          Công khai
         </label>
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">The loai</p>
+        <p className="text-sm font-medium">Thể loại</p>
         {categories.length === 0 ? (
           <div className="rounded-md border p-3 text-sm text-muted-foreground">
-            Chua co the loai de chon.
+            Chưa có thể loại để chọn.
           </div>
         ) : (
           <div className="grid gap-2 rounded-md border p-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -387,7 +394,7 @@ export function AdminComicForm({
                   type="checkbox"
                   checked={selectedCategoryIds.includes(category.id)}
                   onChange={(event) =>
-                    toggleCategory(category.id, event.target.checked)
+                     toggleCategory(category.id, event.target.checked)
                   }
                 />
                 {category.name}
@@ -400,10 +407,10 @@ export function AdminComicForm({
       <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
-            ? "Dang luu..."
+            ? "Đang lưu..."
             : mode === "edit"
-              ? "Cap nhat truyen"
-              : "Them truyen"}
+              ? "Cập nhật truyện"
+              : "Thêm truyện"}
         </Button>
         {mode === "edit" && onCancel ? (
           <Button
@@ -412,7 +419,7 @@ export function AdminComicForm({
             disabled={isSubmitting}
             onClick={onCancel}
           >
-            Huy
+            Hủy
           </Button>
         ) : null}
       </div>

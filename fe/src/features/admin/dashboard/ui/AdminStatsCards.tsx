@@ -28,39 +28,39 @@ function StatCardView({ description, label, value }: StatCard) {
 export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
   const cards: StatCard[] = [
     {
-      label: "Users",
+      label: "Người dùng",
       value: stats.users.total,
-      description: `${stats.users.admins} admin`,
+      description: `${stats.users.admins} quản trị viên`,
     },
     {
-      label: "Comics",
+      label: "Truyện",
       value: stats.comics.total,
-      description: `${stats.comics.public} public`,
+      description: `${stats.comics.public} công khai`,
     },
     {
-      label: "Chapters",
+      label: "Chương",
       value: stats.chapters.total,
-      description: `${stats.chapters.free} free / ${stats.chapters.paid} paid`,
+      description: `${stats.chapters.free} miễn phí / ${stats.chapters.paid} tính phí`,
     },
     {
-      label: "Comments",
+      label: "Bình luận",
       value: stats.comments.total,
     },
     {
-      label: "Follows",
+      label: "Lượt theo dõi",
       value: stats.follows.total,
     },
     {
-      label: "Purchases",
+      label: "Lượt mua",
       value: stats.purchases.total,
-      description: `${formatCompactNumber(stats.purchases.totalCoinSpent)} coin spent`,
+      description: `${formatCompactNumber(stats.purchases.totalCoinSpent)} coin đã tiêu`,
     },
     {
-      label: "Transactions",
+      label: "Giao dịch",
       value: stats.transactions.total,
     },
     {
-      label: "Total coin spent",
+      label: "Tổng coin đã tiêu",
       value: stats.purchases.totalCoinSpent,
     },
   ];

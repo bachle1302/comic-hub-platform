@@ -34,7 +34,7 @@ export function AdminAuditLogsTable({ logs }: AdminAuditLogsTableProps) {
   if (logs.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Khong co audit log nao.
+        Không có nhật ký quản trị nào.
       </div>
     );
   }
@@ -46,12 +46,12 @@ export function AdminAuditLogsTable({ logs }: AdminAuditLogsTableProps) {
           <thead className="bg-muted/60 text-left">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
-              <th className="px-4 py-3 font-medium">Thoi gian</th>
+              <th className="px-4 py-3 font-medium">Thời gian</th>
               <th className="px-4 py-3 font-medium">Admin</th>
-              <th className="px-4 py-3 font-medium">Action</th>
-              <th className="px-4 py-3 font-medium">Entity</th>
-              <th className="px-4 py-3 font-medium">Message</th>
-              <th className="px-4 py-3 font-medium">Metadata</th>
+              <th className="px-4 py-3 font-medium">Hành động</th>
+              <th className="px-4 py-3 font-medium">Đối tượng</th>
+              <th className="px-4 py-3 font-medium">Nội dung</th>
+              <th className="px-4 py-3 font-medium">Dữ liệu chi tiết</th>
               <th className="px-4 py-3 font-medium">IP</th>
               <th className="px-4 py-3 font-medium">User agent</th>
             </tr>

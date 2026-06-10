@@ -64,31 +64,31 @@ export function AdminCoinPackagesFilter({
       className="grid gap-3 rounded-lg border bg-card p-4 md:grid-cols-[minmax(0,1fr)_160px_120px_auto]"
     >
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Tim kiem</span>
+        <span className="font-medium">Tìm kiếm</span>
         <input
           type="search"
           value={q}
           onChange={(event) => setQ(event.target.value)}
           className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-          placeholder="Ten goi coin"
+          placeholder="Tên gói coin"
         />
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Trang thai</span>
+        <span className="font-medium">Trạng thái</span>
         <select
           value={isActive}
           onChange={(event) => setIsActive(event.target.value)}
           className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
         >
-          <option value="">Tat ca</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="">Tất cả</option>
+          <option value="true">Hoạt động</option>
+          <option value="false">Ngừng hoạt động</option>
         </select>
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Limit</span>
+        <span className="font-medium">Số dòng hiển thị</span>
         <select
           value={limit}
           onChange={(event) => setLimit(event.target.value)}
@@ -102,9 +102,9 @@ export function AdminCoinPackagesFilter({
       </label>
 
       <div className="flex items-end gap-2">
-        <Button type="submit">Loc</Button>
+        <Button type="submit">Lọc</Button>
         <Button type="button" variant="outline" onClick={handleClear}>
-          Xoa loc
+          Xóa lọc
         </Button>
       </div>
     </form>

@@ -21,18 +21,18 @@ export default function NewAdminAnnouncementPage() {
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Tao thong bao</h1>
+          <h1 className="text-2xl font-bold">Tạo thông báo</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tao banner/thong bao hien thi tren public site.
+            Tạo banner/thông báo hiển thị trên trang công khai.
           </p>
         </div>
-        <Button asChild variant="outline">
-          <AdminLink href="/admin/announcements">Quay lai</AdminLink>
+        <Button asChild>
+          <AdminLink href="/admin/announcements">Quay lại</AdminLink>
         </Button>
       </div>
 
       <AdminAnnouncementForm
-        submitLabel="Tao thong bao"
+        submitLabel="Tạo thông báo"
         onSubmit={handleSubmit}
       />
     </section>

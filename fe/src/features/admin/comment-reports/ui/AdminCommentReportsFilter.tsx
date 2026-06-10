@@ -74,21 +74,21 @@ export function AdminCommentReportsFilter({
       className="grid gap-3 rounded-lg border p-4 md:grid-cols-[160px_1fr_1fr_140px_auto]"
     >
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Status</span>
+        <span className="font-medium">Trạng thái</span>
         <select
           value={status}
           onChange={(event) => setStatus(event.target.value)}
           className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
         >
-          <option value="">All</option>
-          <option value="PENDING">PENDING</option>
-          <option value="RESOLVED">RESOLVED</option>
-          <option value="REJECTED">REJECTED</option>
+          <option value="">Tất cả</option>
+          <option value="PENDING">Đang chờ</option>
+          <option value="RESOLVED">Đã giải quyết</option>
+          <option value="REJECTED">Đã bác bỏ</option>
         </select>
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Comment ID</span>
+        <span className="font-medium">ID bình luận</span>
         <input
           type="number"
           min={1}
@@ -100,7 +100,7 @@ export function AdminCommentReportsFilter({
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">User ID</span>
+        <span className="font-medium">ID người dùng</span>
         <input
           type="number"
           min={1}
@@ -112,7 +112,7 @@ export function AdminCommentReportsFilter({
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Limit</span>
+        <span className="font-medium">Số dòng hiển thị</span>
         <select
           value={limit}
           onChange={(event) => setLimit(event.target.value)}
@@ -125,9 +125,9 @@ export function AdminCommentReportsFilter({
       </label>
 
       <div className="flex items-end gap-2">
-        <Button type="submit">Loc</Button>
+        <Button type="submit">Lọc</Button>
         <Button type="button" variant="outline" onClick={handleClear}>
-          Xoa loc
+          Xóa lọc
         </Button>
       </div>
     </form>

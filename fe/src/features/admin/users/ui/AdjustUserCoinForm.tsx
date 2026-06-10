@@ -54,7 +54,7 @@ export function AdjustUserCoinForm({
         amount: input.amount,
         reason: input.reason?.trim() || undefined,
       });
-      setMessage(`Da cap nhat coin: ${result.user.coin}`);
+      setMessage(`Đã cập nhật coin: ${result.user.coin}`);
       reset({
         amount: 0,
         reason: "",
@@ -62,7 +62,7 @@ export function AdjustUserCoinForm({
       await onAdjusted();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Cap nhat coin that bai",
+        error instanceof Error ? error.message : "Cập nhật coin thất bại",
       );
     }
   }
@@ -73,17 +73,17 @@ export function AdjustUserCoinForm({
       className="space-y-4 rounded-lg border bg-card p-4"
     >
       <div>
-        <h2 className="text-lg font-semibold">Dieu chinh coin</h2>
+        <h2 className="text-lg font-semibold">Điều chỉnh coin</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Coin hien tai: <span className="font-medium">{currentCoin}</span>.
-          Balance sau dieu chinh:{" "}
+          Coin hiện tại: <span className="font-medium">{currentCoin}</span>.
+          Số dư sau điều chỉnh:{" "}
           <span className="font-medium">{previewBalance}</span>.
         </p>
       </div>
 
       <div className="grid gap-3 md:grid-cols-[180px_minmax(0,1fr)_auto]">
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Amount</span>
+          <span className="font-medium">Số lượng coin</span>
           <input
             type="number"
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
@@ -95,10 +95,10 @@ export function AdjustUserCoinForm({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Ly do</span>
+          <span className="font-medium">Lý do</span>
           <input
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-            placeholder="VD: Admin top up for testing"
+            placeholder="VD: Quản trị viên nạp coin để thử nghiệm"
             {...register("reason")}
           />
           {errors.reason ? (
@@ -108,7 +108,7 @@ export function AdjustUserCoinForm({
 
         <div className="flex items-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Dang luu..." : "Cap nhat"}
+            {isSubmitting ? "Đang lưu..." : "Cập nhật"}
           </Button>
         </div>
       </div>

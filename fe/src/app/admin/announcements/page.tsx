@@ -39,7 +39,7 @@ export default function AdminAnnouncementsPage() {
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : "Khong tai duoc thong bao he thong",
+            : "Không tải được thông báo hệ thống",
         );
       } finally {
         setIsLoading(false);
@@ -84,7 +84,7 @@ export default function AdminAnnouncementsPage() {
 
     try {
       await deleteAdminAnnouncement(id);
-      setSuccessMessage("Da disable announcement.");
+      setSuccessMessage("Đã vô hiệu hóa thông báo.");
       setData((currentData) => {
         if (!currentData) {
           return currentData;
@@ -110,7 +110,7 @@ export default function AdminAnnouncementsPage() {
       });
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Disable announcement that bai",
+        error instanceof Error ? error.message : "Vô hiệu hóa thông báo thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -124,10 +124,10 @@ export default function AdminAnnouncementsPage() {
 
     try {
       const result = await broadcastAdminAnnouncement(id);
-      setSuccessMessage(`Da gui ${result.createdCount} notification.`);
+      setSuccessMessage(`Đã gửi ${result.createdCount} thông báo.`);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Gui notification that bai",
+        error instanceof Error ? error.message : "Gửi thông báo thất bại",
       );
     } finally {
       setBroadcastingId(null);
@@ -138,13 +138,13 @@ export default function AdminAnnouncementsPage() {
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Thong bao he thong</h1>
+          <h1 className="text-2xl font-bold">Thông báo hệ thống</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Quan ly banner/thong bao hien thi tren website.
+            Quản lý banner/thông báo hiển thị trên website.
           </p>
         </div>
         <Button asChild>
-          <AdminLink href="/admin/announcements/new">Tao thong bao</AdminLink>
+          <AdminLink href="/admin/announcements/new">Tạo thông báo</AdminLink>
         </Button>
       </div>
 
@@ -167,12 +167,12 @@ export default function AdminAnnouncementsPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai thong bao...
+          Đang tải thông báo...
         </div>
       ) : data ? (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Tong {data.meta.total} thong bao</span>
+            <span>Tổng {data.meta.total} thông báo</span>
             <span>
               Trang {data.meta.page}/{data.meta.totalPages || 1}
             </span>
@@ -194,7 +194,7 @@ export default function AdminAnnouncementsPage() {
                 disabled={!data.meta.hasPreviousPage || isLoading}
                 onClick={() => handlePageChange((query.page ?? 1) - 1)}
               >
-                Trang truoc
+                Trang trước
               </Button>
               <span className="text-sm text-muted-foreground">
                 Trang {data.meta.page}/{data.meta.totalPages}

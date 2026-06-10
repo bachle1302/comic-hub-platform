@@ -25,7 +25,7 @@ export default function EditAdminAnnouncementPage() {
 
   const loadAnnouncement = useCallback(async () => {
     if (!Number.isFinite(announcementId) || announcementId <= 0) {
-      setErrorMessage("Announcement ID khong hop le");
+      setErrorMessage("ID thông báo không hợp lệ");
       setIsLoading(false);
       return;
     }
@@ -39,7 +39,7 @@ export default function EditAdminAnnouncementPage() {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Khong tai duoc announcement",
+          : "Không tải được thông báo",
       );
     } finally {
       setIsLoading(false);
@@ -60,7 +60,7 @@ export default function EditAdminAnnouncementPage() {
   }
 
   async function handleBroadcast() {
-    if (!window.confirm("Gui announcement nay thanh notification?")) {
+    if (!window.confirm("Gửi thông báo này thành thông báo đẩy?")) {
       return;
     }
 
@@ -70,10 +70,10 @@ export default function EditAdminAnnouncementPage() {
 
     try {
       const result = await broadcastAdminAnnouncement(announcementId);
-      setSuccessMessage(`Da gui ${result.createdCount} notification.`);
+      setSuccessMessage(`Đã gửi ${result.createdCount} thông báo.`);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Gui notification that bai",
+        error instanceof Error ? error.message : "Gửi thông báo thất bại",
       );
     } finally {
       setIsBroadcasting(false);
@@ -84,9 +84,9 @@ export default function EditAdminAnnouncementPage() {
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Sua thong bao</h1>
+          <h1 className="text-2xl font-bold">Sửa thông báo</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cap nhat noi dung, thoi gian va trang thai announcement.
+            Cập nhật nội dung, thời gian và trạng thái thông báo.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -96,10 +96,10 @@ export default function EditAdminAnnouncementPage() {
             disabled={isBroadcasting || !announcement}
             onClick={() => void handleBroadcast()}
           >
-            {isBroadcasting ? "Dang gui..." : "Gui notification"}
+            {isBroadcasting ? "Đang gửi..." : "Gửi thông báo"}
           </Button>
           <Button asChild variant="outline">
-            <AdminLink href="/admin/announcements">Quay lai</AdminLink>
+            <AdminLink href="/admin/announcements">Quay lại</AdminLink>
           </Button>
         </div>
       </div>
@@ -118,12 +118,12 @@ export default function EditAdminAnnouncementPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai thong bao...
+          Đang tải thông báo...
         </div>
       ) : announcement ? (
         <AdminAnnouncementForm
           initialAnnouncement={announcement}
-          submitLabel="Luu thay doi"
+          submitLabel="Lưu thay đổi"
           onSubmit={handleSubmit}
         />
       ) : null}

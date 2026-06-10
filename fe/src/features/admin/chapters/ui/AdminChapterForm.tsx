@@ -121,17 +121,17 @@ export function AdminChapterForm({
     >
       <div>
         <h2 className="text-lg font-semibold">
-          {mode === "edit" ? "Sua chapter" : "Them chapter"}
+          {mode === "edit" ? "Sửa chương" : "Thêm chương"}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Nhap metadata chapter va upload anh bang presigned URL.
+          Nhập thông tin chương và tải ảnh lên bằng URL ký trước (presigned URL).
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="space-y-2 md:col-span-2">
           <label htmlFor="chapter-name" className="text-sm font-medium">
-            Ten chapter
+            Tên chương
           </label>
           <input
             id="chapter-name"
@@ -145,7 +145,7 @@ export function AdminChapterForm({
 
         <div className="space-y-2">
           <label htmlFor="chapter-number" className="text-sm font-medium">
-            Chapter number
+            Số thứ tự chương
           </label>
           <input
             id="chapter-number"
@@ -163,7 +163,7 @@ export function AdminChapterForm({
 
         <div className="space-y-2">
           <label htmlFor="chapter-price" className="text-sm font-medium">
-            Gia coin
+            Giá coin
           </label>
           <input
             id="chapter-price"
@@ -180,14 +180,14 @@ export function AdminChapterForm({
 
       <label className="flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm">
         <input type="checkbox" {...register("isPublic")} />
-        Public chapter
+        Chương công khai
       </label>
 
       {mode === "edit" && initialValue?.images?.length ? (
         <div className="rounded-md border p-3">
-          <p className="text-sm font-medium">Anh hien tai</p>
+          <p className="text-sm font-medium">Ảnh hiện tại</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Upload anh moi se replace toan bo anh cu khi cap nhat.
+            Tải ảnh mới lên sẽ thay thế toàn bộ ảnh cũ khi cập nhật.
           </p>
           <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8">
             {initialValue.images.slice(0, 8).map((image) => (
@@ -218,10 +218,10 @@ export function AdminChapterForm({
       <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={isSubmitting || isUploading}>
           {isSubmitting
-            ? "Dang luu..."
+            ? "Đang lưu..."
             : mode === "edit"
-              ? "Cap nhat chapter"
-              : "Them chapter"}
+              ? "Cập nhật chương"
+              : "Thêm chương"}
         </Button>
         {mode === "edit" && onCancel ? (
           <Button
@@ -230,7 +230,7 @@ export function AdminChapterForm({
             disabled={isSubmitting || isUploading}
             onClick={onCancel}
           >
-            Huy
+            Hủy
           </Button>
         ) : null}
       </div>

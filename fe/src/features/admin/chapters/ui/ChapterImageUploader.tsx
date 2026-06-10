@@ -49,7 +49,7 @@ export function ChapterImageUploader({
 
     if (!chapterNumber || chapterNumber <= 0) {
       setStatus("error");
-      setErrorMessage("Vui long nhap chapter number truoc khi upload anh");
+      setErrorMessage("Vui lòng nhập số thứ tự chương trước khi tải ảnh lên");
       return;
     }
 
@@ -63,7 +63,7 @@ export function ChapterImageUploader({
 
     if (invalidFile) {
       setStatus("error");
-      setErrorMessage(`File ${invalidFile.name} khong phai dinh dang anh hop le`);
+      setErrorMessage(`File ${invalidFile.name} không phải định dạng ảnh hợp lệ`);
       return;
     }
 
@@ -96,7 +96,7 @@ export function ChapterImageUploader({
         );
 
         if (!file) {
-          throw new Error(`Khong tim thay file ${upload.fileName}`);
+          throw new Error(`Không tìm thấy file ${upload.fileName}`);
         }
 
         await uploadFileToStorage({
@@ -121,7 +121,7 @@ export function ChapterImageUploader({
       setStatus("done");
     } catch (error) {
       setStatus("error");
-      setErrorMessage(error instanceof Error ? error.message : "Upload anh that bai");
+      setErrorMessage(error instanceof Error ? error.message : "Tải ảnh lên thất bại");
     } finally {
       onUploadingChange?.(false);
     }
@@ -131,13 +131,13 @@ export function ChapterImageUploader({
     <div className="space-y-3 rounded-md border p-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-medium">Anh chapter</p>
+          <p className="text-sm font-medium">Ảnh chương</p>
           <p className="text-xs text-muted-foreground">
-            Chon nhieu anh, file se duoc upload theo thu tu ten tang dan.
+            Chọn nhiều ảnh, file sẽ được tải lên theo thứ tự tên tăng dần.
           </p>
         </div>
         <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm hover:bg-muted aria-disabled:pointer-events-none aria-disabled:opacity-50">
-          Chon anh
+          Chọn ảnh
           <input
             type="file"
             accept={acceptedTypes.join(",")}
@@ -150,12 +150,12 @@ export function ChapterImageUploader({
       </div>
 
       <div className="text-sm text-muted-foreground">
-        {status === "idle" ? "Chua upload anh moi." : null}
+        {status === "idle" ? "Chưa tải ảnh mới lên." : null}
         {status === "uploading"
-          ? `Dang upload ${uploadedCount}/${uploadTotal} anh...`
+          ? `Đang tải lên ${uploadedCount}/${uploadTotal} ảnh...`
           : null}
-        {status === "done" ? `Da upload ${images.length} anh.` : null}
-        {status === "error" ? "Upload loi." : null}
+        {status === "done" ? `Đã tải lên ${images.length} ảnh.` : null}
+        {status === "error" ? "Tải lên bị lỗi." : null}
       </div>
 
       {errorMessage ? (

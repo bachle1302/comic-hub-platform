@@ -4,18 +4,18 @@ import { usePathname } from "next/navigation";
 import { AdminLink } from "@/shared/ui/AdminLink";
 
 const links = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/users", label: "Nguoi dung" },
-  { href: "/admin/authors", label: "Authors" },
-  { href: "/admin/categories", label: "Categories" },
-  { href: "/admin/comics", label: "Comics" },
-  { href: "/admin/chapters", label: "Chapters" },
-  { href: "/admin/comments", label: "Binh luan" },
-  { href: "/admin/comment-reports", label: "Bao cao binh luan" },
-  { href: "/admin/announcements", label: "Thong bao he thong" },
-  { href: "/admin/coin-packages", label: "Goi coin" },
-  { href: "/admin/contact-tickets", label: "Yeu cau ho tro" },
-  { href: "/admin/audit-logs", label: "Nhat ky quan tri" },
+  { href: "/admin", label: "Bảng điều khiển" },
+  { href: "/admin/users", label: "Người dùng" },
+  { href: "/admin/authors", label: "Tác giả" },
+  { href: "/admin/categories", label: "Thể loại" },
+  { href: "/admin/comics", label: "Truyện tranh" },
+  { href: "/admin/chapters", label: "Chương truyện" },
+  { href: "/admin/comments", label: "Bình luận" },
+  { href: "/admin/comment-reports", label: "Báo cáo bình luận" },
+  { href: "/admin/announcements", label: "Thông báo hệ thống" },
+  { href: "/admin/coin-packages", label: "Gói coin" },
+  { href: "/admin/contact-tickets", label: "Yêu cầu hỗ trợ" },
+  { href: "/admin/audit-logs", label: "Nhật ký quản trị" },
   { href: "/admin/system-settings", label: "Cấu hình hệ thống" },
 ] as const;
 
@@ -34,7 +34,7 @@ export function AdminSidebar() {
     <aside className="rounded-lg border bg-card p-3 md:sticky md:top-24">
       <div className="mb-3 px-2">
         <p className="text-sm font-semibold">Admin</p>
-        <p className="text-xs text-muted-foreground">Quan ly noi dung</p>
+        <p className="text-xs text-muted-foreground">Quản lý nội dung</p>
       </div>
       <nav className="flex gap-2 overflow-x-auto md:flex-col md:overflow-visible">
         {links.map((link) => {

@@ -61,17 +61,17 @@ export function AdminCategoryForm({
     >
       <div>
         <h2 className="text-lg font-semibold">
-          {initialCategory ? "Sua the loai" : "Them the loai"}
+          {initialCategory ? "Sửa thể loại" : "Thêm thể loại"}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Nhap ten va slug the loai dung cho admin catalog.
+          Nhập tên và slug thể loại dùng cho danh mục quản trị.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="category-name" className="text-sm font-medium">
-            Ten the loai
+            Tên thể loại
           </label>
           <input
             id="category-name"
@@ -101,10 +101,10 @@ export function AdminCategoryForm({
       <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
-            ? "Dang luu..."
+            ? "Đang lưu..."
             : initialCategory
-              ? "Cap nhat the loai"
-              : "Them the loai"}
+              ? "Cập nhật thể loại"
+              : "Thêm thể loại"}
         </Button>
         {initialCategory && onCancel ? (
           <Button
@@ -113,7 +113,7 @@ export function AdminCategoryForm({
             disabled={isSubmitting}
             onClick={onCancel}
           >
-            Huy
+            Hủy
           </Button>
         ) : null}
       </div>

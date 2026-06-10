@@ -38,7 +38,7 @@ function toInput(values: FormValues): CreateAdminCoinPackageInput {
 export function AdminCoinPackageForm({
   initialCoinPackage,
   onSubmit,
-  submitLabel = "Luu goi coin",
+  submitLabel = "Lưu gói coin",
 }: AdminCoinPackageFormProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
@@ -78,7 +78,7 @@ export function AdminCoinPackageForm({
     );
 
     if (!parsed.success) {
-      setErrorMessage(parsed.error.issues[0]?.message ?? "Du lieu khong hop le");
+      setErrorMessage(parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ");
       return;
     }
 
@@ -86,7 +86,7 @@ export function AdminCoinPackageForm({
       await onSubmit(parsed.data);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Luu goi coin that bai",
+        error instanceof Error ? error.message : "Lưu gói coin thất bại",
       );
     }
   }
@@ -98,10 +98,10 @@ export function AdminCoinPackageForm({
     >
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-2 text-sm md:col-span-2">
-          <span className="font-medium">Ten goi</span>
+          <span className="font-medium">Tên gói</span>
           <input
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
-            placeholder="Goi 200 coin"
+            placeholder="Gói 200 coin"
             {...register("name")}
           />
         </label>
@@ -127,7 +127,7 @@ export function AdminCoinPackageForm({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Gia VND</span>
+          <span className="font-medium">Giá VND</span>
           <input
             type="number"
             min={1000}
@@ -137,7 +137,7 @@ export function AdminCoinPackageForm({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Sort order</span>
+          <span className="font-medium">Thứ tự sắp xếp</span>
           <input
             type="number"
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
@@ -151,11 +151,11 @@ export function AdminCoinPackageForm({
             className="h-4 w-4"
             {...register("isActive")}
           />
-          <span className="font-medium">Dang bat</span>
+          <span className="font-medium">Hoạt động</span>
         </label>
 
         <div className="rounded-md border bg-muted/40 p-3 text-sm">
-          Total coin: <span className="font-semibold">{totalCoin}</span>
+          Tổng coin: <span className="font-semibold">{totalCoin}</span>
         </div>
       </div>
 
@@ -167,7 +167,7 @@ export function AdminCoinPackageForm({
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Dang luu..." : submitLabel}
+          {isSubmitting ? "Đang lưu..." : submitLabel}
         </Button>
       </div>
     </form>

@@ -18,7 +18,7 @@ function formatDate(value: string): string {
 
 function getUserLabel(comment: AdminComment): string {
   if (!comment.user) {
-    return "Nguoi dung";
+    return "Người dùng";
   }
 
   return comment.user.email
@@ -38,7 +38,7 @@ export function AdminCommentsTable({
   if (comments.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Khong co binh luan nao.
+        Không có bình luận nào.
       </div>
     );
   }
@@ -50,13 +50,13 @@ export function AdminCommentsTable({
           <thead className="bg-muted/60 text-left">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
-              <th className="px-4 py-3 font-medium">Noi dung</th>
-              <th className="px-4 py-3 font-medium">User</th>
-              <th className="px-4 py-3 font-medium">Comic</th>
-              <th className="px-4 py-3 font-medium">Chapter</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Ngay tao</th>
-              <th className="px-4 py-3 text-right font-medium">Thao tac</th>
+              <th className="px-4 py-3 font-medium">Nội dung</th>
+              <th className="px-4 py-3 font-medium">Người dùng</th>
+              <th className="px-4 py-3 font-medium">Truyện</th>
+              <th className="px-4 py-3 font-medium">Chương</th>
+              <th className="px-4 py-3 font-medium">Trạng thái</th>
+              <th className="px-4 py-3 font-medium">Ngày tạo</th>
+              <th className="px-4 py-3 text-right font-medium">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +72,7 @@ export function AdminCommentsTable({
                   </p>
                   {comment.parentId ? (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Parent #{comment.parentId}
+                      Bình luận cha #{comment.parentId}
                     </p>
                   ) : null}
                 </td>
@@ -89,7 +89,7 @@ export function AdminCommentsTable({
                 <td className="px-4 py-3">
                   {comment.chapter ? (
                     <span>
-                      Chapter {comment.chapter.chapterNumber}:{" "}
+                      Chương {comment.chapter.chapterNumber}:{" "}
                       {comment.chapter.name} #{comment.chapter.id}
                     </span>
                   ) : (
@@ -104,16 +104,16 @@ export function AdminCommentsTable({
                           : "rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700"
                       }
                     >
-                      {isDeleted ? "Deleted" : "Active"}
+                      {isDeleted ? "Đã xóa" : "Hoạt động"}
                     </span>
                     {comment.deletedAt ? (
                       <p className="mt-2 text-xs text-muted-foreground">
-                        Deleted: {formatDate(comment.deletedAt)}
+                        Xóa ngày: {formatDate(comment.deletedAt)}
                       </p>
                     ) : null}
                     {comment.deleteReason ? (
                       <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                        Reason: {comment.deleteReason}
+                        Lý do: {comment.deleteReason}
                       </p>
                     ) : null}
                   </td>
@@ -126,16 +126,16 @@ export function AdminCommentsTable({
                         size="sm"
                         disabled={isDeleted || deletingId === comment.id}
                         onClick={() => {
-                          if (window.confirm("Xoa binh luan nay?")) {
+                          if (window.confirm("Xóa bình luận này?")) {
                             void onDelete(comment.id);
                           }
                         }}
                       >
                         {isDeleted
-                          ? "Da xoa"
+                          ? "Đã xóa"
                           : deletingId === comment.id
-                            ? "Dang xoa..."
-                            : "Xoa"}
+                            ? "Đang xóa..."
+                            : "Xóa"}
                       </Button>
                     </div>
                   </td>

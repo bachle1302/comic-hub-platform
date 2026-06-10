@@ -26,7 +26,7 @@ export function AdminAuthorsTable({
   if (authors.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Chua co tac gia nao.
+        Chưa có tác giả nào.
       </div>
     );
   }
@@ -38,11 +38,11 @@ export function AdminAuthorsTable({
           <thead className="bg-muted/60 text-left">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
-              <th className="px-4 py-3 font-medium">Ten</th>
+              <th className="px-4 py-3 font-medium">Tên</th>
               <th className="px-4 py-3 font-medium">Slug</th>
-              <th className="px-4 py-3 font-medium">So truyen</th>
-              <th className="px-4 py-3 font-medium">Ngay tao</th>
-              <th className="px-4 py-3 text-right font-medium">Thao tac</th>
+              <th className="px-4 py-3 font-medium">Số truyện</th>
+              <th className="px-4 py-3 font-medium">Ngày tạo</th>
+              <th className="px-4 py-3 text-right font-medium">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -63,7 +63,7 @@ export function AdminAuthorsTable({
                       size="sm"
                       onClick={() => onEdit(author)}
                     >
-                      Sua
+                      Sửa
                     </Button>
                     <Button
                       type="button"
@@ -72,7 +72,7 @@ export function AdminAuthorsTable({
                       disabled={deletingId === author.id}
                       onClick={() => onDelete(author)}
                     >
-                      {deletingId === author.id ? "Dang xoa..." : "Xoa"}
+                      {deletingId === author.id ? "Đang xóa..." : "Xóa"}
                     </Button>
                   </div>
                 </td>

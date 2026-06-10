@@ -26,7 +26,7 @@ export function AdminCoinPackagesTable({
   if (coinPackages.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Chua co goi coin nao.
+        Chưa có gói coin nào.
       </div>
     );
   }
@@ -37,14 +37,14 @@ export function AdminCoinPackagesTable({
         <table className="w-full min-w-[960px] text-sm">
           <thead className="bg-muted/60 text-left">
             <tr>
-              <th className="px-4 py-3 font-medium">Name</th>
+              <th className="px-4 py-3 font-medium">Tên gói</th>
               <th className="px-4 py-3 font-medium">Coin</th>
-              <th className="px-4 py-3 font-medium">Bonus</th>
-              <th className="px-4 py-3 font-medium">Total</th>
-              <th className="px-4 py-3 font-medium">Price</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Sort</th>
-              <th className="px-4 py-3 text-right font-medium">Thao tac</th>
+              <th className="px-4 py-3 font-medium">Thưởng</th>
+              <th className="px-4 py-3 font-medium">Tổng</th>
+              <th className="px-4 py-3 font-medium">Giá</th>
+              <th className="px-4 py-3 font-medium">Trạng thái</th>
+              <th className="px-4 py-3 font-medium">Sắp xếp</th>
+              <th className="px-4 py-3 text-right font-medium">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -68,7 +68,7 @@ export function AdminCoinPackagesTable({
                           : "rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
                       }
                     >
-                      {coinPackage.isActive ? "Active" : "Inactive"}
+                      {coinPackage.isActive ? "Hoạt động" : "Ngừng hoạt động"}
                     </span>
                   </td>
                   <td className="px-4 py-3">{coinPackage.sortOrder}</td>
@@ -76,7 +76,7 @@ export function AdminCoinPackagesTable({
                     <div className="flex flex-wrap justify-end gap-2">
                       <Button asChild size="sm" variant="outline">
                         <AdminLink href={`/admin/coin-packages/${coinPackage.id}`}>
-                          Sua
+                          Sửa
                         </AdminLink>
                       </Button>
                       <Button
@@ -89,7 +89,7 @@ export function AdminCoinPackagesTable({
                         onClick={() => {
                           if (
                             window.confirm(
-                              "Goi coin se bi tat va khong hien thi cho user. Tiep tuc?",
+                              "Gói coin sẽ bị tắt và không hiển thị cho người dùng. Tiếp tục?",
                             )
                           ) {
                             void onDelete(coinPackage.id);
@@ -97,10 +97,10 @@ export function AdminCoinPackagesTable({
                         }}
                       >
                         {!coinPackage.isActive
-                          ? "Da tat"
+                          ? "Đã tắt"
                           : deletingId === coinPackage.id
-                            ? "Dang tat..."
-                            : "Tat"}
+                            ? "Đang tắt..."
+                            : "Tắt"}
                       </Button>
                     </div>
                   </td>

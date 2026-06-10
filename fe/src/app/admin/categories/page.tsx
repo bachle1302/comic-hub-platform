@@ -30,7 +30,7 @@ export default function AdminCategoriesPage() {
       setCategories(await getAdminCategories());
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc the loai",
+        error instanceof Error ? error.message : "Không tải được thể loại",
       );
     } finally {
       setIsLoading(false);
@@ -58,20 +58,20 @@ export default function AdminCategoriesPage() {
             category.id === updatedCategory.id ? updatedCategory : category,
           ),
         );
-        setSuccessMessage("Cap nhat the loai thanh cong");
+        setSuccessMessage("Cập nhật thể loại thành công");
       } else {
         const createdCategory = await createAdminCategory(input);
         setCategories((currentCategories) => [
           createdCategory,
           ...currentCategories,
         ]);
-        setSuccessMessage("Them the loai thanh cong");
+        setSuccessMessage("Thêm thể loại thành công");
       }
 
       setEditingCategory(null);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Luu the loai that bai",
+        error instanceof Error ? error.message : "Lưu thể loại thất bại",
       );
     } finally {
       setIsSubmitting(false);
@@ -79,7 +79,7 @@ export default function AdminCategoriesPage() {
   }
 
   async function handleDelete(category: AdminCategory) {
-    const confirmed = window.confirm(`Xoa the loai "${category.name}"?`);
+    const confirmed = window.confirm(`Xóa thể loại "${category.name}"?`);
 
     if (!confirmed) {
       return;
@@ -96,14 +96,14 @@ export default function AdminCategoriesPage() {
           (currentCategory) => currentCategory.id !== category.id,
         ),
       );
-      setSuccessMessage("Xoa the loai thanh cong");
+      setSuccessMessage("Xóa thể loại thành công");
 
       if (editingCategory?.id === category.id) {
         setEditingCategory(null);
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Xoa the loai that bai",
+        error instanceof Error ? error.message : "Xóa thể loại thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -113,9 +113,9 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Thể loại</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tao, sua va xoa the loai trong catalog.
+          Tạo, sửa và xóa thể loại trong danh mục.
         </p>
       </div>
 
@@ -140,7 +140,7 @@ export default function AdminCategoriesPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai danh sach the loai...
+          Đang tải danh sách thể loại...
         </div>
       ) : (
         <AdminCategoriesTable

@@ -61,10 +61,6 @@ export function SiteHeader() {
     return () => document.removeEventListener("click", handleOutsideClick);
   }, [showDropdown]);
 
-  if (pathname.startsWith("/admin")) {
-    return null;
-  }
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedQuery = query.trim();

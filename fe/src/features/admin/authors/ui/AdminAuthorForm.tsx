@@ -61,17 +61,17 @@ export function AdminAuthorForm({
     >
       <div>
         <h2 className="text-lg font-semibold">
-          {initialAuthor ? "Sua tac gia" : "Them tac gia"}
+          {initialAuthor ? "Sửa tác giả" : "Thêm tác giả"}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Nhap ten va slug tac gia dung cho admin catalog.
+          Nhập tên và slug tác giả dùng cho danh mục quản trị.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="author-name" className="text-sm font-medium">
-            Ten tac gia
+            Tên tác giả
           </label>
           <input
             id="author-name"
@@ -101,10 +101,10 @@ export function AdminAuthorForm({
       <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
-            ? "Dang luu..."
+            ? "Đang lưu..."
             : initialAuthor
-              ? "Cap nhat tac gia"
-              : "Them tac gia"}
+              ? "Cập nhật tác giả"
+              : "Thêm tác giả"}
         </Button>
         {initialAuthor && onCancel ? (
           <Button
@@ -113,7 +113,7 @@ export function AdminAuthorForm({
             disabled={isSubmitting}
             onClick={onCancel}
           >
-            Huy
+            Hủy
           </Button>
         ) : null}
       </div>

@@ -40,7 +40,7 @@ export default function AdminComicsPage() {
       setComics(await getAdminComics({ deleted }));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc danh sach truyen",
+        error instanceof Error ? error.message : "Không tải được danh sách truyện",
       );
     } finally {
       setIsLoading(false);
@@ -61,7 +61,7 @@ export default function AdminComicsPage() {
       setCategories(nextCategories);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc options admin",
+        error instanceof Error ? error.message : "Không tải được danh sách lựa chọn",
       );
     } finally {
       setIsLoadingOptions(false);
@@ -97,19 +97,19 @@ export default function AdminComicsPage() {
             comic.id === updatedComic.id ? updatedComic : comic,
           ),
         );
-        setSuccessMessage("Cap nhat truyen thanh cong");
+        setSuccessMessage("Cập nhật truyện thành công");
       } else {
         const createdComic = await createAdminComic(input);
         if (deletedFilter !== "deleted") {
           setComics((currentComics) => [createdComic, ...currentComics]);
         }
-        setSuccessMessage("Them truyen thanh cong");
+        setSuccessMessage("Thêm truyện thành công");
       }
 
       setEditingComic(null);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Luu truyen that bai",
+        error instanceof Error ? error.message : "Lưu truyện thất bại",
       );
     } finally {
       setIsSubmitting(false);
@@ -118,7 +118,7 @@ export default function AdminComicsPage() {
 
   async function handleDelete(comic: AdminComic) {
     const confirmed = window.confirm(
-      `Truyen "${comic.name}" se duoc an khoi public, khong bi xoa vinh vien. Tiep tuc?`,
+      `Truyện "${comic.name}" sẽ được ẩn khỏi công khai, không bị xóa vĩnh viễn. Tiếp tục?`,
     );
 
     if (!confirmed) {
@@ -131,7 +131,7 @@ export default function AdminComicsPage() {
 
     try {
       const result = await deleteAdminComic(comic.id);
-      setSuccessMessage(result.message || "Xoa truyen thanh cong");
+      setSuccessMessage(result.message || "Xóa truyện thành công");
       setComics((currentComics) => {
         if (deletedFilter === "all") {
           return currentComics.map((currentComic) =>
@@ -149,7 +149,7 @@ export default function AdminComicsPage() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Xoa truyen that bai",
+        error instanceof Error ? error.message : "Xóa truyện thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -159,15 +159,15 @@ export default function AdminComicsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Quan ly truyen</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Quản lý truyện tranh</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tao, sua va xoa truyen. Chapters va upload anh se lam o buoc sau.
+          Tạo, sửa và xóa truyện. Chương và tải lên ảnh sẽ làm ở bước sau.
         </p>
       </div>
 
       {isLoading || isLoadingOptions ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai du lieu admin comics...
+          Đang tải dữ liệu truyện tranh...
         </div>
       ) : (
         <>
@@ -183,7 +183,7 @@ export default function AdminComicsPage() {
 
           <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4 text-sm">
             <label htmlFor="comic-deleted-filter" className="font-medium">
-              Trang thai
+              Trạng thái
             </label>
             <select
               id="comic-deleted-filter"
@@ -194,12 +194,12 @@ export default function AdminComicsPage() {
               }}
               className="h-10 rounded-md border bg-background px-3 outline-none focus:border-primary"
             >
-              <option value="active">Active</option>
-              <option value="deleted">Deleted</option>
-              <option value="all">All</option>
+              <option value="active">Hoạt động</option>
+              <option value="deleted">Đã xóa</option>
+              <option value="all">Tất cả</option>
             </select>
             <span className="text-muted-foreground">
-              Mac dinh chi hien thi truyen active.
+              Mặc định chỉ hiển thị truyện đang hoạt động.
             </span>
           </div>
 

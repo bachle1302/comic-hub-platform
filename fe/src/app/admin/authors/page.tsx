@@ -29,7 +29,7 @@ export default function AdminAuthorsPage() {
       setAuthors(await getAdminAuthors());
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc tac gia",
+        error instanceof Error ? error.message : "Không tải được tác giả",
       );
     } finally {
       setIsLoading(false);
@@ -57,17 +57,17 @@ export default function AdminAuthorsPage() {
             author.id === updatedAuthor.id ? updatedAuthor : author,
           ),
         );
-        setSuccessMessage("Cap nhat tac gia thanh cong");
+        setSuccessMessage("Cập nhật tác giả thành công");
       } else {
         const createdAuthor = await createAdminAuthor(input);
         setAuthors((currentAuthors) => [createdAuthor, ...currentAuthors]);
-        setSuccessMessage("Them tac gia thanh cong");
+        setSuccessMessage("Thêm tác giả thành công");
       }
 
       setEditingAuthor(null);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Luu tac gia that bai",
+        error instanceof Error ? error.message : "Lưu tác giả thất bại",
       );
     } finally {
       setIsSubmitting(false);
@@ -75,7 +75,7 @@ export default function AdminAuthorsPage() {
   }
 
   async function handleDelete(author: AdminAuthor) {
-    const confirmed = window.confirm(`Xoa tac gia "${author.name}"?`);
+    const confirmed = window.confirm(`Xóa tác giả "${author.name}"?`);
 
     if (!confirmed) {
       return;
@@ -90,14 +90,14 @@ export default function AdminAuthorsPage() {
       setAuthors((currentAuthors) =>
         currentAuthors.filter((currentAuthor) => currentAuthor.id !== author.id),
       );
-      setSuccessMessage("Xoa tac gia thanh cong");
+      setSuccessMessage("Xóa tác giả thành công");
 
       if (editingAuthor?.id === author.id) {
         setEditingAuthor(null);
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Xoa tac gia that bai",
+        error instanceof Error ? error.message : "Xóa tác giả thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -107,9 +107,9 @@ export default function AdminAuthorsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Authors</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Tác giả</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tao, sua va xoa tac gia trong catalog.
+          Tạo, sửa và xóa tác giả trong danh mục.
         </p>
       </div>
 
@@ -134,7 +134,7 @@ export default function AdminAuthorsPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai danh sach tac gia...
+          Đang tải danh sách tác giả...
         </div>
       ) : (
         <AdminAuthorsTable

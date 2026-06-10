@@ -36,7 +36,7 @@ export default function AdminCommentReportsPage() {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Khong tai duoc bao cao binh luan",
+          : "Không tải được báo cáo bình luận",
       );
     } finally {
       setIsLoading(false);
@@ -91,7 +91,7 @@ export default function AdminCommentReportsPage() {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Cap nhat trang thai bao cao that bai",
+          : "Cập nhật trạng thái báo cáo thất bại",
       );
     }
   }
@@ -106,7 +106,7 @@ export default function AdminCommentReportsPage() {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Xoa comment bi bao cao that bai",
+          : "Xóa bình luận bị báo cáo thất bại",
       );
     }
   }
@@ -114,9 +114,9 @@ export default function AdminCommentReportsPage() {
   return (
     <section className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Bao cao binh luan</h1>
+        <h1 className="text-2xl font-bold">Báo cáo bình luận</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Xem, loc va xu ly cac bao cao binh luan cua nguoi dung.
+          Xem, lọc và xử lý các báo cáo bình luận của người dùng.
         </p>
       </div>
 
@@ -133,12 +133,12 @@ export default function AdminCommentReportsPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai bao cao...
+          Đang tải báo cáo...
         </div>
       ) : reportsData ? (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Tong {reportsData.meta.total} bao cao</span>
+            <span>Tổng {reportsData.meta.total} báo cáo</span>
             <span>
               Trang {reportsData.meta.page}/{reportsData.meta.totalPages || 1}
             </span>
@@ -158,7 +158,7 @@ export default function AdminCommentReportsPage() {
                 disabled={!reportsData.meta.hasPreviousPage || isLoading}
                 onClick={() => handlePageChange((query.page ?? 1) - 1)}
               >
-                Trang truoc
+                Trang trước
               </Button>
               <span className="text-sm text-muted-foreground">
                 Trang {reportsData.meta.page}/{reportsData.meta.totalPages}
