@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/features/auth";
 import { SaveReadingProgress, getComicHistory } from "@/features/histories";
 import {
@@ -16,7 +17,6 @@ import { ReaderImageList } from "./ReaderImageList";
 type ReaderClientSectionProps = {
   chapterNumber: string;
   initialReader: ChapterReader;
-  shouldResumeFromHistory?: boolean;
   slug: string;
 };
 
@@ -42,10 +42,12 @@ type ResumeState = {
 export function ReaderClientSection({
   chapterNumber,
   initialReader,
-  shouldResumeFromHistory = false,
   slug,
 }: ReaderClientSectionProps) {
   const { isAuthenticated, isLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const continueParam = searchParams.get("continue");
+  const shouldResumeFromHistory = continueParam === "1";
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [hasImageLoadError, setHasImageLoadError] = useState(false);
   const [isLoadingProtected, setIsLoadingProtected] = useState(false);

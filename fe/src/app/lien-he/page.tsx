@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Liên hệ hỗ trợ, báo lỗi, báo cáo vi phạm hoặc khiếu nại thanh toán.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function ContactPage() {
   const settings = await getPublicSystemSettingsSafe();

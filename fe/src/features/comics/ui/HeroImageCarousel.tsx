@@ -78,10 +78,6 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
 
   // Auto slide every 5 seconds, pause on hover
   useEffect(() => {
-    // Tạm thời tắt tự động cuộn để đo tốc độ tải trang
-    return undefined;
-
-    /* Original auto-scroll code
     if (slides.length <= 1 || isHovered || disableTransition) {
       return undefined;
     }
@@ -91,7 +87,6 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
     }, SLIDE_INTERVAL_MS);
 
     return () => window.clearInterval(timer);
-    */
   }, [slides.length, isHovered, disableTransition]);
 
   // Handle instant jump when crossing boundaries to simulate infinite scroll
@@ -199,9 +194,8 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
                 aria-label={`Xem chi tiết truyện ${comic.name}`}
               >
                 <article
-                  className={`relative h-full w-full overflow-hidden rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-950 transition-all duration-500 ${
-                    isActive ? "opacity-100 shadow-[0_24px_50px_rgba(0,0,0,0.55)]" : "opacity-45"
-                  }`}
+                  className={`relative h-full w-full overflow-hidden rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-950 transition-all duration-500 ${isActive ? "opacity-100 shadow-[0_24px_50px_rgba(0,0,0,0.55)]" : "opacity-45"
+                    }`}
                 >
                   {comic.thumbnail ? (
                     <Image
@@ -213,13 +207,12 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
                         isMobile
                           ? "100vw"
                           : isActive
-                          ? "(min-width: 1280px) 60vw, 70vw"
-                          : "(min-width: 1280px) 20vw, 25vw"
+                            ? "(min-width: 1280px) 60vw, 70vw"
+                            : "(min-width: 1280px) 20vw, 25vw"
                       }
                       unoptimized
-                      className={`object-cover transition-transform duration-700 ease-out ${
-                        isActive ? "group-hover:scale-[1.03]" : ""
-                      }`}
+                      className={`object-cover transition-transform duration-700 ease-out ${isActive ? "group-hover:scale-[1.03]" : ""
+                        }`}
                     />
                   ) : null}
 
@@ -276,9 +269,8 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
               key={index}
               type="button"
               onClick={() => handleDotClick(index)}
-              className={`h-1.5 rounded-full transition-all duration-350 ${
-                index === activeIndex ? "w-6 bg-[#E53935]" : "w-1.5 bg-white/50 hover:bg-white/80"
-              }`}
+              className={`h-1.5 rounded-full transition-all duration-350 ${index === activeIndex ? "w-6 bg-[#E53935]" : "w-1.5 bg-white/50 hover:bg-white/80"
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

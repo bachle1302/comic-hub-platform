@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 type ComicsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
