@@ -25,7 +25,7 @@ export default function AdminPage() {
       } catch (error) {
         if (isMounted) {
           setErrorMessage(
-            error instanceof Error ? error.message : "Khong tai duoc thong ke",
+            error instanceof Error ? error.message : "Không tải được thống kê",
           );
         }
       } finally {
@@ -43,28 +43,28 @@ export default function AdminPage() {
   }, []);
 
   const adminLinks = [
-    { href: "/admin/users", label: "Users", description: "Quan ly user va coin" },
-    { href: "/admin/comics", label: "Comics", description: "Quan ly truyen" },
-    { href: "/admin/chapters", label: "Chapters", description: "Quan ly chuong" },
+    { href: "/admin/users", label: "Người dùng", description: "Quản lý người dùng và coin" },
+    { href: "/admin/comics", label: "Truyện tranh", description: "Quản lý truyện tranh" },
+    { href: "/admin/chapters", label: "Chương truyện", description: "Quản lý chương truyện" },
     {
       href: "/admin/comments",
-      label: "Comments",
-      description: "Quan ly binh luan",
+      label: "Bình luận",
+      description: "Quản lý bình luận",
     },
-    { href: "/admin/authors", label: "Authors", description: "Quan ly tac gia" },
+    { href: "/admin/authors", label: "Tác giả", description: "Quản lý tác giả" },
     {
       href: "/admin/categories",
-      label: "Categories",
-      description: "Quan ly the loai",
+      label: "Thể loại",
+      description: "Quản lý thể loại",
     },
   ] as const;
 
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Bảng điều khiển Admin</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Theo doi so lieu tong quan va truy cap nhanh cac khu vuc quan tri.
+          Theo dõi số liệu tổng quan và truy cập nhanh các khu vực quản trị.
         </p>
       </div>
 
@@ -88,9 +88,9 @@ export default function AdminPage() {
       ) : null}
 
       <div>
-        <h2 className="text-lg font-semibold">Quick links</h2>
+        <h2 className="text-lg font-semibold">Liên kết nhanh</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Cac trang quan tri thuong dung.
+          Các trang quản trị thường dùng.
         </p>
       </div>
 

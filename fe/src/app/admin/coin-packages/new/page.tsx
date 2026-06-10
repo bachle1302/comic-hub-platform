@@ -21,17 +21,17 @@ export default function NewAdminCoinPackagePage() {
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Tao goi coin</h1>
+          <h1 className="text-2xl font-bold">Tạo gói coin</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tao goi nap moi cho trang vi user.
+            Tạo gói nạp mới cho trang ví người dùng.
           </p>
         </div>
-        <Button asChild variant="outline">
-          <AdminLink href="/admin/coin-packages">Quay lai</AdminLink>
+        <Button asChild>
+          <AdminLink href="/admin/coin-packages">Quay lại</AdminLink>
         </Button>
       </div>
 
-      <AdminCoinPackageForm submitLabel="Tao goi coin" onSubmit={handleSubmit} />
+      <AdminCoinPackageForm submitLabel="Tạo gói coin" onSubmit={handleSubmit} />
     </section>
   );
 }

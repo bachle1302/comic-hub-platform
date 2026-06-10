@@ -33,7 +33,7 @@ export default function AdminCommentsPage() {
       setCommentsData(await getAdminComments(nextQuery));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc binh luan",
+        error instanceof Error ? error.message : "Không tải được bình luận",
       );
     } finally {
       setIsLoading(false);
@@ -96,7 +96,7 @@ export default function AdminCommentsPage() {
       });
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Xoa binh luan that bai",
+        error instanceof Error ? error.message : "Xóa bình luận thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -106,9 +106,9 @@ export default function AdminCommentsPage() {
   return (
     <section className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Quan ly binh luan</h1>
+        <h1 className="text-2xl font-bold">Quản lý bình luận</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Xem, loc va xoa binh luan trong he thong.
+          Xem, lọc và xóa bình luận trong hệ thống.
         </p>
       </div>
 
@@ -125,12 +125,12 @@ export default function AdminCommentsPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai binh luan...
+          Đang tải bình luận...
         </div>
       ) : commentsData ? (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Tong {commentsData.meta.total} binh luan</span>
+            <span>Tổng {commentsData.meta.total} bình luận</span>
             <span>
               Trang {commentsData.meta.page}/{commentsData.meta.totalPages || 1}
             </span>
@@ -150,7 +150,7 @@ export default function AdminCommentsPage() {
                 disabled={!commentsData.meta.hasPreviousPage || isLoading}
                 onClick={() => handlePageChange((query.page ?? 1) - 1)}
               >
-                Trang truoc
+                Trang trước
               </Button>
               <span className="text-sm text-muted-foreground">
                 Trang {commentsData.meta.page}/{commentsData.meta.totalPages}

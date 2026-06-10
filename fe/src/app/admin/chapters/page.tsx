@@ -46,7 +46,7 @@ export default function AdminChaptersPage() {
       setChapters(await getAdminChapters(comicId, { deleted }));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc chapter",
+        error instanceof Error ? error.message : "Không tải được chương truyện",
       );
     } finally {
       setIsLoadingChapters(false);
@@ -67,7 +67,7 @@ export default function AdminChaptersPage() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc danh sach truyen",
+        error instanceof Error ? error.message : "Không tải được danh sách truyện",
       );
     } finally {
       setIsLoading(false);
@@ -93,7 +93,7 @@ export default function AdminChaptersPage() {
     input: CreateAdminChapterInput | UpdateAdminChapterInput,
   ) {
     if (!selectedComic) {
-      setErrorMessage("Vui long chon truyen truoc");
+      setErrorMessage("Vui lòng chọn truyện trước");
       return;
     }
 
@@ -108,7 +108,7 @@ export default function AdminChaptersPage() {
             chapter.id === updatedChapter.id ? updatedChapter : chapter,
           ),
         );
-        setSuccessMessage("Cap nhat chapter thanh cong");
+        setSuccessMessage("Cập nhật chương truyện thành công");
       } else {
         const createdChapter = await createAdminChapter(
           selectedComic.id,
@@ -117,13 +117,13 @@ export default function AdminChaptersPage() {
         if (deletedFilter !== "deleted") {
           setChapters((currentChapters) => [createdChapter, ...currentChapters]);
         }
-        setSuccessMessage("Them chapter thanh cong");
+        setSuccessMessage("Thêm chương truyện thành công");
       }
 
       setEditingChapter(null);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Luu chapter that bai",
+        error instanceof Error ? error.message : "Lưu chương truyện thất bại",
       );
     }
   }
@@ -136,14 +136,14 @@ export default function AdminChaptersPage() {
       setEditingChapter(await getAdminChapter(chapter.id));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc chapter detail",
+        error instanceof Error ? error.message : "Không tải được chi tiết chương",
       );
     }
   }
 
   async function handleDelete(chapter: AdminChapter) {
     const confirmed = window.confirm(
-      `Chapter "${chapter.name}" se duoc an khoi public, khong bi xoa vinh vien. Tiep tuc?`,
+      `Chương truyện "${chapter.name}" sẽ được ẩn khỏi công khai, không bị xóa vĩnh viễn. Tiếp tục?`,
     );
 
     if (!confirmed || !selectedComic) {
@@ -176,7 +176,7 @@ export default function AdminChaptersPage() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Xoa chapter that bai",
+        error instanceof Error ? error.message : "Xóa chương truyện thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -186,25 +186,25 @@ export default function AdminChaptersPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Quan ly chuong</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Quản lý chương truyện</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Tao chapter, upload anh len object storage va luu metadata vao backend.
+          Tạo chương truyện, tải ảnh lên kho lưu trữ và lưu siêu dữ liệu vào hệ thống.
         </p>
       </div>
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai danh sach truyen...
+          Đang tải danh sách truyện...
         </div>
       ) : comics.length === 0 ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Vui long tao truyen truoc.
+          Vui lòng tạo truyện trước.
         </div>
       ) : (
         <>
           <div className="space-y-2 rounded-lg border bg-card p-4">
             <label htmlFor="chapter-comic" className="text-sm font-medium">
-              Chon truyen
+              Chọn truyện
             </label>
             <select
               id="chapter-comic"
@@ -222,7 +222,7 @@ export default function AdminChaptersPage() {
 
           <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4 text-sm">
             <label htmlFor="chapter-deleted-filter" className="font-medium">
-              Trang thai chapter
+              Trạng thái chương truyện
             </label>
             <select
               id="chapter-deleted-filter"
@@ -238,12 +238,12 @@ export default function AdminChaptersPage() {
               }}
               className="h-10 rounded-md border bg-background px-3 outline-none focus:border-primary"
             >
-              <option value="active">Active</option>
-              <option value="deleted">Deleted</option>
-              <option value="all">All</option>
+              <option value="active">Hoạt động</option>
+              <option value="deleted">Đã xóa</option>
+              <option value="all">Tất cả</option>
             </select>
             <span className="text-muted-foreground">
-              Loc chapter cua truyen dang chon theo trang thai soft delete.
+              Lọc chương truyện của truyện đang chọn theo trạng thái.
             </span>
           </div>
 
@@ -266,7 +266,7 @@ export default function AdminChaptersPage() {
 
           {isLoadingChapters ? (
             <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-              Dang tai danh sach chapter...
+              Đang tải danh sách chương truyện...
             </div>
           ) : (
             <AdminChaptersTable

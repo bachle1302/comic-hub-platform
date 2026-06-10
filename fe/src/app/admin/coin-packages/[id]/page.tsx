@@ -22,7 +22,7 @@ export default function EditAdminCoinPackagePage() {
 
   const loadCoinPackage = useCallback(async () => {
     if (!Number.isFinite(coinPackageId) || coinPackageId <= 0) {
-      setErrorMessage("Coin package ID khong hop le");
+      setErrorMessage("ID gói coin không hợp lệ");
       setIsLoading(false);
       return;
     }
@@ -34,7 +34,7 @@ export default function EditAdminCoinPackagePage() {
       setCoinPackage(await getAdminCoinPackage(coinPackageId));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc goi coin",
+        error instanceof Error ? error.message : "Không tải được gói coin",
       );
     } finally {
       setIsLoading(false);
@@ -58,13 +58,13 @@ export default function EditAdminCoinPackagePage() {
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Sua goi coin</h1>
+          <h1 className="text-2xl font-bold">Sửa gói coin</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cap nhat coin, gia, sortOrder va trang thai active.
+            Cập nhật coin, giá, thứ tự sắp xếp và trạng thái hoạt động.
           </p>
         </div>
-        <Button asChild variant="outline">
-          <AdminLink href="/admin/coin-packages">Quay lai</AdminLink>
+        <Button asChild>
+          <AdminLink href="/admin/coin-packages">Quay lại</AdminLink>
         </Button>
       </div>
 
@@ -76,12 +76,12 @@ export default function EditAdminCoinPackagePage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai goi coin...
+          Đang tải gói coin...
         </div>
       ) : coinPackage ? (
         <AdminCoinPackageForm
           initialCoinPackage={coinPackage}
-          submitLabel="Luu thay doi"
+          submitLabel="Lưu thay đổi"
           onSubmit={handleSubmit}
         />
       ) : null}

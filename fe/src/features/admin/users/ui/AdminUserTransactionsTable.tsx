@@ -11,13 +11,26 @@ function formatNullableNumber(value?: number | null): string {
   return value === undefined || value === null ? "-" : String(value);
 }
 
+const typeLabels: Record<string, string> = {
+  DEPOSIT: "Nạp coin",
+  SPEND: "Tiêu coin",
+  ADJUST: "Điều chỉnh",
+  REFUND: "Hoàn coin",
+};
+
+const statusLabels: Record<string, string> = {
+  SUCCESS: "Thành công",
+  FAILED: "Thất bại",
+  PENDING: "Đang chờ",
+};
+
 export function AdminUserTransactionsTable({
   transactions,
 }: AdminUserTransactionsTableProps) {
   if (transactions.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        User nay chua co transaction.
+        Người dùng này chưa có giao dịch.
       </div>
     );
   }
@@ -29,13 +42,13 @@ export function AdminUserTransactionsTable({
           <thead className="bg-muted/60 text-left">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
-              <th className="px-4 py-3 font-medium">Amount</th>
-              <th className="px-4 py-3 font-medium">Type</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Before</th>
-              <th className="px-4 py-3 font-medium">After</th>
-              <th className="px-4 py-3 font-medium">Description</th>
-              <th className="px-4 py-3 font-medium">Created</th>
+              <th className="px-4 py-3 font-medium">Số coin</th>
+              <th className="px-4 py-3 font-medium">Loại giao dịch</th>
+              <th className="px-4 py-3 font-medium">Trạng thái</th>
+              <th className="px-4 py-3 font-medium">Trước</th>
+              <th className="px-4 py-3 font-medium">Sau</th>
+              <th className="px-4 py-3 font-medium">Mô tả</th>
+              <th className="px-4 py-3 font-medium">Ngày tạo</th>
             </tr>
           </thead>
           <tbody>
@@ -51,8 +64,12 @@ export function AdminUserTransactionsTable({
                 >
                   {transaction.amount}
                 </td>
-                <td className="px-4 py-3">{transaction.type}</td>
-                <td className="px-4 py-3">{transaction.status}</td>
+                <td className="px-4 py-3">
+                  {typeLabels[transaction.type] ?? transaction.type}
+                </td>
+                <td className="px-4 py-3">
+                  {statusLabels[transaction.status] ?? transaction.status}
+                </td>
                 <td className="px-4 py-3">
                   {formatNullableNumber(transaction.balanceBefore)}
                 </td>

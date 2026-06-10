@@ -78,6 +78,10 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
 
   // Auto slide every 5 seconds, pause on hover
   useEffect(() => {
+    // Tạm thời tắt tự động cuộn để đo tốc độ tải trang
+    return undefined;
+
+    /* Original auto-scroll code
     if (slides.length <= 1 || isHovered || disableTransition) {
       return undefined;
     }
@@ -87,6 +91,7 @@ export function HeroImageCarousel({ comics, className = "" }: HeroImageCarouselP
     }, SLIDE_INTERVAL_MS);
 
     return () => window.clearInterval(timer);
+    */
   }, [slides.length, isHovered, disableTransition]);
 
   // Handle instant jump when crossing boundaries to simulate infinite scroll

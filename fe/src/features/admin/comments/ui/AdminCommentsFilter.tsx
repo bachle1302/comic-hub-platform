@@ -65,7 +65,7 @@ export function AdminCommentsFilter({
       className="grid gap-3 rounded-lg border p-4 md:grid-cols-[1fr_1fr_160px_160px_auto]"
     >
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Comic ID</span>
+        <span className="font-medium">ID truyện</span>
         <input
           type="number"
           min={1}
@@ -77,7 +77,7 @@ export function AdminCommentsFilter({
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Chapter ID</span>
+        <span className="font-medium">ID chương</span>
         <input
           type="number"
           min={1}
@@ -89,7 +89,7 @@ export function AdminCommentsFilter({
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Trang thai</span>
+        <span className="font-medium">Trạng thái</span>
         <select
           value={deleted}
           onChange={(event) =>
@@ -97,14 +97,14 @@ export function AdminCommentsFilter({
           }
           className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
         >
-          <option value="active">Active</option>
-          <option value="deleted">Deleted</option>
-          <option value="all">All</option>
+          <option value="active">Hoạt động</option>
+          <option value="deleted">Đã xóa</option>
+          <option value="all">Tất cả</option>
         </select>
       </label>
 
       <label className="space-y-2 text-sm">
-        <span className="font-medium">Limit</span>
+        <span className="font-medium">Số dòng hiển thị</span>
         <select
           value={limit}
           onChange={(event) => setLimit(event.target.value)}
@@ -117,9 +117,9 @@ export function AdminCommentsFilter({
       </label>
 
       <div className="flex items-end gap-2">
-        <Button type="submit">Loc</Button>
+        <Button type="submit">Lọc</Button>
         <Button type="button" variant="outline" onClick={handleClear}>
-          Xoa loc
+          Xóa lọc
         </Button>
       </div>
     </form>

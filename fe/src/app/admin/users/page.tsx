@@ -30,7 +30,7 @@ export default function AdminUsersPage() {
       setUsersData(await getAdminUsers(nextQuery));
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Khong tai duoc users",
+        error instanceof Error ? error.message : "Không tải được người dùng",
       );
     } finally {
       setIsLoading(false);
@@ -69,9 +69,9 @@ export default function AdminUsersPage() {
   return (
     <section className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Quan ly nguoi dung</h1>
+        <h1 className="text-2xl font-bold">Quản lý người dùng</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Xem user, tim kiem theo ten/email va vao chi tiet de dieu chinh coin.
+          Xem người dùng, tìm kiếm theo tên/email và vào chi tiết để điều chỉnh coin.
         </p>
       </div>
 
@@ -85,12 +85,12 @@ export default function AdminUsersPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai users...
+          Đang tải người dùng...
         </div>
       ) : usersData ? (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Tong {usersData.meta.total} users</span>
+            <span>Tổng {usersData.meta.total} người dùng</span>
             <span>
               Trang {usersData.meta.page}/{usersData.meta.totalPages || 1}
             </span>
@@ -106,7 +106,7 @@ export default function AdminUsersPage() {
                 disabled={!usersData.meta.hasPreviousPage || isLoading}
                 onClick={() => handlePageChange((query.page ?? 1) - 1)}
               >
-                Trang truoc
+                Trang trước
               </Button>
               <span className="text-sm text-muted-foreground">
                 Trang {usersData.meta.page}/{usersData.meta.totalPages}

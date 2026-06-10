@@ -17,6 +17,12 @@ type AdminCommentReportsTableProps = {
 
 const statuses: CommentReportStatus[] = ["PENDING", "RESOLVED", "REJECTED"];
 
+const statusLabels: Record<CommentReportStatus, string> = {
+  PENDING: "Đang chờ",
+  RESOLVED: "Đã giải quyết",
+  REJECTED: "Đã bác bỏ",
+};
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("vi-VN", {
     dateStyle: "short",
@@ -26,7 +32,7 @@ function formatDate(value: string): string {
 
 function getUserLabel(user?: { email?: string; name: string }): string {
   if (!user) {
-    return "Nguoi dung";
+    return "Người dùng";
   }
 
   return user.email ? `${user.name} (${user.email})` : user.name;
@@ -44,7 +50,7 @@ export function AdminCommentReportsTable({
   if (reports.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Khong co bao cao nao.
+        Không có báo cáo nào.
       </div>
     );
   }
@@ -55,15 +61,15 @@ export function AdminCommentReportsTable({
         <table className="w-full min-w-[1180px] text-sm">
           <thead className="bg-muted/60 text-left">
             <tr>
-              <th className="px-4 py-3 font-medium">Report</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Ly do</th>
-              <th className="px-4 py-3 font-medium">Reporter</th>
-              <th className="px-4 py-3 font-medium">Comment</th>
-              <th className="px-4 py-3 font-medium">Owner</th>
-              <th className="px-4 py-3 font-medium">Context</th>
-              <th className="px-4 py-3 font-medium">Ngay tao</th>
-              <th className="px-4 py-3 text-right font-medium">Thao tac</th>
+              <th className="px-4 py-3 font-medium">Báo cáo</th>
+              <th className="px-4 py-3 font-medium">Trạng thái</th>
+              <th className="px-4 py-3 font-medium">Lý do</th>
+              <th className="px-4 py-3 font-medium">Người báo cáo</th>
+              <th className="px-4 py-3 font-medium">Bình luận</th>
+              <th className="px-4 py-3 font-medium">Người viết</th>
+              <th className="px-4 py-3 font-medium">Bối cảnh</th>
+              <th className="px-4 py-3 font-medium">Ngày tạo</th>
+              <th className="px-4 py-3 text-right font-medium">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -75,7 +81,7 @@ export function AdminCommentReportsTable({
                 <td className="px-4 py-3">#{report.id}</td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-muted px-2 py-1 text-xs font-medium">
-                    {report.status}
+                    {statusLabels[report.status]}
                   </span>
                 </td>
                 <td className="max-w-xs px-4 py-3">
@@ -91,28 +97,28 @@ export function AdminCommentReportsTable({
                         {report.comment.content}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Comment #{report.comment.id}
+                        Bình luận #{report.comment.id}
                       </p>
                       {isDeleted ? (
                         <div className="mt-2 space-y-1">
                           <span className="rounded-full bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive">
-                            Deleted
+                            Đã xóa
                           </span>
                           {report.comment.deletedAt ? (
                             <p className="text-xs text-muted-foreground">
-                              Deleted: {formatDate(report.comment.deletedAt)}
+                              Xóa ngày: {formatDate(report.comment.deletedAt)}
                             </p>
                           ) : null}
                           {report.comment.deleteReason ? (
                             <p className="text-xs text-muted-foreground">
-                              Reason: {report.comment.deleteReason}
+                              Lý do: {report.comment.deleteReason}
                             </p>
                           ) : null}
                         </div>
                       ) : null}
                     </>
                   ) : (
-                    <span className="text-muted-foreground">Da bi xoa</span>
+                    <span className="text-muted-foreground">Đã bị xóa</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -126,7 +132,7 @@ export function AdminCommentReportsTable({
                   ) : null}
                   {report.comment?.chapter ? (
                     <p className="text-xs text-muted-foreground">
-                      Chapter {report.comment.chapter.chapterNumber}:{" "}
+                      Chương {report.comment.chapter.chapterNumber}:{" "}
                       {report.comment.chapter.name} #
                       {report.comment.chapter.id}
                     </p>
@@ -150,7 +156,7 @@ export function AdminCommentReportsTable({
                           disabled={report.status === status}
                           onClick={() => void onStatusChange(report.id, status)}
                         >
-                          {status}
+                          {statusLabels[status]}
                         </Button>
                       ))}
                     </div>
@@ -160,12 +166,12 @@ export function AdminCommentReportsTable({
                       variant="destructive"
                       disabled={isDeleted}
                       onClick={() => {
-                        if (window.confirm("Xoa comment bi bao cao nay?")) {
+                        if (window.confirm("Xóa bình luận bị báo cáo này?")) {
                           void onDeleteComment(report.id);
                         }
                       }}
                     >
-                      {isDeleted ? "Da xoa" : "Xoa comment"}
+                      {isDeleted ? "Đã xóa" : "Xóa bình luận"}
                     </Button>
                   </div>
                 </td>

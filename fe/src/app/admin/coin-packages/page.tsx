@@ -35,7 +35,7 @@ export default function AdminCoinPackagesPage() {
         setData(await getAdminCoinPackages(nextQuery));
       } catch (error) {
         setErrorMessage(
-          error instanceof Error ? error.message : "Khong tai duoc goi coin",
+          error instanceof Error ? error.message : "Không tải được gói coin",
         );
       } finally {
         setIsLoading(false);
@@ -80,7 +80,7 @@ export default function AdminCoinPackagesPage() {
 
     try {
       await deleteAdminCoinPackage(id);
-      setSuccessMessage("Da tat goi coin.");
+      setSuccessMessage("Đã tắt gói coin.");
       setData((currentData) => {
         if (!currentData) {
           return currentData;
@@ -104,7 +104,7 @@ export default function AdminCoinPackagesPage() {
       });
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Tat goi coin that bai",
+        error instanceof Error ? error.message : "Tắt gói coin thất bại",
       );
     } finally {
       setDeletingId(null);
@@ -115,13 +115,13 @@ export default function AdminCoinPackagesPage() {
     <section className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Goi coin</h1>
+          <h1 className="text-2xl font-bold">Gói coin</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Quan ly cac goi nap coin hien thi tren vi user.
+            Quản lý các gói nạp coin hiển thị trên ví người dùng.
           </p>
         </div>
         <Button asChild>
-          <AdminLink href="/admin/coin-packages/new">Tao goi coin</AdminLink>
+          <AdminLink href="/admin/coin-packages/new">Tạo gói coin</AdminLink>
         </Button>
       </div>
 
@@ -144,12 +144,12 @@ export default function AdminCoinPackagesPage() {
 
       {isLoading ? (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-          Dang tai goi coin...
+          Đang tải gói coin...
         </div>
       ) : data ? (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
-            <span>Tong {data.meta.total} goi coin</span>
+            <span>Tổng {data.meta.total} gói coin</span>
             <span>
               Trang {data.meta.page}/{data.meta.totalPages || 1}
             </span>
@@ -169,7 +169,7 @@ export default function AdminCoinPackagesPage() {
                 disabled={!data.meta.hasPreviousPage || isLoading}
                 onClick={() => handlePageChange((query.page ?? 1) - 1)}
               >
-                Trang truoc
+                Trang trước
               </Button>
               <span className="text-sm text-muted-foreground">
                 Trang {data.meta.page}/{data.meta.totalPages}

@@ -87,7 +87,7 @@ export function AdminAuditLogsFilter({
     <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border p-4">
       <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-4">
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Tim kiem</span>
+          <span className="font-medium">Tìm kiếm</span>
           <input
             type="text"
             value={q}
@@ -98,13 +98,13 @@ export function AdminAuditLogsFilter({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Action</span>
+          <span className="font-medium">Hành động</span>
           <select
             value={action}
             onChange={(event) => setAction(event.target.value)}
             className="h-10 w-full rounded-md border bg-background px-3 outline-none focus:border-primary"
           >
-            <option value="">Tat ca</option>
+            <option value="">Tất cả</option>
             {adminAuditActionValues.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -126,7 +126,7 @@ export function AdminAuditLogsFilter({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Entity type</span>
+          <span className="font-medium">Loại đối tượng</span>
           <input
             type="text"
             value={entityType}
@@ -137,7 +137,7 @@ export function AdminAuditLogsFilter({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Entity ID</span>
+          <span className="font-medium">ID đối tượng</span>
           <input
             type="text"
             value={entityId}
@@ -148,7 +148,7 @@ export function AdminAuditLogsFilter({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Tu ngay</span>
+          <span className="font-medium">Từ ngày</span>
           <input
             type="date"
             value={dateFrom}
@@ -158,7 +158,7 @@ export function AdminAuditLogsFilter({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Den ngay</span>
+          <span className="font-medium">Đến ngày</span>
           <input
             type="date"
             value={dateTo}
@@ -168,7 +168,7 @@ export function AdminAuditLogsFilter({
         </label>
 
         <label className="space-y-2 text-sm">
-          <span className="font-medium">Limit</span>
+          <span className="font-medium">Số dòng hiển thị</span>
           <select
             value={limit}
             onChange={(event) => setLimit(event.target.value)}
@@ -183,9 +183,9 @@ export function AdminAuditLogsFilter({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit">Loc</Button>
+        <Button type="submit">Lọc</Button>
         <Button type="button" variant="outline" onClick={handleClear}>
-          Xoa loc
+          Xóa lọc
         </Button>
       </div>
     </form>

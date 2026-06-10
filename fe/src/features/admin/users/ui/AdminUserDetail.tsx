@@ -17,6 +17,11 @@ function DetailRow({ label, value }: { label: string; value: string | number }) 
   );
 }
 
+const roleLabels: Record<string, string> = {
+  ADMIN: "Quản trị viên",
+  USER: "Người dùng",
+};
+
 export function AdminUserDetail({ user }: AdminUserDetailProps) {
   return (
     <div className="rounded-lg border bg-card p-4">
@@ -41,18 +46,18 @@ export function AdminUserDetail({ user }: AdminUserDetailProps) {
           <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border px-3 py-1 text-xs font-medium">
-              {user.role}
+              {roleLabels[user.role] ?? user.role}
             </span>
             <span className="rounded-full border px-3 py-1 text-xs font-medium">
               {user.coin} coin
             </span>
             {user.bannedAt ? (
               <span className="rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-semibold text-destructive">
-                Banned
+                Bị khóa
               </span>
             ) : (
               <span className="rounded-full border border-green-600/30 bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                Active
+                Hoạt động
               </span>
             )}
           </div>
@@ -62,35 +67,35 @@ export function AdminUserDetail({ user }: AdminUserDetailProps) {
       {user.bannedAt ? (
         <div className="mt-5 rounded-md border border-destructive/30 bg-destructive/5 p-3">
           <p className="text-sm font-semibold text-destructive">
-            Tai khoan nay dang bi ban
+            Tài khoản này đang bị khóa
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Banned at: {formatDate(user.bannedAt)}
+            Bị khóa lúc: {formatDate(user.bannedAt)}
           </p>
           <p className="mt-1 break-words text-sm text-muted-foreground">
-            Reason: {user.banReason || "-"}
+            Lý do: {user.banReason || "-"}
           </p>
         </div>
       ) : null}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <DetailRow label="User ID" value={user.id} />
+        <DetailRow label="ID người dùng" value={user.id} />
         <DetailRow
-          label="Account status"
-          value={user.bannedAt ? "Banned" : "Active"}
+          label="Trạng thái tài khoản"
+          value={user.bannedAt ? "Bị khóa" : "Hoạt động"}
         />
         <DetailRow
-          label="Banned at"
+          label="Bị khóa lúc"
           value={user.bannedAt ? formatDate(user.bannedAt) : "-"}
         />
-        <DetailRow label="Ban reason" value={user.banReason || "-"} />
-        <DetailRow label="Created" value={formatDate(user.createdAt)} />
-        <DetailRow label="Updated" value={formatDate(user.updatedAt)} />
-        <DetailRow label="Transactions" value={user._count?.transactions ?? 0} />
-        <DetailRow label="Purchases" value={user._count?.purchases ?? 0} />
-        <DetailRow label="Comments" value={user._count?.comments ?? 0} />
-        <DetailRow label="Follows" value={user._count?.follows ?? 0} />
-        <DetailRow label="Histories" value={user._count?.histories ?? 0} />
+        <DetailRow label="Lý do khóa" value={user.banReason || "-"} />
+        <DetailRow label="Ngày tạo" value={formatDate(user.createdAt)} />
+        <DetailRow label="Ngày cập nhật" value={formatDate(user.updatedAt)} />
+        <DetailRow label="Số giao dịch" value={user._count?.transactions ?? 0} />
+        <DetailRow label="Số lượt mua" value={user._count?.purchases ?? 0} />
+        <DetailRow label="Số bình luận" value={user._count?.comments ?? 0} />
+        <DetailRow label="Số lượt theo dõi" value={user._count?.follows ?? 0} />
+        <DetailRow label="Lịch sử đọc" value={user._count?.histories ?? 0} />
       </div>
     </div>
   );

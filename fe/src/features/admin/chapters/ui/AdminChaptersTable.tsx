@@ -34,7 +34,7 @@ export function AdminChaptersTable({
   if (chapters.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-sm text-muted-foreground">
-        Chua co chapter nao cho truyen nay.
+        Chưa có chương nào cho truyện này.
       </div>
     );
   }
@@ -46,15 +46,15 @@ export function AdminChaptersTable({
           <thead className="bg-muted/60 text-left">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
-              <th className="px-4 py-3 font-medium">Ten</th>
-              <th className="px-4 py-3 font-medium">Chapter</th>
-              <th className="px-4 py-3 font-medium">Gia</th>
-              <th className="px-4 py-3 font-medium">Public</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Anh</th>
-              <th className="px-4 py-3 font-medium">Views</th>
-              <th className="px-4 py-3 font-medium">Ngay tao</th>
-              <th className="px-4 py-3 text-right font-medium">Thao tac</th>
+              <th className="px-4 py-3 font-medium">Tên</th>
+              <th className="px-4 py-3 font-medium">Chương</th>
+              <th className="px-4 py-3 font-medium">Giá</th>
+              <th className="px-4 py-3 font-medium">Công khai</th>
+              <th className="px-4 py-3 font-medium">Trạng thái</th>
+              <th className="px-4 py-3 font-medium">Số ảnh</th>
+              <th className="px-4 py-3 font-medium">Lượt xem</th>
+              <th className="px-4 py-3 font-medium">Ngày tạo</th>
+              <th className="px-4 py-3 text-right font-medium">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -68,7 +68,7 @@ export function AdminChaptersTable({
                 <td className="px-4 py-3">{chapter.chapterNumber}</td>
                 <td className="px-4 py-3">{chapter.price}</td>
                 <td className="px-4 py-3">
-                  {chapter.isPublic ? "Yes" : "No"}
+                  {chapter.isPublic ? "Có" : "Không"}
                 </td>
                 <td className="px-4 py-3">
                   <span
@@ -78,16 +78,16 @@ export function AdminChaptersTable({
                         : "rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700"
                     }
                   >
-                    {isDeleted ? "Deleted" : "Active"}
+                    {isDeleted ? "Đã xóa" : "Hoạt động"}
                   </span>
                   {chapter.deletedAt ? (
                     <p className="mt-2 text-xs text-muted-foreground">
-                      Deleted: {formatDate(chapter.deletedAt)}
+                      Xóa ngày: {formatDate(chapter.deletedAt)}
                     </p>
                   ) : null}
                   {chapter.deleteReason ? (
                     <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                      Reason: {chapter.deleteReason}
+                      Lý do: {chapter.deleteReason}
                     </p>
                   ) : null}
                 </td>
@@ -103,7 +103,7 @@ export function AdminChaptersTable({
                       disabled={isDeleted}
                       onClick={() => onEdit(chapter)}
                     >
-                      Sua
+                      Sửa
                     </Button>
                     <Button
                       type="button"
@@ -113,10 +113,10 @@ export function AdminChaptersTable({
                       onClick={() => onDelete(chapter)}
                     >
                       {isDeleted
-                        ? "Da xoa"
+                        ? "Đã xóa"
                         : deletingId === chapter.id
-                          ? "Dang xoa..."
-                          : "Xoa"}
+                          ? "Đang xóa..."
+                          : "Xóa"}
                     </Button>
                   </div>
                 </td>

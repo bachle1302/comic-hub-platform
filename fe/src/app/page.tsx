@@ -21,7 +21,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 async function safeLoad<T>(task: Promise<T>, fallback: T): Promise<T> {
   try {
