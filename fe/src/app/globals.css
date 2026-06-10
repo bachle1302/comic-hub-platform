@@ -126,7 +126,7 @@
   }
   html {
     @apply font-sans;
-    background-color: #b90805;
+    background-color: #c00906;
   }
   ::selection {
     background-color: #E53935;

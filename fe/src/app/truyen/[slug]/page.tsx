@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CommentSection } from "@/features/comments";
-import { ChapterList, ComicLikeButton, getComicDetail } from "@/features/comics";
+import { ChapterList, ComicLikeButton, getComicDetail, getAllComics } from "@/features/comics";
 import { FollowButton } from "@/features/follows";
 import { ContinueReadingButton } from "@/features/histories";
 import {
@@ -25,7 +25,18 @@ type ComicDetailPageProps = {
 };
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
+
+export async function generateStaticParams() {
+  try {
+    const comics = await getAllComics();
+    return comics.map((comic) => ({
+      slug: comic.slug,
+    }));
+  } catch (error) {
+    console.error("Failed to generate static params for comics:", error);
+    return [];
+  }
+}
 
 export async function generateMetadata({
   params,

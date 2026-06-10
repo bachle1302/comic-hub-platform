@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Info } from "lucide-react";
 import { CommentSection } from "@/features/comments";
 import { ReaderClientSection, ReaderNavigation, getChapter } from "@/features/reader";
+import { getAllComics, getComicDetail } from "@/features/comics";
 import { absoluteUrl, createOpenGraphImages } from "@/shared/seo/metadata";
 import { formatDate } from "@/shared/utils/format";
 
@@ -11,13 +13,37 @@ type ReaderPageProps = {
     chapterNumber: string;
     slug: string;
   }>;
-  searchParams?: Promise<{
-    continue?: string | string[];
-  }>;
 };
 
 export const revalidate = 120;
-export const dynamic = "force-dynamic";
+
+export async function generateStaticParams() {
+  try {
+    const comics = await getAllComics();
+    const results = await Promise.allSettled(
+      comics.map((comic) => getComicDetail(comic.slug)),
+    );
+
+    const params: Array<{ slug: string; chapterNumber: string }> = [];
+
+    for (const result of results) {
+      if (result.status === "fulfilled") {
+        const comicDetail = result.value;
+        for (const chapter of comicDetail.chapters) {
+          params.push({
+            slug: comicDetail.slug,
+            chapterNumber: String(chapter.chapterNumber),
+          });
+        }
+      }
+    }
+
+    return params;
+  } catch (error) {
+    console.error("Failed to generate static params for reader pages:", error);
+    return [];
+  }
+}
 
 export async function generateMetadata({
   params,
@@ -66,13 +92,8 @@ export async function generateMetadata({
   }
 }
 
-export default async function ReaderPage({ params, searchParams }: ReaderPageProps) {
+export default async function ReaderPage({ params }: ReaderPageProps) {
   const { chapterNumber, slug } = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : {};
-  const continueParam = resolvedSearchParams.continue;
-  const shouldResumeFromHistory = Array.isArray(continueParam)
-    ? continueParam.includes("1")
-    : continueParam === "1";
   const reader = await getChapter(slug, chapterNumber);
   const chapterName =
     reader.chapter?.name ?? reader.name ?? `Chapter ${chapterNumber}`;
@@ -135,12 +156,13 @@ export default async function ReaderPage({ params, searchParams }: ReaderPagePro
         />
       </header>
 
-      <ReaderClientSection
-        chapterNumber={chapterNumber}
-        initialReader={reader}
-        shouldResumeFromHistory={shouldResumeFromHistory}
-        slug={slug}
-      />
+      <Suspense fallback={<p className="text-center text-sm text-muted-foreground my-8">Đang tải nội dung chương...</p>}>
+        <ReaderClientSection
+          chapterNumber={chapterNumber}
+          initialReader={reader}
+          slug={slug}
+        />
+      </Suspense>
 
       <div className="mx-auto max-w-5xl rounded-xl border bg-card p-4 shadow-sm">
         <ReaderNavigation
