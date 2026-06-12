@@ -3,7 +3,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Info } from "lucide-react";
 import { CommentSection } from "@/features/comments";
-import { ReaderClientSection, ReaderNavigation, getChapter } from "@/features/reader";
+import {
+  ReaderClientSection,
+  ReaderFloatingToolbar,
+  ReaderNavigation,
+  getChapter,
+} from "@/features/reader";
 import { getAllComics, getComicDetail } from "@/features/comics";
 import { absoluteUrl, createOpenGraphImages } from "@/shared/seo/metadata";
 import { formatDate } from "@/shared/utils/format";
@@ -105,8 +110,9 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
   const formattedDate = updatedAtString ? formatDate(updatedAtString) : "";
 
   return (
-    <div className="space-y-6">
-      <header className="mx-auto max-w-5xl space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm">
+    <div className="-mx-4 -my-6 min-h-screen bg-background px-4 py-6 text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 pb-24">
+      <header className="space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm">
         {/* Breadcrumbs */}
         <nav className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
           <Link href="/" prefetch={false} className="hover:text-foreground transition-colors">
@@ -164,7 +170,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
         />
       </Suspense>
 
-      <div className="mx-auto max-w-5xl rounded-xl border bg-card p-4 shadow-sm">
+      <div className="rounded-xl border bg-card p-4 shadow-sm">
         <ReaderNavigation
           comicSlug={reader.comic.slug}
           nextChapter={reader.navigation.nextChapter}
@@ -173,6 +179,16 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
       </div>
 
       {chapterId ? <CommentSection targetId={chapterId} targetType="chapter" /> : null}
+
+      <ReaderFloatingToolbar
+        comicId={reader.comic.id}
+        comicSlug={reader.comic.slug}
+        currentChapterName={chapterName}
+        currentChapterNumber={resolvedChapterNumber}
+        nextChapter={reader.navigation.nextChapter}
+        previousChapter={reader.navigation.previousChapter}
+      />
+      </div>
     </div>
   );
 }
