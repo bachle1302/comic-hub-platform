@@ -76,32 +76,22 @@ export default async function HomePage() {
         </section>
 
         {/* Personalized / Fallback Recommendations */}
-        <LazyLoad>
+          <FeaturedComicsSection />
           <PersonalizedRecommendationSection limit={12} />
-        </LazyLoad>
 
         {/* Recommended Comics */}
-        <LazyLoad>
-          <FeaturedComicsSection />
-        </LazyLoad>
 
         {/* Two Column Layout (Content & Sidebar) */}
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-10">
-            <LazyLoad>
               <LatestComicsSection />
-            </LazyLoad>
 
-            <LazyLoad>
-              <CompletedComicsSection />
-            </LazyLoad>
+              {/* <CompletedComicsSection /> */}
           </div>
 
           {/* Sidebar Area */}
           <div className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-            <LazyLoad>
               <PopularComicsSidebarSection />
-            </LazyLoad>
             <CategoryCloud categories={categoriesData.categories} />
           </div>
         </div>

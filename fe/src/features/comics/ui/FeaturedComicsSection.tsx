@@ -48,7 +48,7 @@ export function FeaturedComicsSection() {
 
   return (
     <ComicSection
-      title="Truyện đề cử"
+      title="Truyện hot"
       description="Các bộ truyện nổi bật đang được nhiều độc giả quan tâm."
       href="/truyen"
       comics={comics}
