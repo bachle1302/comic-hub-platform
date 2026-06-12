@@ -21,6 +21,8 @@ type LazyImageProps = {
   onImageError?: () => void;
 };
 
+const READER_IMAGE_MAX_WIDTH = 820;
+
 function LazyImage({ image, index, priority, onImageError }: LazyImageProps) {
   const [isIntersecting, setIsIntersecting] = useState(priority);
   const ref = useRef<HTMLDivElement>(null);
@@ -66,10 +68,12 @@ function LazyImage({ image, index, priority, onImageError }: LazyImageProps) {
     <div
       ref={ref}
       id={`page-${index}`}
-      className="w-full max-w-[960px] bg-muted/10 flex items-center justify-center overflow-hidden"
+      className="w-full bg-muted/10 flex items-center justify-center overflow-hidden"
       style={{
         ...aspectRatioStyle,
-        maxWidth: image.width ? `${image.width}px` : undefined,
+        maxWidth: image.width
+          ? `${Math.min(image.width, READER_IMAGE_MAX_WIDTH)}px`
+          : `${READER_IMAGE_MAX_WIDTH}px`,
       }}
     >
       {isIntersecting ? (

@@ -136,7 +136,7 @@ export function CommentSection({ targetId, targetType }: CommentSectionProps) {
   }
 
   return (
-    <section className="mx-auto max-w-5xl space-y-4 rounded-lg border p-4">
+    <section className="dark mx-auto max-w-5xl space-y-4 rounded-lg border border-zinc-900 bg-black p-4 text-zinc-100">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-xl font-semibold">Bình luận</h2>

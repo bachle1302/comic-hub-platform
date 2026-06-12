@@ -81,7 +81,7 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-zinc-100/95 dark:bg-zinc-900/95 backdrop-blur">
+    <header className="bg-zinc-100/95 dark:bg-zinc-900/95 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4">
         {/* Left Section: Logo & Links */}
         <div className="flex items-center gap-8">
