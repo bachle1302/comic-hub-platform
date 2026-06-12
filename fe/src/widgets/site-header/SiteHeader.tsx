@@ -16,10 +16,31 @@ import {
   Settings,
   LogOut,
   ShieldAlert,
+  Home,
+  LayoutGrid,
+  Trophy,
+  Flag,
+  Zap,
+  BarChart3,
+  BookOpen,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/modetoggle";
 import { useAuth } from "@/features/auth/model/auth-store";
+import { clientApiGet } from "@/shared/api/client-api";
+import { categoriesSchema, type CategoryListItem } from "@/features/categories";
+
+const PRESET_CATEGORIES = [
+  { id: 1, name: "Action", slug: "action" },
+  { id: 2, name: "Adventure", slug: "adventure" },
+  { id: 3, name: "Comedy", slug: "comedy" },
+  { id: 4, name: "Fantasy", slug: "fantasy" },
+  { id: 5, name: "Drama", slug: "drama" },
+  { id: 6, name: "Shounen", slug: "shounen" },
+  { id: 7, name: "Romance", slug: "romance" },
+  { id: 8, name: "School Life", slug: "school-life" },
+];
 
 const NotificationBell = dynamic(
   () =>
@@ -43,11 +64,32 @@ const WalletBadge = dynamic(
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const isHomeActive = pathname === "/";
+  const isManhwaActive = pathname === "/the-loai/manhwa";
+  const isMangaActive = pathname === "/the-loai/manga";
+  const isManhuaActive = pathname === "/the-loai/manhua";
+  const isNgonTinhActive = pathname === "/the-loai/ngon-tinh";
+  const isSearchActive = pathname === "/tim-kiem";
+  const isHistoriesActive = pathname === "/me/histories";
+  const isFollowsActive = pathname === "/me/follows";
+  const isCategoryActive = pathname.startsWith("/the-loai") && !isManhwaActive && !isMangaActive && !isManhuaActive && !isNgonTinhActive;
+  const isRankingActive = pathname.startsWith("/bang-xep-hang");
   const router = useRouter();
   const { isAuthenticated, isLoading, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [query, setQuery] = useState("");
+  const [categories, setCategories] = useState<CategoryListItem[]>([]);
+
+  useEffect(() => {
+    clientApiGet("/categories", categoriesSchema)
+      .then((data) => {
+        setCategories(data.categories);
+      })
+      .catch((err) => {
+        console.error("Failed to load categories in header:", err);
+      });
+  }, []);
 
   useEffect(() => {
     if (!showDropdown) return;
@@ -81,10 +123,10 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="bg-zinc-100/95 dark:bg-zinc-900/95 backdrop-blur">
+    <header className="relative z-50 w-full bg-zinc-100/95 dark:bg-black/95 backdrop-blur shadow-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4">
-        {/* Left Section: Logo & Links */}
-        <div className="flex items-center gap-8">
+        {/* Left Section: Logo & Search */}
+        <div className="flex items-center gap-6 md:gap-8 flex-1 max-w-3xl mr-4">
           <Link href="/" prefetch={false} className="flex items-center gap-2.5 cursor-pointer group shrink-0">
             <svg 
               width="48" 
@@ -108,7 +150,7 @@ export function SiteHeader() {
               <circle cx="50" cy="50" r="1.5" fill="#ffffff" />
             </svg>
 
-            <span className="font-extrabold text-3xl tracking-tighter ml-0.5 flex items-center select-none">
+            <span className="font-extrabold text-1xl tracking-tighter ml-0.5 flex items-center select-none">
               <span className="bg-gradient-to-r from-zinc-950 via-zinc-800 to-zinc-700 dark:from-zinc-50 dark:via-zinc-200 dark:to-zinc-400 bg-clip-text text-transparent font-black tracking-tight">
                 Comic
               </span>
@@ -118,38 +160,20 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden items-center gap-6 text-base font-semibold md:flex">
-            <Link
-              href="/truyen"
-              prefetch={false}
-              className="text-muted-foreground transition hover:text-foreground"
-            >
-              Truyện
-            </Link>
-            <Link
-              href="/bang-xep-hang"
-              prefetch={false}
-              className="text-muted-foreground transition hover:text-foreground"
-            >
-              Bảng xếp hạng
-            </Link>
-          </nav>
-        </div>
-
-        {/* Right Section: Search & Actions */}
-        <div className="flex items-center gap-3">
-          {/* Desktop Search */}
-          <form onSubmit={handleSubmit} className="relative hidden sm:block w-48 md:w-64 lg:w-72">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          {/* Desktop Search - Positioned next to Comic HUB & Made larger */}
+          <form onSubmit={handleSubmit} className="relative hidden sm:block flex-1 max-w-md">
+            <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Tìm truyện..."
-              className="h-9 w-full rounded-full border border-border bg-muted/40 pl-9 pr-3 text-xs outline-none transition focus:border-primary focus:bg-background focus:ring-1 focus:ring-primary"
+              className="h-10 w-full rounded-full border border-border bg-muted/40 pl-11 pr-4 text-sm outline-none transition focus:border-primary focus:bg-background focus:ring-1 focus:ring-primary"
             />
           </form>
+        </div>
 
+        {/* Right Section: Actions */}
+        <div className="flex items-center gap-3">
           {/* Actions Menu */}
           <div className="flex items-center gap-2">
             {/* Theme Toggle - Desktop only */}
@@ -189,7 +213,7 @@ export function SiteHeader() {
 
                   {/* Dropdown Menu */}
                   {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl border border-border bg-card p-4 shadow-xl animate-fade-in z-50">
+                    <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl border border-border bg-background p-4 shadow-xl animate-fade-in z-50">
                       <div className="px-2 py-1.5 text-left">
                         <p className="text-sm font-bold text-foreground truncate">
                           {user.name}
@@ -309,9 +333,178 @@ export function SiteHeader() {
         </div>
       </div>
 
+      {/* Desktop Navigation Sub-header (visible on md and up) */}
+      <div className="hidden md:block bg-zinc-100 dark:bg-black shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex flex-wrap items-center justify-start gap-7 text-sm font-medium text-zinc-600 dark:text-zinc-300 select-none">
+          {/* Trang Chủ */}
+          <Link
+            href="/"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isHomeActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <Home className={`size-3.5 transition-colors duration-200 ${isHomeActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Trang Chủ</span>
+          </Link>
+
+          {/* Thể Loại Dropdown */}
+          <div className="relative group/category">
+            <button className={`flex items-center gap-1.5 transition py-1 cursor-pointer ${isCategoryActive ? "text-[#E53935]" : "hover:text-[#E53935] group-hover/category:text-[#E53935]"}`}>
+              <LayoutGrid className={`size-3.5 transition-colors duration-200 ${isCategoryActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover/category:text-[#E53935]"}`} />
+              <span>Thể Loại</span>
+              <ChevronDown className={`size-3 transition-all duration-200 ${isCategoryActive ? "rotate-180 text-[#E53935]" : "group-hover/category:rotate-180 group-hover/category:text-[#E53935]"}`} />
+            </button>
+            <div className="absolute left-0 top-full pt-2.5 hidden group-hover/category:block z-50">
+              <div className="grid grid-cols-3 gap-2 w-72 rounded-xl border border-border bg-background p-3 shadow-xl">
+                {categories.length > 0 ? (
+                  categories.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/the-loai/${c.slug}`}
+                      prefetch={false}
+                      className="rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                    >
+                      {c.name}
+                    </Link>
+                  ))
+                ) : (
+                  PRESET_CATEGORIES.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/the-loai/${c.slug}`}
+                      prefetch={false}
+                      className="rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                    >
+                      {c.name}
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Xếp Hạng Dropdown */}
+          <div className="relative group/ranking">
+            <button className={`flex items-center gap-1.5 transition py-1 cursor-pointer ${isRankingActive ? "text-[#E53935]" : "hover:text-[#E53935] group-hover/ranking:text-[#E53935]"}`}>
+              <Trophy className={`size-3.5 transition-colors duration-200 ${isRankingActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover/ranking:text-[#E53935]"}`} />
+              <span>Xếp Hạng</span>
+              <ChevronDown className={`size-3 transition-all duration-200 ${isRankingActive ? "rotate-180 text-[#E53935]" : "group-hover/ranking:rotate-180 group-hover/ranking:text-[#E53935]"}`} />
+            </button>
+            <div className="absolute left-0 top-full pt-2.5 hidden group-hover/ranking:block z-50">
+              <div className="flex flex-col w-44 rounded-xl border border-border bg-background p-2 shadow-xl">
+                <Link
+                  href="/bang-xep-hang?type=hot"
+                  prefetch={false}
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                >
+                  Top Hot
+                </Link>
+                <Link
+                  href="/bang-xep-hang?type=views"
+                  prefetch={false}
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                >
+                  Top Lượt Xem
+                </Link>
+                <Link
+                  href="/bang-xep-hang?type=follows"
+                  prefetch={false}
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                >
+                  Top Theo Dõi
+                </Link>
+                <Link
+                  href="/bang-xep-hang?type=likes"
+                  prefetch={false}
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                >
+                  Top Yêu Thích
+                </Link>
+                <Link
+                  href="/bang-xep-hang?type=latest"
+                  prefetch={false}
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
+                >
+                  Mới Cập Nhật
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Top Manhwa */}
+          <Link
+            href="/the-loai/manhwa"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isManhwaActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <Flag className={`size-3.5 transition-colors duration-200 ${isManhwaActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Top Manhwa</span>
+          </Link>
+
+          {/* Top Manga */}
+          <Link
+            href="/the-loai/manga"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isMangaActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <Zap className={`size-3.5 transition-colors duration-200 ${isMangaActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Top Manga</span>
+          </Link>
+
+          {/* Top Manhua */}
+          <Link
+            href="/the-loai/manhua"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isManhuaActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <BarChart3 className={`size-3.5 transition-colors duration-200 ${isManhuaActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Top Manhua</span>
+          </Link>
+
+          {/* Tìm Truyện */}
+          <Link
+            href="/tim-kiem"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isSearchActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <Search className={`size-3.5 transition-colors duration-200 ${isSearchActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Tìm Truyện</span>
+          </Link>
+
+          {/* Lịch Sử */}
+          <Link
+            href="/me/histories"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isHistoriesActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <Clock className={`size-3.5 transition-colors duration-200 ${isHistoriesActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Lịch Sử</span>
+          </Link>
+
+          {/* Theo Dõi */}
+          <Link
+            href="/me/follows"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isFollowsActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <Bookmark className={`size-3.5 transition-colors duration-200 ${isFollowsActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Theo Dõi</span>
+          </Link>
+
+          {/* Truyện ngôn tình */}
+          <Link
+            href="/the-loai/ngon-tinh"
+            prefetch={false}
+            className={`flex items-center gap-1.5 transition py-1 group ${isNgonTinhActive ? "text-[#E53935]" : "hover:text-[#E53935]"}`}
+          >
+            <BookOpen className={`size-3.5 transition-colors duration-200 ${isNgonTinhActive ? "text-[#E53935]" : "text-zinc-500 dark:text-zinc-400 group-hover:text-[#E53935]"}`} />
+            <span>Truyện ngôn tình</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Mobile Drawer */}
       {isOpen ? (
-        <div className="border-t border-border px-4 py-4 md:hidden bg-zinc-100 dark:bg-zinc-900 space-y-4">
+        <div className="border-t border-border px-4 py-4 md:hidden bg-zinc-100 dark:bg-black space-y-4">
           {/* Mobile Search */}
           <form onSubmit={handleSubmit} className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -326,20 +519,83 @@ export function SiteHeader() {
           {/* Navigation Links */}
           <nav className="flex flex-col gap-1 text-sm font-semibold">
             <Link
-              href="/truyen"
+              href="/"
               prefetch={false}
-              className="rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
               onClick={() => setIsOpen(false)}
             >
-              Truyện tranh
+              <Home className="size-4 text-blue-500" />
+              <span>Trang Chủ</span>
             </Link>
+            
+            <Link
+              href="/truyen"
+              prefetch={false}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => setIsOpen(false)}
+            >
+              <LayoutGrid className="size-4 text-orange-500" />
+              <span>Thể Loại</span>
+            </Link>
+
             <Link
               href="/bang-xep-hang"
               prefetch={false}
-              className="rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
               onClick={() => setIsOpen(false)}
             >
-              Bảng xếp hạng
+              <Trophy className="size-4 text-yellow-500" />
+              <span>Xếp Hạng</span>
+            </Link>
+
+            <Link
+              href="/the-loai/manhwa"
+              prefetch={false}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => setIsOpen(false)}
+            >
+              <Flag className="size-4 text-green-500" />
+              <span>Top Manhwa</span>
+            </Link>
+
+            <Link
+              href="/the-loai/manga"
+              prefetch={false}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => setIsOpen(false)}
+            >
+              <Zap className="size-4 text-purple-500" />
+              <span>Top Manga</span>
+            </Link>
+
+            <Link
+              href="/the-loai/manhua"
+              prefetch={false}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => setIsOpen(false)}
+            >
+              <BarChart3 className="size-4 text-red-500" />
+              <span>Top Manhua</span>
+            </Link>
+
+            <Link
+              href="/tim-kiem"
+              prefetch={false}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => setIsOpen(false)}
+            >
+              <Search className="size-4 text-sky-500" />
+              <span>Tìm Truyện</span>
+            </Link>
+
+            <Link
+              href="/the-loai/ngon-tinh"
+              prefetch={false}
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              onClick={() => setIsOpen(false)}
+            >
+              <BookOpen className="size-4 text-teal-500" />
+              <span>Truyện ngôn tình</span>
             </Link>
 
             {isAuthenticated && user && (
