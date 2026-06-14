@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { ComicSort, SearchComicsQueryDto } from './dto/search-comics-query.dto';
+import { SearchSuggestionsQueryDto } from './dto/search-suggestions-query.dto';
 
 type PaginationMeta = {
   page: number;
@@ -17,6 +18,16 @@ type SearchResult = {
   message: string;
   items: unknown[];
   meta: PaginationMeta;
+};
+
+type SearchSuggestion = {
+  id: number;
+  title: string;
+  slug: string;
+  thumbnail: string | null;
+  authorName: string | null;
+  status: string;
+  latestChapterNumber: number | null;
 };
 
 type ComicWithCounts = {
@@ -51,6 +62,39 @@ const comicInclude = {
     },
   },
 } as const;
+
+const suggestionSelect = {
+  id: true,
+  name: true,
+  slug: true,
+  thumbnail: true,
+  status: true,
+  viewTotal: true,
+  followCount: true,
+  updatedAt: true,
+  author: {
+    select: {
+      name: true,
+    },
+  },
+  chapters: {
+    where: {
+      isPublic: true,
+      deletedAt: null,
+    },
+    orderBy: {
+      chapterNumber: 'desc',
+    },
+    take: 1,
+    select: {
+      chapterNumber: true,
+    },
+  },
+} satisfies Prisma.ComicSelect;
+
+type SuggestionComic = Prisma.ComicGetPayload<{
+  select: typeof suggestionSelect;
+}>;
 
 @Injectable()
 export class SearchService {
@@ -88,6 +132,79 @@ export class SearchService {
       items: items.map((item) => this.withPublicCounts(item)),
       meta: this.buildMeta(page, limit, total),
     };
+
+    await this.redis.set(cacheKey, result, 60);
+
+    return result;
+  }
+
+  async suggestions(
+    query: SearchSuggestionsQueryDto,
+  ): Promise<SearchSuggestion[]> {
+    const normalizedQ = this.normalizeKeyword(query.q);
+
+    if (!normalizedQ) {
+      return [];
+    }
+
+    const limit = Math.min(query.limit ?? 8, 10);
+    const cacheKey = `search:suggestions:${normalizedQ}:${limit}`;
+    const cached = await this.redis.get<SearchSuggestion[]>(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    const candidates = await this.prisma.comic.findMany({
+      where: {
+        isPublic: true,
+        deletedAt: null,
+        OR: [
+          {
+            name: {
+              contains: normalizedQ,
+              mode: 'insensitive',
+            },
+          },
+          {
+            slug: {
+              contains: normalizedQ,
+              mode: 'insensitive',
+            },
+          },
+          {
+            author: {
+              name: {
+                contains: normalizedQ,
+                mode: 'insensitive',
+              },
+            },
+          },
+        ],
+      },
+      select: suggestionSelect,
+      orderBy: [
+        {
+          viewTotal: 'desc',
+        },
+        {
+          followCount: 'desc',
+        },
+        {
+          updatedAt: 'desc',
+        },
+      ],
+      take: limit * 3,
+    });
+
+    const result = candidates
+      .sort(
+        (left, right) =>
+          this.getSuggestionRank(left, normalizedQ) -
+          this.getSuggestionRank(right, normalizedQ),
+      )
+      .slice(0, limit)
+      .map((comic) => this.toSuggestion(comic));
 
     await this.redis.set(cacheKey, result, 60);
 
@@ -193,6 +310,45 @@ export class SearchService {
       ...comic,
       followCount: comic.followCount ?? comic._count?.follows ?? 0,
       likeCount: comic._count?.likes ?? 0,
+    };
+  }
+
+  private normalizeKeyword(keyword?: string): string {
+    return keyword?.trim().toLowerCase() ?? '';
+  }
+
+  private getSuggestionRank(
+    comic: SuggestionComic,
+    normalizedQ: string,
+  ): number {
+    const name = comic.name.toLowerCase();
+    const slug = comic.slug.toLowerCase();
+    const authorName = comic.author?.name.toLowerCase() ?? '';
+
+    if (name === normalizedQ || slug === normalizedQ) {
+      return 0;
+    }
+
+    if (name.startsWith(normalizedQ) || slug.startsWith(normalizedQ)) {
+      return 1;
+    }
+
+    if (authorName.startsWith(normalizedQ)) {
+      return 2;
+    }
+
+    return 3;
+  }
+
+  private toSuggestion(comic: SuggestionComic): SearchSuggestion {
+    return {
+      id: comic.id,
+      title: comic.name,
+      slug: comic.slug,
+      thumbnail: comic.thumbnail,
+      authorName: comic.author?.name ?? null,
+      status: comic.status,
+      latestChapterNumber: comic.chapters[0]?.chapterNumber ?? null,
     };
   }
 }
